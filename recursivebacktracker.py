@@ -1,6 +1,6 @@
 from grid import Grid
 import random, time
-from terminal_grid import TermGrid
+from os import system
 
 
 class RecursiveBacktracker:
@@ -26,8 +26,9 @@ class RecursiveBacktracker:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        # termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
-        # for row in range(len(visual_grid)):
-        #    for col in range(len(visual_grid[0])):
-        #        termgrid.cells[(row, col)] = visual_grid[row][col]
-        # termgrid.show()
+        lines = []
+        for line in visual_grid:
+            lines.append("".join(line))
+        system("clear")
+        for line in lines:
+            print(line)
