@@ -1,12 +1,12 @@
 from grid import Grid
-import random, time
-from os import system
+import random
 
 
 class RecursiveBacktracker:
     def __init__(self, grid: Grid):
         self.grid = grid
-        self.visual_algo = True
+
+    def generate_maze(self):
         cell = self.grid.random_cell()
         stack = []
         stack.append(cell)
@@ -17,15 +17,9 @@ class RecursiveBacktracker:
                 cell.link(next_cell)
                 stack.append(next_cell)
                 cell = next_cell
-                self.show_grid()
-                time.sleep(0.05)
+                yield self.grid
+
             else:
                 stack.pop()
                 if stack:
                     cell = stack[-1]
-
-    def show_grid(self):
-        visual_grid = self.grid.get_visual_grid()
-        lines = ["".join(line) for line in visual_grid]
-        system("clear")
-        print("\n".join(lines))
