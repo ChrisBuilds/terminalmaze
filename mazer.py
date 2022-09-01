@@ -8,8 +8,6 @@ from huntandkill import HuntandKill
 from wilsons import Wilsons
 from recursivebacktracker import RecursiveBacktracker
 from grid import Grid
-from terminal_grid import TermGrid
-import curses, time
 
 
 def gen_mask(mask):
@@ -31,14 +29,13 @@ def main():
     ..........
     """
 
-    grid = Grid(50, 20, mask=gen_mask(mask))
+    grid = Grid(20, 10, mask=gen_mask(mask))
     # maze = BinaryTree(grid, screen)
     # maze = Sidewinder(grid, screen)
     # maze = AldousBroder(grid, screen)
     # maze = Wilsons(grid, screen)
     # maze = HuntandKill(grid, screen)
     maze = RecursiveBacktracker(grid)
-    time.sleep(5)
 
 
 if __name__ == "__main__":
