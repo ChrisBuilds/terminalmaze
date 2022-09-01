@@ -26,9 +26,6 @@ class RecursiveBacktracker:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        lines = []
-        for line in visual_grid:
-            lines.append("".join(line))
+        lines = ["".join(line) for line in visual_grid]
         system("clear")
-        for line in lines:
-            print(line)
+        print("\n".join(lines))
