@@ -1,10 +1,10 @@
 from grid import Grid
 import random, time
-from terminal_grid import TermGrid
+from os import system
 
 
 class Sidewinder:
-    def __init__(self, grid: Grid, screen):
+    def __init__(self, grid: Grid):
         """
         For each row, randomly link cells in a run of cells to their north or east neighbor.
 
@@ -12,7 +12,6 @@ class Sidewinder:
         :type grid: Grid
         """
         self.grid = grid
-        self.screen = screen
         for row in self.grid.each_row(bottom_up=True):
             run = []
             for cell in row:
@@ -36,8 +35,6 @@ class Sidewinder:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
-        for row in range(len(visual_grid)):
-            for col in range(len(visual_grid[0])):
-                termgrid.cells[(row, col)] = visual_grid[row][col]
-        termgrid.show()
+        lines = ["".join(line) for line in visual_grid]
+        system("clear")
+        print("\n".join(lines))

@@ -1,16 +1,13 @@
 from grid import Grid
 import random, time
-from terminal_grid import TermGrid
+from os import system
 
 
 class Wilsons:
-    def __init__(self, grid: Grid, screen):
-        self.screen = screen
+    def __init__(self, grid: Grid):
         self.grid = grid
         walk = []
-        starting_target = self.grid.get_cell(
-            random.choice(list(self.grid.cells.keys()))
-        )
+        starting_target = self.grid.get_cell(random.choice(list(self.grid.cells.keys())))
         unvisited = list(self.grid.cells.keys())
         unvisited.remove((starting_target.row, starting_target.column))
         while unvisited:
@@ -35,9 +32,7 @@ class Wilsons:
                         if i == len(walk) - 1:
                             self.grid.get_cell(cell).link(self.grid.get_cell(next_cell))
                         else:
-                            self.grid.get_cell(cell).link(
-                                self.grid.get_cell(walk[i + 1])
-                            )
+                            self.grid.get_cell(cell).link(self.grid.get_cell(walk[i + 1]))
                         self.show_grid()
                         time.sleep(0.1)
                 else:
@@ -46,8 +41,6 @@ class Wilsons:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
-        for row in range(len(visual_grid)):
-            for col in range(len(visual_grid[0])):
-                termgrid.cells[(row, col)] = visual_grid[row][col]
-        termgrid.show()
+        lines = ["".join(line) for line in visual_grid]
+        system("clear")
+        print("\n".join(lines))

@@ -30,11 +30,11 @@ def main():
     """
 
     grid = Grid(20, 10, mask=gen_mask(mask))
-    # maze = BinaryTree(grid, screen)
-    # maze = Sidewinder(grid, screen)
-    # maze = AldousBroder(grid, screen)
-    # maze = Wilsons(grid, screen)
-    # maze = HuntandKill(grid, screen)
+    # maze = BinaryTree(grid)
+    # maze = Sidewinder(grid)
+    # maze = AldousBroder(grid)
+    # maze = Wilsons(grid)
+    # maze = HuntandKill(grid)
     maze = RecursiveBacktracker(grid)
 
 

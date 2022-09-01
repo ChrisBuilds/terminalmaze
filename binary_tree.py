@@ -1,10 +1,10 @@
 from grid import Grid
 import random, time
-from terminal_grid import TermGrid
+from os import system
 
 
 class BinaryTree:
-    def __init__(self, grid: Grid, screen):
+    def __init__(self, grid: Grid):
         """
         Create a maze by randomly connecting each cell to its neighbor to the north or east.
 
@@ -12,7 +12,6 @@ class BinaryTree:
         :type grid: Grid
         """
 
-        self.screen = screen
         self.grid = grid
         for cell in grid.each_cell():
             neighbors = []
@@ -28,8 +27,6 @@ class BinaryTree:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
-        for row in range(len(visual_grid)):
-            for col in range(len(visual_grid[0])):
-                termgrid.cells[(row, col)] = visual_grid[row][col]
-        termgrid.show()
+        lines = ["".join(line) for line in visual_grid]
+        system("clear")
+        print("\n".join(lines))
