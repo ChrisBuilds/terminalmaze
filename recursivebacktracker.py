@@ -4,8 +4,7 @@ from terminal_grid import TermGrid
 
 
 class RecursiveBacktracker:
-    def __init__(self, grid: Grid, screen):
-        self.screen = screen
+    def __init__(self, grid: Grid):
         self.grid = grid
         self.visual_algo = True
         cell = self.grid.random_cell()
@@ -27,8 +26,8 @@ class RecursiveBacktracker:
 
     def show_grid(self):
         visual_grid = self.grid.get_visual_grid()
-        termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
-        for row in range(len(visual_grid)):
-            for col in range(len(visual_grid[0])):
-                termgrid.cells[(row, col)] = visual_grid[row][col]
-        termgrid.show()
+        # termgrid = TermGrid(self.screen, len(visual_grid) + 2, len(visual_grid[0]) + 2)
+        # for row in range(len(visual_grid)):
+        #    for col in range(len(visual_grid[0])):
+        #        termgrid.cells[(row, col)] = visual_grid[row][col]
+        # termgrid.show()

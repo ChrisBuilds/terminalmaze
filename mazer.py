@@ -17,7 +17,7 @@ def gen_mask(mask):
     return mask
 
 
-def main(screen: curses.window):
+def main():
     mask = """
     ..........
     ..........
@@ -31,17 +31,15 @@ def main(screen: curses.window):
     ..........
     """
 
-    screen.nodelay(True)
-    curses.curs_set(0)
     grid = Grid(50, 20, mask=gen_mask(mask))
     # maze = BinaryTree(grid, screen)
     # maze = Sidewinder(grid, screen)
     # maze = AldousBroder(grid, screen)
     # maze = Wilsons(grid, screen)
     # maze = HuntandKill(grid, screen)
-    maze = RecursiveBacktracker(grid, screen)
+    maze = RecursiveBacktracker(grid)
     time.sleep(5)
 
 
 if __name__ == "__main__":
-    curses.wrapper(main)
+    main()
