@@ -8,6 +8,7 @@ from huntandkill import HuntandKill
 from wilsons import Wilsons
 from recursivebacktracker import RecursiveBacktracker
 from grid import Grid
+from os import system
 
 
 def gen_mask(mask):
@@ -35,7 +36,17 @@ def main():
     # maze = AldousBroder(grid)
     # maze = Wilsons(grid)
     # maze = HuntandKill(grid)
-    maze = RecursiveBacktracker(grid)
+    algo = RecursiveBacktracker(grid)
+
+    for maze in algo.generate_maze():
+        show_maze(maze)
+
+
+def show_maze(maze):
+    visual_grid = maze.get_visual_grid()
+    lines = ["".join(line) for line in visual_grid]
+    system("clear")
+    print("\n".join(lines))
 
 
 if __name__ == "__main__":
