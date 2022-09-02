@@ -1,17 +1,19 @@
 import random
-import time
-from os import system
+from collections.abc import Generator
+
 
 from grid.grid import Grid
 
 
 class Wilsons:
-    def __init__(self, grid: Grid):
+    def __init__(self, grid: Grid, showlogic: bool = False) -> None:
         self.grid = grid
+        self.showlogic = showlogic
+        self.logic_data = {"working_cell": None, "last_linked": None}
+
+    def generate_maze(self) -> Generator[Grid, None, None]:
         walk = []
-        starting_target = self.grid.get_cell(
-            random.choice(list(self.grid.cells.keys()))
-        )
+        starting_target = self.grid.get_cell(random.choice(list(self.grid.cells.keys())))
         unvisited = list(self.grid.cells.keys())
         unvisited.remove((starting_target.row, starting_target.column))
         while unvisited:
@@ -36,17 +38,8 @@ class Wilsons:
                         if i == len(walk) - 1:
                             self.grid.get_cell(cell).link(self.grid.get_cell(next_cell))
                         else:
-                            self.grid.get_cell(cell).link(
-                                self.grid.get_cell(walk[i + 1])
-                            )
-                        self.show_grid()
-                        time.sleep(0.1)
+                            self.grid.get_cell(cell).link(self.grid.get_cell(walk[i + 1]))
+                        yield self.grid
                 else:
                     walk.append(next_cell)
                     origin = self.grid.get_cell(next_cell)
-
-    def show_grid(self):
-        visual_grid = self.grid.get_visual_grid()
-        lines = ["".join(line) for line in visual_grid]
-        system("clear")
-        print("\n".join(lines))
