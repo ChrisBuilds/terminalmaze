@@ -1,13 +1,11 @@
 #!/usr/bin/python3
 
-from audioop import add
-from aldousbroder import AldousBroder
-from binary_tree import BinaryTree
-from sidewinder import Sidewinder
-from aldousbroder import AldousBroder
-from huntandkill import HuntandKill
-from wilsons import Wilsons
-from recursivebacktracker import RecursiveBacktracker
+from maze_algorithms.huntandkill import HuntandKill
+from maze_algorithms.wilsons import Wilsons
+from maze_algorithms.binarytree import BinaryTree
+from maze_algorithms.sidewinder import Sidewinder
+from maze_algorithms.aldousbroder import AldousBroder
+from maze_algorithms.recursivebacktracker import RecursiveBacktracker
 from grid import Grid
 from os import system
 import colorama
@@ -39,8 +37,8 @@ def main():
     # maze = Sidewinder(grid)
     # maze = AldousBroder(grid)
     # maze = Wilsons(grid)
-    # maze = HuntandKill(grid)
-    algo = RecursiveBacktracker(grid, showlogic=showlogic)
+    algo = HuntandKill(grid)
+    # algo = RecursiveBacktracker(grid, showlogic=showlogic)
 
     for maze in algo.generate_maze():
         show_maze(maze, algo.logic_data, showlogic)
@@ -75,12 +73,12 @@ def add_logic_data(visual_grid, logic_data):
 def show_maze(maze, logic_data, showlogic):
     visual_grid = maze.get_visual_grid()
     if showlogic:
-        if logic_data["working_cell"]:
+        if logic_data.get("working_cell"):
             visual_grid = add_logic_data(visual_grid, logic_data)
     lines = ["".join(line) for line in visual_grid]
     system("clear")
     print("\n".join(lines))
-    # sleep(0.05)
+    sleep(0.05)
 
 
 if __name__ == "__main__":

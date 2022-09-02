@@ -8,7 +8,7 @@ class RecursiveBacktracker:
         self.showlogic = showlogic
         self.logic_data = {"working_cell": None, "last_linked": None}
 
-    def generate_maze(self):
+    def generate_maze(self) -> Grid:
         cell = self.grid.random_cell()
         stack = []
         stack.append(cell)

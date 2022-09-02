@@ -1,4 +1,4 @@
-from cell import Cell
+from grid.cell import Cell
 import random
 
 
