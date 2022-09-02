@@ -1,17 +1,17 @@
 class Cell:
-    def __init__(self, row, col):
+    def __init__(self, row: int, col: int) -> None:
         """
         Create a new node and set its row and column attributes.
 
         :param row: the row number of the cell
         :param col: the column number of the cell
         """
-        self.row = row
-        self.column = col
-        self.links = set()
-        self.neighbors = {}
+        self.row: int = row
+        self.column: int = col
+        self.links: set["Cell"] = set()
+        self.neighbors: dict[str, "Cell"] = {}
 
-    def link(self, cell, bidi=True):
+    def link(self, cell: "Cell", bidi: bool = True) -> None:
         """
         Add a link to the cell.
 
@@ -22,7 +22,7 @@ class Cell:
         if bidi:
             cell.link(self, False)
 
-    def unlink(self, cell, bidi=True):
+    def unlink(self, cell: "Cell", bidi: bool = True) -> None:
         """
         Remove the cell from the list of links.
 
@@ -33,14 +33,14 @@ class Cell:
         if bidi:
             cell.unlink(self, False)
 
-    def get_links(self):
+    def get_links(self) -> set["Cell"]:
         """
         The function returns a set of cells linked to this cell.
         :return: Set of cells linked to this cell
         """
         return self.links
 
-    def is_linked(self, cell):
+    def is_linked(self, cell: "Cell") -> bool:
         """
         Return if this cell is linked to the given cell.
 

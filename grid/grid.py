@@ -1,23 +1,24 @@
 from grid.cell import Cell
 import random
 from colorama import Fore
+from collections.abc import Generator
 
 
 class Grid:
-    def __init__(self, width, height, mask=None):
+    def __init__(self, width: int, height: int, mask=None) -> None:
         """
         Create a new grid with the given width and height.
 
         :param width: the number of columns in the grid
         :param height: the number of rows in the grid
         """
-        self.width = width
-        self.height = height
-        self.cells = {}
+        self.width: int = width
+        self.height: int = height
+        self.cells: dict[tuple[int, int], Cell] = {}
         self.prepare_grid()
         self.configure_cells()
 
-    def prepare_grid(self):
+    def prepare_grid(self) -> None:
         """
         Create a dictionary of Cell objects, where the dictionary key is a tuple of the row and column, and
         the value is the Cell object.
@@ -27,21 +28,25 @@ class Grid:
                 cell = Cell(row, col)
                 self.cells[(row, col)] = cell
 
-    def configure_cells(self):
+    def configure_cells(self) -> None:
         """
         For each cell in the grid, set the neighbors of that cell to the cells that are adjacent to it.
         """
         for cell in self.cells.values():
             row = cell.row
             col = cell.column
-            cell.neighbors = {
+            adjacent_cell_coordinates = {
                 "north": (row - 1, col),
                 "south": (row + 1, col),
                 "west": (row, col - 1),
                 "east": (row, col + 1),
             }
+            for direction, coordinates in adjacent_cell_coordinates.items():
+                neighbor = self.get_cell(coordinates)
+                if neighbor:
+                    cell.neighbors[direction] = neighbor
 
-    def get_cell(self, cell):
+    def get_cell(self, cell: tuple[int, int]) -> Cell:
         """
         Given cell coordinates, return the cell object if valid coordinates, else None.
 
@@ -55,7 +60,7 @@ class Grid:
         else:
             return None
 
-    def get_neighbors(self, cell, adjacent=True):
+    def get_neighbors(self, cell: Cell, adjacent: bool = True) -> list[Cell]:
         """
         Given a cell, return a list of its neighboring cells
 
@@ -67,22 +72,22 @@ class Grid:
         neighbors = [self.get_cell(coord) for coord in neighbor_coords if self.get_cell(coord)]
         return neighbors
 
-    def random_cell(self):
+    def random_cell(self) -> Cell:
         """
         Return a random cell from the grid.
         :return: A random cell from the list of cells.
         """
-        cell = random.choice([cell for cell in self.cells.values() if cell])
+        cell = random.choice(list(self.cells.values()))
         return cell
 
-    def size(self):
+    def size(self) -> int:
         """
         Return the number of cells in the grid.
         :return: Number of cells in the grid
         """
         return self.height * self.width
 
-    def each_row(self, bottom_up=False):
+    def each_row(self, bottom_up: bool = False) -> Generator[Cell, None, None]:
         """
         Yield one row of the grid at a time as a list.
 
@@ -95,7 +100,7 @@ class Grid:
             for row in range(self.height - 1, -1, -1):
                 yield [self.cells[(row, col)] for col in range(self.width)]
 
-    def each_cell(self):
+    def each_cell(self) -> Generator[Cell, None, None]:
         """
         Return a generator that yields a cell at a time.
         """
@@ -103,11 +108,13 @@ class Grid:
             for col in range(self.width):
                 yield self.cells[(row, col)]
 
-    def get_visual_grid(self):
+    def get_visual_grid(self) -> list[list[str]]:
         """
         Create a grid of the maze, with a wall character between each cell.
         :return: A list of lists of strings.
         """
+        cell: Cell
+
         self.visual_grid = []
         wall = f"{Fore.WHITE}{chr(9608)}{Fore.RESET}"
         for row in self.each_row():
@@ -118,15 +125,15 @@ class Grid:
                     term_row.append(" ")
                 else:
                     term_row.append(wall)
-                cell_east_coord = cell.neighbors["east"]
-                cell_south_coord = cell.neighbors["south"]
-                if self.get_cell(cell_east_coord):
-                    if cell.is_linked(self.get_cell(cell_east_coord)):
+                cell_east = cell.neighbors.get("east")
+                cell_south = cell.neighbors.get("south")
+                if cell_east:
+                    if cell.is_linked(cell_east):
                         term_row.append(" ")
                     else:
                         term_row.append(wall)
-                if self.get_cell(cell_south_coord):
-                    if cell.is_linked(self.get_cell(cell_south_coord)):
+                if cell_south:
+                    if cell.is_linked(cell_south):
                         lower_row.append(" ")
                     else:
                         lower_row.append(wall)
@@ -142,7 +149,7 @@ class Grid:
         self.visual_grid.append([wall for _ in range(len(self.visual_grid[0]))])
         return self.visual_grid
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
         Prints a text representation of the maze.
         :return: A string representation of the grid.
@@ -155,12 +162,7 @@ class Grid:
             for cell in row:
                 body = "   "
                 if cell.is_linked(self.get_cell(cell.neighbors["east"])):
-                    east_boundary = " "
-                else:
-                    east_boundary = "|"
-                top += body + east_boundary
-                if cell.is_linked(self.get_cell(cell.neighbors["south"])):
-                    south_boundary = "   "
+                    eCelluth_boundary = "   "
                 else:
                     south_boundary = "---"
                 corner = "+"
