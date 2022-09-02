@@ -1,6 +1,5 @@
 from grid import Grid
-import random, time
-from os import system
+import random
 
 
 class HuntandKill:
