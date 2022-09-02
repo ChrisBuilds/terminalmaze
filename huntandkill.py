@@ -31,7 +31,7 @@ class HuntandKill:
     Methods
     -------
     generate_maze():
-        Generator the yields the Grid when cells are linked and, if showlogic is True,
+        Generator that yields the Grid when cells are linked and, if showlogic is True,
         when maze logic checks are performed.
     """
 
