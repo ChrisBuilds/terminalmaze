@@ -15,6 +15,7 @@ Classes
 
 from grid import Grid
 import random
+from collections.abc import Generator
 
 
 class HuntandKill:
@@ -35,11 +36,11 @@ class HuntandKill:
         when maze logic checks are performed.
     """
 
-    def __init__(self, grid: Grid, showlogic=False):
+    def __init__(self, grid: Grid, showlogic: bool = False) -> None:
         self.grid = grid
         self.logic_data = {}
 
-    def generate_maze(self):
+    def generate_maze(self) -> Generator[Grid, None, None]:
         """Generates a maze by linking Cells in a Grid according to the Hunt and Kill maze generation
         algorithm.
 
