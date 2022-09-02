@@ -1,5 +1,6 @@
 from grid.cell import Cell
 import random
+from colorama import Fore
 
 
 class Grid:
@@ -108,7 +109,7 @@ class Grid:
         :return: A list of lists of strings.
         """
         self.visual_grid = []
-        wall = chr(9608)
+        wall = f"{Fore.WHITE}{chr(9608)}{Fore.RESET}"
         for row in self.each_row():
             term_row = []
             lower_row = []
