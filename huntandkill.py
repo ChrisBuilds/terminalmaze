@@ -6,7 +6,10 @@ from os import system
 class HuntandKill:
     def __init__(self, grid: Grid):
         self.grid = grid
-        unvisited = [cell for cell in grid.cells.values()]
+        self.logic_data = {}
+
+    def generate_maze(self):
+        unvisited = [cell for cell in self.grid.cells.values()]
         cell = random.choice(unvisited)
         unvisited.remove(cell)
         while unvisited:
@@ -15,8 +18,7 @@ class HuntandKill:
                 neighbor = random.choice(unvisited_neighbors)
                 cell.link(neighbor)
                 unvisited.remove(neighbor)
-                self.show_grid()
-                time.sleep(0.05)
+                yield self.grid
                 cell = neighbor
 
             else:
@@ -25,11 +27,5 @@ class HuntandKill:
                     if visited_neighbors:
                         cell.link(random.choice(visited_neighbors))
                         unvisited.remove(cell)
-                        self.show_grid()
+                        yield self.grid
                         break
-
-    def show_grid(self):
-        visual_grid = self.grid.get_visual_grid()
-        lines = ["".join(line) for line in visual_grid]
-        system("clear")
-        print("\n".join(lines))
