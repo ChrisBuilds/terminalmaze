@@ -6,10 +6,10 @@ from maze_algorithms.binarytree import BinaryTree
 from maze_algorithms.sidewinder import Sidewinder
 from maze_algorithms.aldousbroder import AldousBroder
 from maze_algorithms.recursivebacktracker import RecursiveBacktracker
-from grid import Grid
-from os import system
+from grid.grid import Grid
 import colorama
 from time import sleep
+from os import system
 
 
 def gen_mask(mask):
@@ -32,12 +32,12 @@ def main():
     """
     colorama.init()
     showlogic = True
-    grid = Grid(40, 20, mask=gen_mask(mask))
+    mazegrid = Grid(40, 20, mask=gen_mask(mask))
     # maze = BinaryTree(grid)
     # maze = Sidewinder(grid)
     # maze = AldousBroder(grid)
     # maze = Wilsons(grid)
-    algo = HuntandKill(grid)
+    algo = HuntandKill(mazegrid)
     # algo = RecursiveBacktracker(grid, showlogic=showlogic)
 
     for maze in algo.generate_maze():
@@ -46,17 +46,17 @@ def main():
 
 def add_logic_data(visual_grid, logic_data):
     def translate_cell_coords(cell):
-        y = cell.row
-        x = cell.column
-        if y == 0:
-            y = 1
+        row = cell.row
+        column = cell.column
+        if row == 0:
+            row = 1
         else:
-            y = (y * 2) + 1
-        if x == 0:
-            x = 1
+            row = (row * 2) + 1
+        if column == 0:
+            column = 1
         else:
-            x = (x * 2) + 1
-        return (y, x)
+            column = (column * 2) + 1
+        return row, column
 
     working_cell = logic_data["working_cell"]
     last_linked = logic_data["last_linked"]
@@ -66,7 +66,9 @@ def add_logic_data(visual_grid, logic_data):
     # color last linked cell
     if last_linked:
         y, x = translate_cell_coords(last_linked)
-        visual_grid[y][x] = f"{colorama.Fore.LIGHTYELLOW_EX}{chr(9608)}{colorama.Fore.RESET}"
+        visual_grid[y][
+            x
+        ] = f"{colorama.Fore.LIGHTYELLOW_EX}{chr(9608)}{colorama.Fore.RESET}"
     return visual_grid
 
 

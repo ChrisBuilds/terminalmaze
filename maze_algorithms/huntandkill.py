@@ -13,9 +13,10 @@ Classes
     HuntandKill
 """
 
-from grid import Grid
 import random
 from collections.abc import Generator
+
+from grid.grid import Grid
 
 
 class HuntandKill:
@@ -36,8 +37,9 @@ class HuntandKill:
         when maze logic checks are performed.
     """
 
-    def __init__(self, grid: Grid, showlogic: bool = False) -> None:
-        self.grid = grid
+    def __init__(self, mazegrid: Grid, showlogic: bool = False) -> None:
+        self.grid = mazegrid
+        self.showlogic = showlogic
         self.logic_data = {}
 
     def generate_maze(self) -> Generator[Grid, None, None]:
@@ -52,7 +54,9 @@ class HuntandKill:
         unvisited.remove(cell)
         while unvisited:
             self.logic_data["working_cell"] = cell
-            unvisited_neighbors = [c for c in self.grid.get_neighbors(cell) if c in unvisited]
+            unvisited_neighbors = [
+                c for c in self.grid.get_neighbors(cell) if c in unvisited
+            ]
             if unvisited_neighbors:
                 neighbor = random.choice(unvisited_neighbors)
                 cell.link(neighbor)
@@ -64,8 +68,11 @@ class HuntandKill:
             else:
                 for cell in unvisited:
                     self.logic_data["working_cell"] = cell
-                    visited_neighbors = [c for c in self.grid.get_neighbors(cell) if c not in unvisited]
-                    yield self.grid
+                    visited_neighbors = [
+                        c for c in self.grid.get_neighbors(cell) if c not in unvisited
+                    ]
+                    if self.showlogic:
+                        yield self.grid
                     if visited_neighbors:
                         neighbor = random.choice(visited_neighbors)
                         cell.link(neighbor)

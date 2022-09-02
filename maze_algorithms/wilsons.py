@@ -1,13 +1,17 @@
-from grid import Grid
-import random, time
+import random
+import time
 from os import system
+
+from grid.grid import Grid
 
 
 class Wilsons:
     def __init__(self, grid: Grid):
         self.grid = grid
         walk = []
-        starting_target = self.grid.get_cell(random.choice(list(self.grid.cells.keys())))
+        starting_target = self.grid.get_cell(
+            random.choice(list(self.grid.cells.keys()))
+        )
         unvisited = list(self.grid.cells.keys())
         unvisited.remove((starting_target.row, starting_target.column))
         while unvisited:
@@ -32,7 +36,9 @@ class Wilsons:
                         if i == len(walk) - 1:
                             self.grid.get_cell(cell).link(self.grid.get_cell(next_cell))
                         else:
-                            self.grid.get_cell(cell).link(self.grid.get_cell(walk[i + 1]))
+                            self.grid.get_cell(cell).link(
+                                self.grid.get_cell(walk[i + 1])
+                            )
                         self.show_grid()
                         time.sleep(0.1)
                 else:

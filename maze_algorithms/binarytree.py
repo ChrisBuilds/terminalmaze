@@ -1,6 +1,8 @@
-from grid import Grid
-import random, time
+import random
+import time
 from os import system
+
+from grid.grid import Grid
 
 
 class BinaryTree:

@@ -1,12 +1,14 @@
-from grid import Grid
-import random, time
+import random
+import time
 from os import system
+
+from grid.grid import Grid
 
 
 class AldousBroder:
-    def __init__(self, grid: Grid):
-        self.grid = grid
-        unvisited = [cell for cell in grid.cells]
+    def __init__(self, mazegrid: Grid):
+        self.grid = mazegrid
+        unvisited = [cell for cell in mazegrid.cells]
         starting_cell_coords = random.choice(unvisited)
         unvisited.remove(starting_cell_coords)
         cell = self.grid.get_cell(starting_cell_coords)
