@@ -1,33 +1,30 @@
 import random
-import time
-from os import system
+from collections.abc import Generator
+
 
 from grid.grid import Grid
 
 
 class AldousBroder:
-    def __init__(self, mazegrid: Grid):
+    def __init__(self, mazegrid: Grid, showlogic: bool = False) -> Generator[Grid, None, None]:
         self.grid = mazegrid
-        unvisited = [cell for cell in mazegrid.cells]
-        starting_cell_coords = random.choice(unvisited)
-        unvisited.remove(starting_cell_coords)
-        cell = self.grid.get_cell(starting_cell_coords)
-        while unvisited:
-            neighbor_coords = list(cell.neighbors.values())
-            verified_neighbors = []
-            for n in neighbor_coords:
-                if self.grid.get_cell(n):
-                    verified_neighbors.append(n)
-            neighbor = random.choice(verified_neighbors)
-            if neighbor in unvisited:
-                cell.link(self.grid.get_cell(neighbor))
-                unvisited.remove(neighbor)
-                self.show_grid()
-                time.sleep(0.1)
-            cell = self.grid.get_cell(neighbor)
+        self.showlogic = showlogic
+        self.logic_data = {}
 
-    def show_grid(self):
-        visual_grid = self.grid.get_visual_grid()
-        lines = ["".join(line) for line in visual_grid]
-        system("clear")
-        print("\n".join(lines))
+    def generate_maze(self):
+        unvisited = [cell for cell in self.grid.cells.values()]
+        working_cell = random.choice(unvisited)
+        self.logic_data["working_cell"] = working_cell
+        if self.showlogic:
+            yield self.grid
+        unvisited.remove(working_cell)
+        while unvisited:
+            neighbor = random.choice([neighbor for neighbor in working_cell.neighbors.values()])
+            if neighbor in unvisited:
+                working_cell.link(neighbor)
+                unvisited.remove(neighbor)
+                yield self.grid
+            working_cell = neighbor
+            self.logic_data["working_cell"] = working_cell
+            if self.showlogic:
+                yield self.grid
