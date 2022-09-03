@@ -25,7 +25,7 @@ class Wilsons:
             self.logic_data["working_cell"] = working_cell
             walk.append(working_cell)
             while walking:
-                next_cell = random.choice([neighbor for neighbor in working_cell.neighbors.values()])
+                next_cell = random.choice(list(working_cell.neighbors.values()))
                 if next_cell in walk:
                     walk = walk[: walk.index(next_cell) + 1]
                     self.logic_data["logic0"] = walk
@@ -45,4 +45,5 @@ class Wilsons:
                     walk.append(next_cell)
                     working_cell = next_cell
                     self.logic_data["working_cell"] = working_cell
-                    yield self.grid
+                    if self.showlogic:
+                        yield self.grid
