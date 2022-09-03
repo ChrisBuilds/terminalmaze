@@ -6,14 +6,16 @@ class RecursiveBacktracker:
     def __init__(self, mazegrid: Grid, showlogic: bool = False) -> None:
         self.grid: Grid = mazegrid
         self.showlogic: bool = showlogic
-        self.logic_data: dict[str, Cell] = {"working_cell": None, "last_linked": None}
+        self.logic_data: dict[str, Cell] = {}
 
     def generate_maze(self) -> Grid:
         cell = self.grid.random_cell()
         stack = [cell]
+        self.logic_data["logic0"] = stack
         while stack:
             self.logic_data["working_cell"] = cell
             unvisited_neighbors = [neighbor for neighbor in cell.neighbors.values() if not neighbor.links]
+            self.logic_data["invalid_neighbors"] = [neighbor for neighbor in cell.neighbors.values() if neighbor.links]
             if unvisited_neighbors:
                 next_cell = random.choice(unvisited_neighbors)
                 cell.link(next_cell)
