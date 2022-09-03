@@ -40,7 +40,7 @@ class Wilsons:
                             cell.link(walk[i + 1])
                         unvisited_cells.remove(cell)
                         yield self.grid
-                    self.logic_data.pop("logic1")
+                    self.logic_data.pop("logic1", None)
                 else:
                     walk.append(next_cell)
                     working_cell = next_cell
