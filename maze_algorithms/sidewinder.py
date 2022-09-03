@@ -1,42 +1,48 @@
+from operator import ne
 import random
-import time
-from os import system
+from collections.abc import Generator
 
-from grid.grid import Grid
+from grid.grid import Grid, Cell
 
 
 class Sidewinder:
-    def __init__(self, grid: Grid):
+    def __init__(self, grid: Grid, showlogic: bool = False):
         """
         For each row, randomly link cells in a run of cells to their north or east neighbor.
-
-        :param grid: The grid to generate
-        :type grid: Grid
         """
         self.grid = grid
-        for row in self.grid.each_row(bottom_up=True):
-            run = []
-            for cell in row:
-                neighbors = {}
-                directions = ("north", "east")
-                for direction in directions:
-                    neighbor_coord = cell.neighbors[direction]
-                    if self.grid.get_cell(neighbor_coord):
-                        neighbors[direction] = self.grid.get_cell(neighbor_coord)
-                if neighbors:
-                    link_direction = random.choice(list(neighbors.keys()))
-                    run.append(cell)
-                    if link_direction == "north":
-                        cell = random.choice(run)
-                        cell.link(grid.get_cell(cell.neighbors["north"]))
-                        run = []
-                    elif link_direction == "east":
-                        cell.link(neighbors[link_direction])
-                self.show_grid()
-                time.sleep(0.05)
+        self.showlogic = showlogic
+        self.logic_data = {}
 
-    def show_grid(self):
-        visual_grid = self.grid.get_visual_grid()
-        lines = ["".join(line) for line in visual_grid]
-        system("clear")
-        print("\n".join(lines))
+    def generate_maze(self) -> Generator[Grid, None, None]:
+        run: list[Cell] = []
+        self.logic_data["logic0"] = run
+        for row in self.grid.each_row(bottom_up=True):
+            unvisited_cells = row.copy()
+            while unvisited_cells:
+                working_cell = unvisited_cells.pop(0)
+                self.logic_data["working_cell"] = working_cell
+                run.append(working_cell)
+                while run:
+                    neighbors = {}
+                    if working_cell.neighbors.get("north"):
+                        neighbors["north"] = working_cell.neighbors["north"]
+                    if working_cell.neighbors.get("east"):
+                        neighbors["east"] = working_cell.neighbors["east"]
+                    if not neighbors:
+                        break
+                    direction = random.choice(list(neighbors.keys()))
+                    if direction == "east":
+                        working_cell.link(neighbors["east"])
+                        self.logic_data["last_linked"] = neighbors["east"]
+                        working_cell = neighbors["east"]
+                        self.logic_data["working_cell"] = working_cell
+                        run.append(working_cell)
+                        unvisited_cells.pop(0)
+                    elif direction == "north":
+                        working_cell = random.choice(run)
+                        self.logic_data["working_cell"] = working_cell
+                        working_cell.link(working_cell.neighbors["north"])
+                        self.logic_data["last_linked"] = working_cell.neighbors["north"]
+                        run.clear()
+                    yield self.grid
