@@ -87,7 +87,7 @@ class Grid:
         """
         return self.height * self.width
 
-    def each_row(self, bottom_up: bool = False) -> Generator[Cell, None, None]:
+    def each_row(self, bottom_up: bool = False) -> Generator[list[Cell], None, None]:
         """
         Yield one row of the grid at a time as a list.
 
