@@ -10,6 +10,7 @@ from grid.grid import Grid
 import colored
 from time import sleep
 from os import system
+import sys
 
 
 def gen_mask(mask):
@@ -32,15 +33,18 @@ def main():
     """
     showlogic = True
     mazegrid = Grid(30, 15, mask=gen_mask(mask))
-    # maze = BinaryTree(grid)
-    # maze = Sidewinder(grid)
-    # maze = AldousBroder(grid)
-    # algo = Wilsons(mazegrid)
-    algo = HuntandKill(mazegrid, showlogic=showlogic)
+    algo = BinaryTree(mazegrid, showlogic=showlogic)
+    # algo = Sidewinder(mazegrid, showlogic=showlogic)
+    # algo = AldousBroder(mazegrid, showlogic=showlogic)
+    # algo = Wilsons(mazegrid, showlogic=showlogic)
+    # algo = HuntandKill(mazegrid, showlogic=showlogic)
     # algo = RecursiveBacktracker(mazegrid, showlogic=showlogic)
-
-    for maze in algo.generate_maze():
-        show_maze(maze, algo.logic_data, showlogic)
+    try:
+        for maze in algo.generate_maze():
+            show_maze(maze, algo.logic_data, showlogic)
+    except KeyboardInterrupt:
+        print("Maze generation stopped.")
+        sys.exit()
 
 
 def add_logic_data(visual_grid, logic_data):
@@ -66,6 +70,7 @@ def add_logic_data(visual_grid, logic_data):
         "last_linked": colored.fg(2),
         "invalid_neighbors": colored.fg(52),
         "logic0": colored.fg(237),
+        "logic1": colored.fg(28),
     }
     working_cell = logic_data.get("working_cell")
     last_linked = logic_data.get("last_linked")
@@ -81,7 +86,8 @@ def add_logic_data(visual_grid, logic_data):
 
 def show_maze(maze, logic_data, showlogic):
     visual_grid = maze.get_visual_grid()
-    visual_grid = add_logic_data(visual_grid, logic_data)
+    if showlogic:
+        visual_grid = add_logic_data(visual_grid, logic_data)
     lines = ["".join(line) for line in visual_grid]
     system("clear")
     print("\n".join(lines))
