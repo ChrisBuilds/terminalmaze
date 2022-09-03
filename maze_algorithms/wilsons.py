@@ -2,44 +2,47 @@ import random
 from collections.abc import Generator
 
 
-from grid.grid import Grid
+from grid.grid import Grid, Cell
 
 
 class Wilsons:
     def __init__(self, grid: Grid, showlogic: bool = False) -> None:
         self.grid = grid
         self.showlogic = showlogic
-        self.logic_data = {"working_cell": None, "last_linked": None}
+        self.logic_data = {}
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        walk = []
-        starting_target = self.grid.get_cell(random.choice(list(self.grid.cells.keys())))
-        unvisited = list(self.grid.cells.keys())
-        unvisited.remove((starting_target.row, starting_target.column))
-        while unvisited:
+        walk: list[Cell] = []
+        target = self.grid.random_cell()
+        self.logic_data["logic1"] = target
+        unvisited_cells = [cell for cell in self.grid.cells.values()]
+        unvisited_cells.remove(target)
+        while unvisited_cells:
             walk = []
+            self.logic_data["logic0"] = walk
             walking = True
-            origin = self.grid.get_cell(random.choice(unvisited))
-            walk.append((origin.row, origin.column))
+            working_cell = random.choice(unvisited_cells)
+            self.logic_data["working_cell"] = working_cell
+            walk.append(working_cell)
             while walking:
-                neighbors = []
-                for coord in list(origin.neighbors.values()):
-                    if self.grid.get_cell(coord):
-                        neighbors.append(coord)
-                next_cell = random.choice(neighbors)
+                next_cell = random.choice([neighbor for neighbor in working_cell.neighbors.values()])
                 if next_cell in walk:
                     walk = walk[: walk.index(next_cell) + 1]
-                    origin = self.grid.get_cell(walk[-1])
-                elif next_cell not in unvisited:
+                    self.logic_data["logic0"] = walk
+                    working_cell = walk[-1]
+                    self.logic_data["working_cell"] = working_cell
+                elif next_cell not in unvisited_cells:
                     walking = False
-                    for cell in walk:
-                        unvisited.remove(cell)
                     for i, cell in enumerate(walk):
-                        if i == len(walk) - 1:
-                            self.grid.get_cell(cell).link(self.grid.get_cell(next_cell))
+                        if cell == walk[-1]:
+                            cell.link(next_cell)
                         else:
-                            self.grid.get_cell(cell).link(self.grid.get_cell(walk[i + 1]))
+                            cell.link(walk[i + 1])
+                        unvisited_cells.remove(cell)
                         yield self.grid
+                    self.logic_data.pop("logic1")
                 else:
                     walk.append(next_cell)
-                    origin = self.grid.get_cell(next_cell)
+                    working_cell = next_cell
+                    self.logic_data["working_cell"] = working_cell
+                    yield self.grid
