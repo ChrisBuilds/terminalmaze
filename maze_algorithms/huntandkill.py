@@ -54,9 +54,7 @@ class HuntandKill:
         unvisited.remove(cell)
         while unvisited:
             self.logic_data["working_cell"] = cell
-            unvisited_neighbors = [
-                c for c in self.grid.get_neighbors(cell) if c in unvisited
-            ]
+            unvisited_neighbors = [neighbor for neighbor in cell.neighbors.values() if neighbor in unvisited]
             if unvisited_neighbors:
                 neighbor = random.choice(unvisited_neighbors)
                 cell.link(neighbor)
@@ -68,12 +66,14 @@ class HuntandKill:
             else:
                 for cell in unvisited:
                     self.logic_data["working_cell"] = cell
-                    visited_neighbors = [
-                        c for c in self.grid.get_neighbors(cell) if c not in unvisited
+                    visited_neighbors = [neighbor for neighbor in cell.neighbors.values() if neighbor.links]
+                    self.logic_data["invalid_neighbors"] = [
+                        neighbor for neighbor in cell.neighbors.values() if not neighbor.links
                     ]
                     if self.showlogic:
                         yield self.grid
                     if visited_neighbors:
+                        self.logic_data["invalid_neighbors"] = []
                         neighbor = random.choice(visited_neighbors)
                         cell.link(neighbor)
                         self.logic_data["last_linked"] = neighbor
