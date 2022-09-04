@@ -79,18 +79,18 @@ class Grid:
         else:
             return None
 
-    def get_neighbors(self, cell: Cell, adjacent: bool = True) -> list[Cell]:
+    def get_neighbors(self, cell: Cell, adjacent: bool = True) -> dict[str, Cell]:
         """
         Given a cell, return a list of its neighboring cells
 
         :param cell: the cell to get the neighbors of
         :param adjacent: ignore diagonal neighbors
-        :return: A list of the neighbors of the cell.
+        :return: A dict of {str,Cell} neighbors.
         """
-        neighbors = []
-        for neighbor in cell.neighbors.values():
+        neighbors = {}
+        for direction, neighbor in cell.neighbors.items():
             if neighbor not in self.masked_cells.values():
-                neighbors.append(neighbor)
+                neighbors[direction] = neighbor
         return neighbors
 
     def random_cell(self) -> Cell:
