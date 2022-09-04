@@ -16,6 +16,7 @@ class BreadthFirst:
         visited = []
         self.logic_data["explored"] = visited
         self.logic_data["frontier"] = frontier
+        frame_gap = 5
         while frontier:
             position = frontier.pop(0)
             visited.append(position)
@@ -24,7 +25,10 @@ class BreadthFirst:
             for cell in edges:
                 explored[cell] = position
             frontier.extend(edges)
-            yield self.maze
+            frame_gap -= 1
+            if frame_gap == 0:
+                frame_gap = 5
+                yield self.maze
 
         self.logic_data.pop("explored", None)
         self.logic_data.pop("frontier", None)
