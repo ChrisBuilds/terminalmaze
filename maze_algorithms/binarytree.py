@@ -17,12 +17,11 @@ class BinaryTree:
     def generate_maze(self) -> Generator[Grid, None, None]:
         for cell in self.maze.each_cell():
             self.logic_data["working_cell"] = cell
-            neighbors = []
-            for direction in ("north", "east"):
-                if cell.neighbors.get(direction):
-                    neighbors.append(cell.neighbors.get(direction))
+            neighbors = self.maze.get_neighbors(cell)
+            neighbors.pop("south", None)
+            neighbors.pop("west", None)
             if neighbors:
-                neighbor = random.choice(neighbors)
+                neighbor = random.choice(list(neighbors.values()))
                 cell.link(neighbor)
                 self.logic_data["last_linked"] = neighbor
             yield self.maze
