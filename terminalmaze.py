@@ -16,19 +16,23 @@ import sys
 
 
 def gen_mask(mask):
-    mask = [line.strip("\n") for line in mask.split("\n") if "#" in line]
+    mask = [line.strip("\n") for line in mask.split("\n")]
     return mask
 
 
 def main():
     mask = """
-########  ##    ## ######## ##     ##  #######  ##    ## 
-##     ##  ##  ##     ##    ##     ##        ## ###   ## 
-            ####      ##    ##     ## ##     ## ####  ## 
-########     ##       ##    ######### ##     ## ## ## ## 
-##           ##       ##    ##     ## ##     ## ##  #### 
-##           ##       ##    ##     ## ##        ##   ### 
-##           ##       ##    ##     ##  #######  ##    ## 
+##  ############################################################
+##                                                            ##  
+##  ########  ##    ## ######## ##     ##  #######  ##    ##  ##
+##  ##     ##  ##  ##     ##    ##     ##        ## ###   ##  ##
+##              ####      ##    ##     ## ##     ## ####  ##  ##
+##  ########     ##       ##    ######### ##     ## ## ## ##  ##
+##  ##           ##       ##    ##     ## ##     ## ##  ####  ##
+##  ##           ##       ##    ##     ## ##        ##   ###  ##
+##  ##           ##       ##    ##     ##  #######  ##    ##  ##
+##                                                            ##
+############################################################  ##
     """
     #    mask = """
     ###
@@ -36,13 +40,13 @@ def main():
     ###
     # """
     showlogic = True
-    maze = Grid(10, 5, mask=None)
+    maze = Grid(105, 26, mask=gen_mask(mask))
     # algo = BinaryTree(maze, showlogic=showlogic)
-    # algo = Sidewinder(maze, showlogic=showlogic)
+    algo = Sidewinder(maze, showlogic=showlogic)
     # algo = AldousBroder(maze, showlogic=showlogic)
     # algo = Wilsons(maze, showlogic=showlogic)
     # algo = HuntandKill(maze, showlogic=showlogic)
-    algo = RecursiveBacktracker(maze, showlogic=showlogic)
+    # algo = RecursiveBacktracker(maze, showlogic=showlogic)
 
     solver = BreadthFirst(maze)
     try:
@@ -88,13 +92,13 @@ def add_logic_data(visual_grid, logic_data, maze: Grid):
     }
     for label, data in logic_data.items():
         if isinstance(data, list):
-            translated_cells = [translate_cell_coords(cell) for cell in data]
+            translated_cells = set(translate_cell_coords(cell) for cell in data)
             for visual_coordinates in maze.visual_links:
                 visual_y, visual_x = visual_coordinates
                 if ((visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells) or (
                     (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
                 ):
-                    translated_cells.append(visual_coordinates)
+                    translated_cells.add(visual_coordinates)
             for visual_coordinates in translated_cells:
                 update_visual_grid(visual_coordinates, color_map[label])
         else:
@@ -111,7 +115,7 @@ def show_maze(maze, logic_data, showlogic):
     lines = ["".join(line) for line in visual_grid]
     system("clear")
     print("\n".join(lines))
-    sleep(0.03)
+    sleep(0.0125)
 
 
 if __name__ == "__main__":
