@@ -36,13 +36,13 @@ def main():
     ###
     # """
     showlogic = True
-    maze = Grid(80, 20, mask=gen_mask(mask))
-    algo = BinaryTree(maze, showlogic=showlogic)
+    maze = Grid(10, 5, mask=None)
+    # algo = BinaryTree(maze, showlogic=showlogic)
     # algo = Sidewinder(maze, showlogic=showlogic)
     # algo = AldousBroder(maze, showlogic=showlogic)
     # algo = Wilsons(maze, showlogic=showlogic)
     # algo = HuntandKill(maze, showlogic=showlogic)
-    # algo = RecursiveBacktracker(maze, showlogic=showlogic)
+    algo = RecursiveBacktracker(maze, showlogic=showlogic)
 
     solver = BreadthFirst(maze)
     try:
@@ -55,7 +55,7 @@ def main():
         sys.exit()
 
 
-def add_logic_data(visual_grid, logic_data):
+def add_logic_data(visual_grid, logic_data, maze: Grid):
     def translate_cell_coords(cell):
         row = cell.row
         column = cell.column
@@ -69,8 +69,8 @@ def add_logic_data(visual_grid, logic_data):
             column = (column * 2) + 1
         return row, column
 
-    def update_visual_grid(cell, color):
-        y, x = translate_cell_coords(cell)
+    def update_visual_grid(visual_coordinates, color):
+        y, x = visual_coordinates
         visual_grid[y][x] = f"{color}{chr(9608)}"
 
     color_map = {
@@ -88,10 +88,18 @@ def add_logic_data(visual_grid, logic_data):
     }
     for label, data in logic_data.items():
         if isinstance(data, list):
-            for cell in data:
-                update_visual_grid(cell, color_map[label])
+            translated_cells = [translate_cell_coords(cell) for cell in data]
+            for visual_coordinates in maze.visual_links:
+                visual_y, visual_x = visual_coordinates
+                if ((visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells) or (
+                    (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
+                ):
+                    translated_cells.append(visual_coordinates)
+            for visual_coordinates in translated_cells:
+                update_visual_grid(visual_coordinates, color_map[label])
         else:
-            update_visual_grid(data, color_map[label])
+            visual_coordinates = translate_cell_coords(data)
+            update_visual_grid(visual_coordinates, color_map[label])
 
     return visual_grid
 
@@ -99,7 +107,7 @@ def add_logic_data(visual_grid, logic_data):
 def show_maze(maze, logic_data, showlogic):
     visual_grid = maze.get_visual_grid()
     if showlogic:
-        visual_grid = add_logic_data(visual_grid, logic_data)
+        visual_grid = add_logic_data(visual_grid, logic_data, maze)
     lines = ["".join(line) for line in visual_grid]
     system("clear")
     print("\n".join(lines))
