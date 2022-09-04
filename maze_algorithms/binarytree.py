@@ -5,17 +5,17 @@ from collections.abc import Generator
 
 
 class BinaryTree:
-    def __init__(self, mazegrid: Grid, showlogic=False):
+    def __init__(self, maze: Grid, showlogic=False):
         """
         Create a maze by randomly connecting each cell to its neighbor to the north or east.
         """
 
-        self.grid = mazegrid
+        self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        for cell in self.grid.each_cell():
+        for cell in self.maze.each_cell():
             self.logic_data["working_cell"] = cell
             neighbors = []
             for direction in ("north", "east"):
@@ -25,4 +25,4 @@ class BinaryTree:
                 neighbor = random.choice(neighbors)
                 cell.link(neighbor)
                 self.logic_data["last_linked"] = neighbor
-            yield self.grid
+            yield self.maze
