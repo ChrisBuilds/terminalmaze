@@ -1,6 +1,6 @@
 from grid.cell import Cell
 import random
-from colorama import Fore
+import colored
 from collections.abc import Generator
 
 
@@ -137,25 +137,26 @@ class Grid:
         cell: Cell
 
         self.visual_grid = []
-        wall = f"{Fore.WHITE}{chr(9608)}{Fore.RESET}"
+        wall = f"{colored.fg(102)}{chr(9608)}"
+        path = f"{colored.fg(106)}{chr(9608)}"
         for row in self.each_row():
             term_row = []
             lower_row = []
             for i, cell in enumerate(row):
                 if cell.get_links():
-                    term_row.append(" ")
+                    term_row.append(path)
                 else:
                     term_row.append(wall)
                 cell_east = cell.neighbors.get("east")
                 cell_south = cell.neighbors.get("south")
                 if cell_east:
                     if cell.is_linked(cell_east):
-                        term_row.append(" ")
+                        term_row.append(path)
                     else:
                         term_row.append(wall)
                 if cell_south:
                     if cell.is_linked(cell_south):
-                        lower_row.append(" ")
+                        lower_row.append(path)
                     else:
                         lower_row.append(wall)
                     if i != len(row) - 1:
