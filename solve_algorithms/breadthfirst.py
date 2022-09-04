@@ -32,6 +32,8 @@ class BreadthFirst:
         position = target
         path = [target]
         self.logic_data["path"] = path
+        if target not in explored:
+            return
         while position != start:
             path.append(explored[position])
             position = explored[position]
