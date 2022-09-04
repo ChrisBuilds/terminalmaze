@@ -20,6 +20,9 @@ class Grid:
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_grid()
         self.configure_cells()
+        self.wall = f"{colored.fg(240)}{chr(9608)}"
+        self.path = f"{colored.fg(29)}{chr(9608)}"
+        self.visual_grid = self.prepare_visual_grid()
 
     def prepare_grid(self) -> None:
         """
@@ -46,7 +49,9 @@ class Grid:
             for x, symbol in enumerate(line):
                 if symbol == "#":
                     cell_coordinates = (y + y_delta, x + x_delta)
-                    self.masked_cells[cell_coordinates] = self.get_cell(cell_coordinates)
+                    self.masked_cells[cell_coordinates] = self.get_cell(
+                        cell_coordinates
+                    )
 
     def configure_cells(self) -> None:
         """
@@ -65,6 +70,33 @@ class Grid:
                 neighbor = self.get_cell(coordinates)
                 if neighbor:
                     cell.neighbors[direction] = neighbor
+                else:
+                    cell.neighbors[direction] = None
+
+    def prepare_visual_grid(self) -> list[list[str]]:
+        visual_grid = []
+        for row in self.each_row():
+            term_row = []
+            lower_row = []
+            for i, cell in enumerate(row):
+                term_row.append(self.wall)
+                cell_east = cell.neighbors.get("east")
+                cell_south = cell.neighbors.get("south")
+                if cell_east:
+                    term_row.append(self.wall)
+                if cell_south:
+                    lower_row.append(self.wall)
+                if i != len(row) - 1:
+                    lower_row.append(self.wall)
+            visual_grid.append(term_row)
+            visual_grid.append(lower_row)
+        visual_grid.pop(-1)  # remove extra lower row
+        for row in visual_grid:
+            row.insert(0, self.wall)
+            row.append(self.wall)
+        visual_grid.insert(0, [self.wall for _ in range(len(visual_grid[0]))])
+        visual_grid.append([self.wall for _ in range(len(visual_grid[0]))])
+        return visual_grid
 
     def get_cell(self, cell: tuple[int, int]) -> Cell:
         """
@@ -93,6 +125,49 @@ class Grid:
             if neighbor not in self.masked_cells.values():
                 neighbors[direction] = neighbor
         return neighbors
+
+    def link_cells(self, cell_a: Cell, cell_b: Cell, bidi: bool = True):
+        """
+        Link cells and update visual grid to show link.
+        :param cell_a: cell from which the link starts
+        :param cell_b: cell to which the link occurs
+        :param bidi: If True, the link is bidirectional, defaults to True (optional)
+        """
+        cell_a.link(cell_b, bidi=bidi)
+
+        # replace wall with path for linked cells
+        for cell in (cell_a, cell_b):
+            row, column = self.translate_cell_coords(cell)
+            self.visual_grid[row][column] = self.path
+
+        # replace wall at link address with path
+        offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
+        for direction, offset in offsets.items():
+            row_offset, column_offset = offset
+            row, column = self.translate_cell_coords(cell_a)
+            if cell_b is cell_a.neighbors[direction]:
+                self.visual_grid[row + row_offset][column + column_offset] = self.path
+                self.visual_links.add((row + row_offset, column + column_offset))
+                return
+
+    def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
+        """Translate cell coordinates to match row, column indexes in the visual
+        grid.
+
+        :param cell: cell to translate
+        :return: ruple (row, column)
+        """
+        row = cell.row
+        column = cell.column
+        if row == 0:
+            row = 1
+        else:
+            row = (row * 2) + 1
+        if column == 0:
+            column = 1
+        else:
+            column = (column * 2) + 1
+        return row, column
 
     def random_cell(self) -> Cell:
         """
@@ -129,66 +204,6 @@ class Grid:
         for row in range(self.height):
             for col in range(self.width):
                 yield self.cells[(row, col)]
-
-    def get_visual_grid(self) -> list[list[str]]:
-        """
-        Create a grid of the maze, with a wall character between each cell.
-        :return: A list of lists of strings.
-        """
-
-        def translate_cell_coords(cell):
-            row = cell.row
-            column = cell.column
-            if row == 0:
-                row = 1
-            else:
-                row = (row * 2) + 1
-            if column == 0:
-                column = 1
-            else:
-                column = (column * 2) + 1
-            return row, column
-
-        cell: Cell
-
-        self.visual_grid = []
-        self.visual_links.clear()
-        wall = f"{colored.fg(240)}{chr(9608)}"
-        path = f"{colored.fg(29)}{chr(9608)}"
-        for row in self.each_row():
-            term_row = []
-            lower_row = []
-            for i, cell in enumerate(row):
-                if cell.get_links():
-                    visual_row, visual_column = translate_cell_coords(cell)
-                    term_row.append(path)
-                else:
-                    term_row.append(wall)
-                cell_east = cell.neighbors.get("east")
-                cell_south = cell.neighbors.get("south")
-                if cell_east:
-                    if cell.is_linked(cell_east):
-                        term_row.append(path)
-                        self.visual_links.add((visual_row, visual_column + 1))
-                    else:
-                        term_row.append(wall)
-                if cell_south:
-                    if cell.is_linked(cell_south):
-                        lower_row.append(path)
-                        self.visual_links.add((visual_row + 1, visual_column))
-                    else:
-                        lower_row.append(wall)
-                    if i != len(row) - 1:
-                        lower_row.append(wall)
-            self.visual_grid.append(term_row)
-            self.visual_grid.append(lower_row)
-        self.visual_grid.pop(-1)  # remove extra lower row
-        for row in self.visual_grid:
-            row.insert(0, wall)
-            row.append(wall)
-        self.visual_grid.insert(0, [wall for _ in range(len(self.visual_grid[0]))])
-        self.visual_grid.append([wall for _ in range(len(self.visual_grid[0]))])
-        return self.visual_grid
 
     def __str__(self) -> str:
         """
