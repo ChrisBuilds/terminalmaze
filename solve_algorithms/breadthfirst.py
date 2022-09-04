@@ -30,11 +30,15 @@ class BreadthFirst:
         self.logic_data.pop("frontier", None)
         self.logic_data.pop("position", None)
         position = target
-        path = [target]
-        self.logic_data["path"] = path
+        route = [target]
         if target not in explored:
             return
         while position != start:
-            path.append(explored[position])
+            route.append(explored[position])
             position = explored[position]
+        route.reverse()
+        path = []
+        self.logic_data["path"] = path
+        for step in route:
+            path.append(step)
             yield self.maze
