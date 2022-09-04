@@ -15,14 +15,18 @@ class RecursiveBacktracker:
         while stack:
             self.logic_data["working_cell"] = cell
             unvisited_neighbors = [
-                neighbor for neighbor in self.grid.get_neighbors(cell).values() if not neighbor.links
+                neighbor
+                for neighbor in self.grid.get_neighbors(cell).values()
+                if neighbor and not neighbor.links
             ]
             self.logic_data["invalid_neighbors"] = [
-                neighbor for neighbor in self.grid.get_neighbors(cell).values() if neighbor.links
+                neighbor
+                for neighbor in self.grid.get_neighbors(cell).values()
+                if neighbor and neighbor.links
             ]
             if unvisited_neighbors:
                 next_cell = random.choice(unvisited_neighbors)
-                cell.link(next_cell)
+                self.grid.link_cells(cell, next_cell)
                 self.logic_data["last_linked"] = next_cell
                 stack.append(next_cell)
                 cell = next_cell
