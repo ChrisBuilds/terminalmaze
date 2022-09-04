@@ -17,7 +17,7 @@ class Grid:
         self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
         self.masked_cells = {}
-        self.visual_links: list[tuple[int, int]] = []
+        self.visual_links: set[tuple[int, int]] = set()
         self.prepare_grid()
         self.configure_cells()
 
@@ -153,8 +153,8 @@ class Grid:
 
         self.visual_grid = []
         self.visual_links.clear()
-        wall = f"{colored.fg(102)}{chr(9608)}"
-        path = f"{colored.fg(106)}{chr(9608)}"
+        wall = f"{colored.fg(240)}{chr(9608)}"
+        path = f"{colored.fg(29)}{chr(9608)}"
         for row in self.each_row():
             term_row = []
             lower_row = []
@@ -169,13 +169,13 @@ class Grid:
                 if cell_east:
                     if cell.is_linked(cell_east):
                         term_row.append(path)
-                        self.visual_links.append((visual_row, visual_column + 1))
+                        self.visual_links.add((visual_row, visual_column + 1))
                     else:
                         term_row.append(wall)
                 if cell_south:
                     if cell.is_linked(cell_south):
                         lower_row.append(path)
-                        self.visual_links.append((visual_row + 1, visual_column))
+                        self.visual_links.add((visual_row + 1, visual_column))
                     else:
                         lower_row.append(wall)
                     if i != len(row) - 1:
