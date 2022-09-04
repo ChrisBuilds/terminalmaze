@@ -14,7 +14,9 @@ class Grid:
         """
         self.width: int = width
         self.height: int = height
+        self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
+        self.masked_cells = {}
         self.prepare_grid()
         self.configure_cells()
 
@@ -27,6 +29,22 @@ class Grid:
             for col in range(self.width):
                 cell = Cell(row, col)
                 self.cells[(row, col)] = cell
+
+        if self.mask:
+            self.mask_cells()
+
+    def mask_cells(self):
+        mask_midpoint_x = -(-len(max(self.mask)) // 2)
+        mask_midpoint_y = -(-len(self.mask) // 2)
+        grid_midpoint_x = -(-self.width // 2)
+        grid_midpoint_y = -(-self.height // 2)
+        x_delta = grid_midpoint_x - mask_midpoint_x
+        y_delta = grid_midpoint_y - mask_midpoint_y
+        for y, line in enumerate(self.mask):
+            for x, symbol in enumerate(line):
+                if symbol == "#":
+                    cell_coordinates = (y + y_delta, x + x_delta)
+                    self.masked_cells[cell_coordinates] = self.get_cell(cell_coordinates)
 
     def configure_cells(self) -> None:
         """
@@ -68,8 +86,10 @@ class Grid:
         :param adjacent: ignore diagonal neighbors
         :return: A list of the neighbors of the cell.
         """
-        neighbor_coords = [c for c in cell.neighbors.values()]
-        neighbors = [self.get_cell(coord) for coord in neighbor_coords if self.get_cell(coord)]
+        neighbors = []
+        for neighbor in cell.neighbors.values():
+            if neighbor not in self.masked_cells.values():
+                neighbors.append(neighbor)
         return neighbors
 
     def random_cell(self) -> Cell:
