@@ -33,7 +33,8 @@ class Grid:
         if self.mask:
             self.mask_cells()
 
-    def mask_cells(self):
+    def mask_cells(self) -> None:
+        """Translate mask string to cell coordinates centered in the grid. Track masked cells in self.masked_cells."""
         mask_midpoint_x = -(-len(max(self.mask)) // 2)
         mask_midpoint_y = -(-len(self.mask) // 2)
         grid_midpoint_x = -(-self.width // 2)
