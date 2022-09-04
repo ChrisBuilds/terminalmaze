@@ -17,6 +17,7 @@ class Grid:
         self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
         self.masked_cells = {}
+        self.visual_links: list[tuple[int, int]] = []
         self.prepare_grid()
         self.configure_cells()
 
@@ -134,9 +135,24 @@ class Grid:
         Create a grid of the maze, with a wall character between each cell.
         :return: A list of lists of strings.
         """
+
+        def translate_cell_coords(cell):
+            row = cell.row
+            column = cell.column
+            if row == 0:
+                row = 1
+            else:
+                row = (row * 2) + 1
+            if column == 0:
+                column = 1
+            else:
+                column = (column * 2) + 1
+            return row, column
+
         cell: Cell
 
         self.visual_grid = []
+        self.visual_links.clear()
         wall = f"{colored.fg(102)}{chr(9608)}"
         path = f"{colored.fg(106)}{chr(9608)}"
         for row in self.each_row():
@@ -144,6 +160,7 @@ class Grid:
             lower_row = []
             for i, cell in enumerate(row):
                 if cell.get_links():
+                    visual_row, visual_column = translate_cell_coords(cell)
                     term_row.append(path)
                 else:
                     term_row.append(wall)
@@ -152,11 +169,13 @@ class Grid:
                 if cell_east:
                     if cell.is_linked(cell_east):
                         term_row.append(path)
+                        self.visual_links.append((visual_row, visual_column + 1))
                     else:
                         term_row.append(wall)
                 if cell_south:
                     if cell.is_linked(cell_south):
                         lower_row.append(path)
+                        self.visual_links.append((visual_row + 1, visual_column))
                     else:
                         lower_row.append(wall)
                     if i != len(row) - 1:
