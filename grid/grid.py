@@ -21,7 +21,7 @@ class Grid:
         self.prepare_grid()
         self.configure_cells()
         self.wall = f"{colored.fg(240)}{chr(9608)}"
-        self.path = f"{colored.fg(29)}{chr(9608)}"
+        self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
         self.visual_grid = self.prepare_visual_grid()
 
     def prepare_grid(self) -> None:
@@ -49,9 +49,7 @@ class Grid:
             for x, symbol in enumerate(line):
                 if symbol == "#":
                     cell_coordinates = (y + y_delta, x + x_delta)
-                    self.masked_cells[cell_coordinates] = self.get_cell(
-                        cell_coordinates
-                    )
+                    self.masked_cells[cell_coordinates] = self.get_cell(cell_coordinates)
 
     def configure_cells(self) -> None:
         """
@@ -126,21 +124,22 @@ class Grid:
                 neighbors[direction] = neighbor
         return neighbors
 
-    def link_cells(self, cell_a: Cell, cell_b: Cell, bidi: bool = True):
+    def link_cells(self, cell_a: Cell, cell_b: Cell, bidi: bool = True) -> None:
         """
         Link cells and update visual grid to show link.
+
         :param cell_a: cell from which the link starts
         :param cell_b: cell to which the link occurs
         :param bidi: If True, the link is bidirectional, defaults to True (optional)
         """
         cell_a.link(cell_b, bidi=bidi)
 
-        # replace wall with path for linked cells
+        # replace wall on cells with path for linked cells
         for cell in (cell_a, cell_b):
             row, column = self.translate_cell_coords(cell)
             self.visual_grid[row][column] = self.path
 
-        # replace wall at link address with path
+        # replace wall between cells with path
         offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
         for direction, offset in offsets.items():
             row_offset, column_offset = offset
