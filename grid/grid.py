@@ -1,6 +1,7 @@
 from grid.cell import Cell
 import random
 import colored
+from os import system
 from collections.abc import Generator
 
 
@@ -17,12 +18,16 @@ class Grid:
         self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
         self.masked_cells = {}
-        self.visual_links: set[tuple[int, int]] = set()
+        if self.mask:
+            self.format_mask()
         self.prepare_grid()
         self.configure_cells()
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
-        self.visual_grid = self.prepare_visual_grid()
+        self.visual = Visual(self)
+
+    def format_mask(self) -> None:
+        self.mask = [line.strip("\n") for line in self.mask.split("\n")]
 
     def prepare_grid(self) -> None:
         """
@@ -71,31 +76,6 @@ class Grid:
                 else:
                     cell.neighbors[direction] = None
 
-    def prepare_visual_grid(self) -> list[list[str]]:
-        visual_grid = []
-        for row in self.each_row():
-            term_row = []
-            lower_row = []
-            for i, cell in enumerate(row):
-                term_row.append(self.wall)
-                cell_east = cell.neighbors.get("east")
-                cell_south = cell.neighbors.get("south")
-                if cell_east:
-                    term_row.append(self.wall)
-                if cell_south:
-                    lower_row.append(self.wall)
-                if i != len(row) - 1:
-                    lower_row.append(self.wall)
-            visual_grid.append(term_row)
-            visual_grid.append(lower_row)
-        visual_grid.pop(-1)  # remove extra lower row
-        for row in visual_grid:
-            row.insert(0, self.wall)
-            row.append(self.wall)
-        visual_grid.insert(0, [self.wall for _ in range(len(visual_grid[0]))])
-        visual_grid.append([self.wall for _ in range(len(visual_grid[0]))])
-        return visual_grid
-
     def get_cell(self, cell: tuple[int, int]) -> Cell:
         """
         Given cell coordinates, return the cell object if valid coordinates, else None.
@@ -133,40 +113,7 @@ class Grid:
         :param bidi: If True, the link is bidirectional, defaults to True (optional)
         """
         cell_a.link(cell_b, bidi=bidi)
-
-        # replace wall on cells with path for linked cells
-        for cell in (cell_a, cell_b):
-            row, column = self.translate_cell_coords(cell)
-            self.visual_grid[row][column] = self.path
-
-        # replace wall between cells with path
-        offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
-        for direction, offset in offsets.items():
-            row_offset, column_offset = offset
-            row, column = self.translate_cell_coords(cell_a)
-            if cell_b is cell_a.neighbors[direction]:
-                self.visual_grid[row + row_offset][column + column_offset] = self.path
-                self.visual_links.add((row + row_offset, column + column_offset))
-                return
-
-    def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
-        """Translate cell coordinates to match row, column indexes in the visual
-        grid.
-
-        :param cell: cell to translate
-        :return: ruple (row, column)
-        """
-        row = cell.row
-        column = cell.column
-        if row == 0:
-            row = 1
-        else:
-            row = (row * 2) + 1
-        if column == 0:
-            column = 1
-        else:
-            column = (column * 2) + 1
-        return row, column
+        self.visual.link_cells(cell_a, cell_b)
 
     def random_cell(self) -> Cell:
         """
@@ -204,26 +151,123 @@ class Grid:
             for col in range(self.width):
                 yield self.cells[(row, col)]
 
-    def __str__(self) -> str:
+
+class Visual:
+    def __init__(self, grid: Grid) -> None:
+        self.grid = grid
+        self.wall = f"{colored.fg(240)}{chr(9608)}"
+        self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
+        self.color_map = {
+            "working_cell": colored.fg(14),
+            "last_linked": colored.fg(2),
+            "invalid_neighbors": colored.fg(52),
+            "frontier": colored.fg(72),
+            "explored": colored.fg(218),  # 137
+            "position": colored.fg(76),
+            "target": colored.fg(202),
+            "start": colored.fg(211),
+            "path": colored.fg(218),  # 133
+            "logic0": colored.fg(237),
+            "logic1": colored.fg(28),
+        }
+        self.visual_grid: list[list[str]] = list()
+        self.visual_links: set[tuple[int, int]] = set()
+        self.prepare_visual()
+
+    def prepare_visual(self):
+        for row in self.grid.each_row():
+            term_row = []
+            lower_row = []
+            for i, cell in enumerate(row):
+                term_row.append(self.wall)
+                cell_east = cell.neighbors.get("east")
+                cell_south = cell.neighbors.get("south")
+                if cell_east:
+                    term_row.append(self.wall)
+                if cell_south:
+                    lower_row.append(self.wall)
+                if i != len(row) - 1:
+                    lower_row.append(self.wall)
+            self.visual_grid.append(term_row)
+            self.visual_grid.append(lower_row)
+        self.visual_grid.pop(-1)  # remove extra lower row
+        for row in self.visual_grid:
+            row.insert(0, self.wall)
+            row.append(self.wall)
+        self.visual_grid.insert(0, [self.wall for _ in range(len(self.visual_grid[0]))])
+        self.visual_grid.append([self.wall for _ in range(len(self.visual_grid[0]))])
+        return self.visual_grid
+
+    def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
+        """Translate cell coordinates to match row, column indexes in the visual
+        grid.
+
+        :param cell: cell to translate
+        :return: ruple (row, column)
         """
-        Prints a text representation of the maze.
-        :return: A string representation of the grid.
+        row = cell.row
+        column = cell.column
+        if row == 0:
+            row = 1
+        else:
+            row = (row * 2) + 1
+        if column == 0:
+            column = 1
+        else:
+            column = (column * 2) + 1
+        return row, column
+
+    def link_cells(self, cell_a: Cell, cell_b: Cell) -> None:
+        """Replace characters for linked cells and the wall between them.
+
+        Args:
+            cell_a (Cell): Cell being linked from
+            cell_b (Cell): Cell being linked to
         """
-        output = "+" + "---+" * self.width + "\n"
+        # replace wall on cells with path for linked cells
+        for cell in (cell_a, cell_b):
+            row, column = self.translate_cell_coords(cell)
+            self.visual_grid[row][column] = self.path
 
-        for row in self.each_row():
-            top = "|"
-            bottom = "+"
-            for cell in row:
-                body = "   "
-                if cell.is_linked(self.get_cell(cell.neighbors["east"])):
-                    eCelluth_boundary = "   "
-                else:
-                    south_boundary = "---"
-                corner = "+"
-                bottom += south_boundary + corner
+        # replace wall between cells with path
+        offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
+        for direction, offset in offsets.items():
+            row_offset, column_offset = offset
+            row, column = self.translate_cell_coords(cell_a)
+            if cell_b is cell_a.neighbors[direction]:
+                self.visual_grid[row + row_offset][column + column_offset] = self.path
+                self.visual_links.add((row + row_offset, column + column_offset))
+                return
 
-            output += top + "\n"
-            output += bottom + "\n"
+    def add_logic_data(self, logic_data) -> None:
+        colored_visual_grid = [line.copy() for line in self.visual_grid]
+        for label, data in logic_data.items():
+            if isinstance(data, list):
+                translated_cells = set(self.translate_cell_coords(cell) for cell in data)
+                for visual_coordinates in self.visual_links:
+                    visual_y, visual_x = visual_coordinates
+                    if (
+                        (visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells
+                    ) or (
+                        (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
+                    ):
+                        translated_cells.add(visual_coordinates)
+                for visual_coordinates in translated_cells:
+                    self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+            else:
+                visual_coordinates = self.translate_cell_coords(data)
+                self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+        return colored_visual_grid
 
-        return output
+    def apply_color(self, colored_visual_grid, visual_coordinates, color):
+        y, x = visual_coordinates
+        colored_visual_grid[y][x] = f"{color}{chr(9608)}"
+
+    def show(self, logic_data, showlogic=False):
+        if showlogic:
+            maze_visual = self.add_logic_data(logic_data)
+        else:
+            maze_visual = self.visual_grid
+        lines = ["".join(line) for line in maze_visual]
+        system("clear")
+        print("\n".join(lines))
