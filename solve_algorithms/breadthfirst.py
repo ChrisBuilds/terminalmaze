@@ -10,10 +10,9 @@ class BreadthFirst:
         self.status_text = {"Algorithm": "Breadth First"}
 
     def solve(self) -> Generator[Grid, None, None]:
-        # don't use hardcoded cell, might be masked
-        target = self.maze.get_cell((self.maze.height - 1, self.maze.width - 1))
+        target = list(self.maze.each_cell())[-1]
         self.logic_data["target"] = target
-        start = self.maze.cells.get((0, 0))
+        start = list(self.maze.each_cell())[0]
         frontier = [start]
         explored = {start: None}
         visited = []
