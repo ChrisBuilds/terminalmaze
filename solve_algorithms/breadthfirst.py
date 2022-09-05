@@ -34,6 +34,8 @@ class BreadthFirst:
             if frame_gap == 0:
                 frame_gap = len(frontier)
                 frame_gap = 5
+                self.status_text["Frontier"] = len(frontier)
+                self.status_text["Visited"] = len(visited)
                 yield self.maze
 
         self.logic_data.pop("explored", None)
@@ -51,4 +53,6 @@ class BreadthFirst:
         self.logic_data["path"] = path
         for step in route:
             path.append(step)
+            self.status_text = {"Algorithm": "Breadth First"}
+            self.status_text["Solution Length"] = len(route)
             yield self.maze
