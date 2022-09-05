@@ -14,6 +14,7 @@ Classes
 """
 
 import random
+import time
 from collections.abc import Generator
 
 from grid.grid import Grid
@@ -42,6 +43,7 @@ class HuntandKill:
         self.showlogic = showlogic
         self.logic_data = {}
         self.status_text = {"Algorithm": "Hunt And Kill"}
+        self.frame_time = time.time()
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         """Generates a maze by linking Cells in a Grid according to the Hunt and Kill maze generation
@@ -79,12 +81,14 @@ class HuntandKill:
                         if neighbor and not neighbor.links
                     ]
                     if self.showlogic:
-                        yield self.maze
+                        if time.time() - self.frame_time > 0.018:
+                            self.frame_time = time.time()
+                            yield self.maze
                     if visited_neighbors:
                         self.logic_data["invalid_neighbors"] = []
                         neighbor = random.choice(visited_neighbors)
                         self.maze.link_cells(cell, neighbor)
                         self.logic_data["last_linked"] = neighbor
                         unvisited.remove(cell)
+                        yield self.maze
                         break
-                yield self.maze
