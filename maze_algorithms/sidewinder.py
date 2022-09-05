@@ -6,18 +6,19 @@ from grid.grid import Grid, Cell
 
 
 class Sidewinder:
-    def __init__(self, grid: Grid, showlogic: bool = False):
+    def __init__(self, maze: Grid, showlogic: bool = False):
         """
         For each row, randomly link cells in a run of cells to their north or east neighbor.
         """
-        self.grid = grid
+        self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
+        self.status_text = {"Algorithm": "Sidewinder"}
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         run: list[Cell] = []
         self.logic_data["logic0"] = run
-        for row in self.grid.each_row(bottom_up=True):
+        for row in self.maze.each_row(ignore_mask=True, bottom_up=True):
             unvisited_cells = row.copy()
             while unvisited_cells:
                 working_cell = unvisited_cells.pop(0)
@@ -25,15 +26,15 @@ class Sidewinder:
                 run.append(working_cell)
                 while run:
                     neighbors = {}
-                    if working_cell.neighbors.get("north"):
-                        neighbors["north"] = working_cell.neighbors["north"]
-                    if working_cell.neighbors.get("east"):
-                        neighbors["east"] = working_cell.neighbors["east"]
+                    if "north" in self.maze.get_neighbors(working_cell, ignore_mask=True):
+                        neighbors["north"] = self.maze.get_neighbors(working_cell, ignore_mask=True)["north"]
+                    if "east" in self.maze.get_neighbors(working_cell, ignore_mask=True):
+                        neighbors["east"] = self.maze.get_neighbors(working_cell, ignore_mask=True)["east"]
                     if not neighbors:
                         break
                     direction = random.choice(list(neighbors.keys()))
                     if direction == "east":
-                        working_cell.link(neighbors["east"])
+                        self.maze.link_cells(working_cell, neighbors["east"])
                         self.logic_data["last_linked"] = neighbors["east"]
                         working_cell = neighbors["east"]
                         self.logic_data["working_cell"] = working_cell
@@ -42,7 +43,7 @@ class Sidewinder:
                     elif direction == "north":
                         working_cell = random.choice(run)
                         self.logic_data["working_cell"] = working_cell
-                        working_cell.link(working_cell.neighbors["north"])
+                        self.maze.link_cells(working_cell, self.maze.get_neighbors(working_cell)["north"])
                         self.logic_data["last_linked"] = working_cell.neighbors["north"]
                         run.clear()
-                    yield self.grid
+                    yield self.maze
