@@ -3,11 +3,14 @@ from collections.abc import Generator
 
 
 class BreadthFirst:
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
         self.maze = maze
+        self.showlogic = showlogic
         self.logic_data = {}
+        self.status_text = {"Algorithm": "Breadth First"}
 
     def solve(self) -> Generator[Grid, None, None]:
+        # don't use hardcoded cell, might be masked
         target = self.maze.get_cell((self.maze.height - 1, self.maze.width - 1))
         self.logic_data["target"] = target
         start = self.maze.cells.get((0, 0))
@@ -16,8 +19,10 @@ class BreadthFirst:
         visited = []
         self.logic_data["explored"] = visited
         self.logic_data["frontier"] = frontier
-        frame_gap = 5
+        frame_gap = 1
         while frontier:
+            self.status_text["Frontier"] = len(frontier)
+            self.status_text["Visited"] = len(visited)
             position = frontier.pop(0)
             visited.append(position)
             self.logic_data["position"] = position
@@ -27,6 +32,7 @@ class BreadthFirst:
             frontier.extend(edges)
             frame_gap -= 1
             if frame_gap == 0:
+                frame_gap = len(frontier)
                 frame_gap = 5
                 yield self.maze
 
