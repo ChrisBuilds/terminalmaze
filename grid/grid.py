@@ -30,7 +30,17 @@ class Grid:
         self.visual = Visual(self)
 
     def format_mask(self) -> None:
-        self.mask = [line.strip("\n") for line in self.mask.split("\n")]
+        """Format the mask string for use in other methods."""
+        mask_lines = []
+        for line in self.mask.split("\n"):
+            if line.strip().startswith("m:"):
+                line = line.strip("m:").strip("\n")
+                mask_lines.append(line)
+        self.mask = mask_lines
+        mask_width = len(max(self.mask, key=len))
+        mask_height = len(self.mask)
+        if mask_width > self.width or mask_height > self.height:
+            self.mask = None
 
     def prepare_grid(self) -> None:
         """
@@ -82,7 +92,7 @@ class Grid:
                 else:
                     cell.neighbors[direction] = None
 
-    def get_cell(self, cell: tuple[int, int]) -> Cell:
+    def get_cell(self, cell: tuple[int, int]) -> Optional[Cell]:
         """
         Given cell coordinates, return the cell object if valid coordinates, else None.
 
@@ -100,12 +110,12 @@ class Grid:
         self, cell: Cell, ignore_mask=False, existing_only: bool = True, adjacent: bool = True
     ) -> dict[str, Cell]:
         """
-        Given a cell, return a list of its neighboring cells
+        Given a cell, return a list of its neighboring cells.
 
         :param cell: the cell to get the neighbors of
-        :param ignore_mask: return masked and unmasked neighbors
-        :param existing_only: If True, only return direction:Cell pair if neighbor exists. Defaults to True.
-        :param adjacent: ignore diagonal neighbors
+        :param ignore_mask: return masked and unmasked neighbors. Defaults to False.
+        :param existing_only: if True, only return direction:Cell pair if neighbor exists. Defaults to True.
+        :param adjacent: ignore diagonal neighbors. Defaults to True
         :return: A dict of {str,Cell} neighbors.
         """
         neighbors = {}
@@ -116,7 +126,7 @@ class Grid:
         if not ignore_mask:
             unmasked_neighbors = {}
             for direction, neighbor in neighbors.items():
-                if neighbor not in self.masked_cells:
+                if neighbor not in self.masked_cells.values():
                     unmasked_neighbors[direction] = neighbor
             neighbors = unmasked_neighbors
 
