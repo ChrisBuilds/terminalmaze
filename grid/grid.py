@@ -96,17 +96,20 @@ class Grid:
         else:
             return None
 
-    def get_neighbors(self, cell: Cell, adjacent: bool = True) -> dict[str, Cell]:
+    def get_neighbors(self, cell: Cell, existing_only: bool = True, adjacent: bool = True) -> dict[str, Cell]:
         """
         Given a cell, return a list of its neighboring cells
 
         :param cell: the cell to get the neighbors of
+        :param existing_only: If True, only return direction:Cell pair if neighbor exists. Defaults to True.
         :param adjacent: ignore diagonal neighbors
         :return: A dict of {str,Cell} neighbors.
         """
         neighbors = {}
         for direction, neighbor in cell.neighbors.items():
             if neighbor not in self.masked_cells.values():
+                if existing_only and not neighbor:
+                    continue
                 neighbors[direction] = neighbor
         return neighbors
 
@@ -322,7 +325,12 @@ class Visual:
         y, x = visual_coordinates
         colored_visual_grid[y][x] = f"{color}{chr(9608)}"
 
-    def show(self, logic_data: dict[str, Union[list[Cell], Cell]], showlogic: bool = False):
+    def show(
+        self,
+        logic_data: dict[str, Union[list[Cell], Cell]],
+        status_text: dict[str, Union[str, int]],
+        showlogic: bool = False,
+    ):
         """Apply coloring based on logic data if showlogic, then print the maze.
 
         Args:
@@ -335,5 +343,10 @@ class Visual:
         else:
             maze_visual = self.visual_grid
         lines = ["".join(line) for line in maze_visual]
+        status_string = ""
+        for label, value in status_text.items():
+            status_string += f" {label}: {value} |"
+        status_string = status_string.strip("|").strip()
         system("clear")
         print("\n".join(lines))
+        print(status_string)
