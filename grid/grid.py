@@ -3,21 +3,23 @@ import random
 import colored
 from os import system
 from collections.abc import Generator
+from typing import Optional, Union
 
 
 class Grid:
-    def __init__(self, width: int, height: int, mask=None) -> None:
+    def __init__(self, width: int = 20, height: int = 10, mask: Optional[list[str]] = None) -> None:
         """
         Create a new grid with the given width and height.
 
         :param width: the number of columns in the grid
         :param height: the number of rows in the grid
+        :param mask: mask to apply
         """
         self.width: int = width
         self.height: int = height
         self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
-        self.masked_cells = {}
+        self.masked_cells: dict[tuple[int, int], Cell] = {}
         if self.mask:
             self.format_mask()
         self.prepare_grid()
@@ -153,7 +155,14 @@ class Grid:
 
 
 class Visual:
+    """Visual representation of the maze graph and operations on the visual."""
+
     def __init__(self, grid: Grid) -> None:
+        """Prepare a visual representation of the maze graph.
+
+        Args:
+            grid (Grid): Maze
+        """
         self.grid = grid
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
@@ -174,7 +183,8 @@ class Visual:
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_visual()
 
-    def prepare_visual(self):
+    def prepare_visual(self) -> None:
+        """Prepare a visual representation of the maze graph."""
         for row in self.grid.each_row():
             term_row = []
             lower_row = []
@@ -196,7 +206,6 @@ class Visual:
             row.append(self.wall)
         self.visual_grid.insert(0, [self.wall for _ in range(len(self.visual_grid[0]))])
         self.visual_grid.append([self.wall for _ in range(len(self.visual_grid[0]))])
-        return self.visual_grid
 
     def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
         """Translate cell coordinates to match row, column indexes in the visual
@@ -239,7 +248,16 @@ class Visual:
                 self.visual_links.add((row + row_offset, column + column_offset))
                 return
 
-    def add_logic_data(self, logic_data) -> None:
+    def add_logic_data(self, logic_data: dict[str, Union[list[Cell], Cell]]) -> list[list[str]]:
+        """Apply color to cells and walls to show logic.
+
+        Args:
+            logic_data (dict[str, Union[list[Cell], Cell]]): label : cell pairs for various logical
+            indicators.
+
+        Returns:
+            list[list[str]]: visual grid with colored cells
+        """
         colored_visual_grid = [line.copy() for line in self.visual_grid]
         for label, data in logic_data.items():
             if isinstance(data, list):
@@ -259,11 +277,27 @@ class Visual:
                 self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
         return colored_visual_grid
 
-    def apply_color(self, colored_visual_grid, visual_coordinates, color):
+    def apply_color(
+        self, colored_visual_grid: list[list[str]], visual_coordinates: tuple[int, int], color: str
+    ) -> None:
+        """Apply the given color to the character at the given coordinates.
+
+        Args:
+            colored_visual_grid (list[list[str]]): visual grid copy used for logic coloring
+            visual_coordinates (tuple[int, int]): row,column coordinates of the character to be colored
+            color (str): colored.fg() color to apply to the character
+        """
         y, x = visual_coordinates
         colored_visual_grid[y][x] = f"{color}{chr(9608)}"
 
-    def show(self, logic_data, showlogic=False):
+    def show(self, logic_data: dict[str, Union[list[Cell], Cell]], showlogic: bool = False):
+        """Apply coloring based on logic data if showlogic, then print the maze.
+
+        Args:
+            logic_data (dict[str, Union[list[Cell], Cell]]): cell pairs for various logical
+            indicators.
+            showlogic (bool, optional): Apply coloring based on logic if True, else skip coloring. Defaults to False.
+        """
         if showlogic:
             maze_visual = self.add_logic_data(logic_data)
         else:
