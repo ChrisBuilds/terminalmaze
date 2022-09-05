@@ -20,6 +20,7 @@ class Grid:
         self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
         self.masked_cells: dict[tuple[int, int], Cell] = {}
+        self.unmasked_cells: dict[tuple[int, int], Cell] = {}
         if self.mask:
             self.format_mask()
         self.prepare_grid()
@@ -40,12 +41,14 @@ class Grid:
             for col in range(self.width):
                 cell = Cell(row, col)
                 self.cells[(row, col)] = cell
+                self.unmasked_cells[(row, col)] = cell
 
         if self.mask:
             self.mask_cells()
 
     def mask_cells(self) -> None:
-        """Translate mask string to cell coordinates centered in the grid. Track masked cells in self.masked_cells."""
+        """Translate mask string to cell coordinates centered in the grid. Track masked cells in self.masked_cells
+        and unmasked cells in self.unmasked_cells."""
         mask_midpoint_x = -(-len(max(self.mask)) // 2)
         mask_midpoint_y = -(-len(self.mask) // 2)
         grid_midpoint_x = -(-self.width // 2)
@@ -57,6 +60,7 @@ class Grid:
                 if symbol == "#":
                     cell_coordinates = (y + y_delta, x + x_delta)
                     self.masked_cells[cell_coordinates] = self.get_cell(cell_coordinates)
+                    self.unmasked_cells.pop(cell_coordinates, None)
 
     def configure_cells(self) -> None:
         """
@@ -117,12 +121,19 @@ class Grid:
         cell_a.link(cell_b, bidi=bidi)
         self.visual.link_cells(cell_a, cell_b)
 
-    def random_cell(self) -> Cell:
+    def random_cell(self, ignore_mask: bool = False) -> Cell:
+        """Return a random cell from the grid.
+
+        Args:
+            ignore_mask (bool, optional): If True, select from all cells, including masked. Defaults to False.
+
+        Returns:
+            Cell: Cell
         """
-        Return a random cell from the grid.
-        :return: A random cell from the list of cells.
-        """
-        cell = random.choice(list(self.cells.values()))
+        if ignore_mask:
+            cell = random.choice(list(self.cells.values()))
+        else:
+            cell = random.choice(list(self.unmasked_cells.values()))
         return cell
 
     def size(self) -> int:
@@ -132,26 +143,47 @@ class Grid:
         """
         return self.height * self.width
 
-    def each_row(self, bottom_up: bool = False) -> Generator[list[Cell], None, None]:
+    def each_row(self, ignore_mask: bool = False, bottom_up: bool = False) -> Generator[list[Cell], None, None]:
         """
         Yield one row of the grid at a time as a list.
 
+        :param ignore_mask: If True, include masked cells in the list of cells, defaults to False (optional)
         :param bottom_up: If True, the cells are traversed in bottom-up order, defaults to False (optional)
         """
         if not bottom_up:
             for row in range(self.height):
-                yield [self.cells[(row, col)] for col in range(self.width)]
+                if ignore_mask:
+                    yield [self.cells[(row, col)] for col in range(self.width)]
+                else:
+                    yield [
+                        self.unmasked_cells.get((row, col), None)
+                        for col in range(self.width)
+                        if self.unmasked_cells.get((row, col), None)
+                    ]
         else:
             for row in range(self.height - 1, -1, -1):
-                yield [self.cells[(row, col)] for col in range(self.width)]
+                if ignore_mask:
+                    yield [self.cells[(row, col)] for col in range(self.width)]
+                else:
+                    yield [
+                        self.unmasked_cells.get((row, col), None)
+                        for col in range(self.width)
+                        if self.unmasked_cells.get((row, col), None)
+                    ]
 
-    def each_cell(self) -> Generator[Cell, None, None]:
+    def each_cell(self, ignore_mask: bool = False) -> Generator[Cell, None, None]:
         """
         Return a generator that yields a cell at a time.
+        :param ignore_mask: If True, include masked cells, defaults to False (optional)
         """
         for row in range(self.height):
             for col in range(self.width):
-                yield self.cells[(row, col)]
+                if ignore_mask:
+                    yield self.cells[(row, col)]
+                else:
+                    cell = self.unmasked_cells.get((row, col), None)
+                    if cell:
+                        yield cell
 
 
 class Visual:
@@ -185,7 +217,7 @@ class Visual:
 
     def prepare_visual(self) -> None:
         """Prepare a visual representation of the maze graph."""
-        for row in self.grid.each_row():
+        for row in self.grid.each_row(ignore_mask=True):
             term_row = []
             lower_row = []
             for i, cell in enumerate(row):
