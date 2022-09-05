@@ -41,6 +41,7 @@ class HuntandKill:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
+        self.status_text = {"Algorithm": "Hunt And Kill"}
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         """Generates a maze by linking Cells in a Grid according to the Hunt and Kill maze generation
@@ -53,6 +54,7 @@ class HuntandKill:
         cell = random.choice(unvisited)
         unvisited.remove(cell)
         while unvisited:
+            self.status_text["Unvisited Cells"] = len(unvisited)
             self.logic_data["working_cell"] = cell
             unvisited_neighbors = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor in unvisited
