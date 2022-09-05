@@ -96,21 +96,30 @@ class Grid:
         else:
             return None
 
-    def get_neighbors(self, cell: Cell, existing_only: bool = True, adjacent: bool = True) -> dict[str, Cell]:
+    def get_neighbors(
+        self, cell: Cell, ignore_mask=False, existing_only: bool = True, adjacent: bool = True
+    ) -> dict[str, Cell]:
         """
         Given a cell, return a list of its neighboring cells
 
         :param cell: the cell to get the neighbors of
+        :param ignore_mask: return masked and unmasked neighbors
         :param existing_only: If True, only return direction:Cell pair if neighbor exists. Defaults to True.
         :param adjacent: ignore diagonal neighbors
         :return: A dict of {str,Cell} neighbors.
         """
         neighbors = {}
         for direction, neighbor in cell.neighbors.items():
-            if neighbor not in self.masked_cells.values():
-                if existing_only and not neighbor:
-                    continue
-                neighbors[direction] = neighbor
+            if existing_only and not neighbor:
+                continue
+            neighbors[direction] = neighbor
+        if not ignore_mask:
+            unmasked_neighbors = {}
+            for direction, neighbor in neighbors.items():
+                if neighbor not in self.masked_cells:
+                    unmasked_neighbors[direction] = neighbor
+            neighbors = unmasked_neighbors
+
         return neighbors
 
     def link_cells(self, cell_a: Cell, cell_b: Cell, bidi: bool = True) -> None:
@@ -202,8 +211,8 @@ class Visual:
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
         self.color_map = {
-            "working_cell": colored.fg(14),
-            "last_linked": colored.fg(2),
+            "working_cell": colored.fg(45),
+            "last_linked": colored.fg(218),
             "invalid_neighbors": colored.fg(52),
             "frontier": colored.fg(72),
             "explored": colored.fg(218),  # 137
