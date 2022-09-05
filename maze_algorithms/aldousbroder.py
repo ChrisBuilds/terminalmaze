@@ -1,4 +1,5 @@
 import random
+import time
 from collections.abc import Generator
 
 
@@ -13,9 +14,9 @@ class AldousBroder:
         self.status_text = {"Algorithm": "Aldous Broder"}
         self.last_linked = list()
         self.logic_data["last_linked"] = self.last_linked
+        self.frame_time = time.time()
 
     def generate_maze(self):
-        frame_delay = 40
         unvisited = set(self.maze.each_cell())
         working_cell = unvisited.pop()
         self.logic_data["working_cell"] = working_cell
@@ -41,9 +42,9 @@ class AldousBroder:
             working_cell = neighbor
             self.logic_data["working_cell"] = working_cell
             if self.showlogic:
-                frame_delay -= 1
-                if frame_delay == 0:
-                    frame_delay = 50
+                time_since_last_frame = time.time() - self.frame_time
+                if time_since_last_frame > 0.10:
+                    self.frame_time = time.time()
                     self.status_text["Unvisited"] = len(unvisited)
                     self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                     yield self.maze
