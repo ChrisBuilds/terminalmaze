@@ -37,8 +37,8 @@ class HuntandKill:
         when maze logic checks are performed.
     """
 
-    def __init__(self, mazegrid: Grid, showlogic: bool = False) -> None:
-        self.grid = mazegrid
+    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
+        self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
 
@@ -49,34 +49,40 @@ class HuntandKill:
         Yields:
             Grid: grid of cells
         """
-        unvisited = [cell for cell in self.grid.cells.values()]
+        unvisited = list(self.maze.each_cell())
         cell = random.choice(unvisited)
         unvisited.remove(cell)
         while unvisited:
             self.logic_data["working_cell"] = cell
-            unvisited_neighbors = [neighbor for neighbor in cell.neighbors.values() if neighbor in unvisited]
+            unvisited_neighbors = [
+                neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor in unvisited
+            ]
             if unvisited_neighbors:
                 neighbor = random.choice(unvisited_neighbors)
-                cell.link(neighbor)
+                self.maze.link_cells(cell, neighbor)
                 self.logic_data["last_linked"] = neighbor
                 unvisited.remove(neighbor)
                 cell = neighbor
-                yield self.grid
+                yield self.maze
 
             else:
                 for cell in unvisited:
                     self.logic_data["working_cell"] = cell
-                    visited_neighbors = [neighbor for neighbor in cell.neighbors.values() if neighbor.links]
+                    visited_neighbors = [
+                        neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and neighbor.links
+                    ]
                     self.logic_data["invalid_neighbors"] = [
-                        neighbor for neighbor in cell.neighbors.values() if not neighbor.links
+                        neighbor
+                        for neighbor in self.maze.get_neighbors(cell).values()
+                        if neighbor and not neighbor.links
                     ]
                     if self.showlogic:
-                        yield self.grid
+                        yield self.maze
                     if visited_neighbors:
                         self.logic_data["invalid_neighbors"] = []
                         neighbor = random.choice(visited_neighbors)
-                        cell.link(neighbor)
+                        self.maze.link_cells(cell, neighbor)
                         self.logic_data["last_linked"] = neighbor
                         unvisited.remove(cell)
                         break
-                yield self.grid
+                yield self.maze
