@@ -9,11 +9,12 @@ class RecursiveBacktracker:
         self.showlogic: bool = showlogic
         self.logic_data: dict[str, Cell] = {}
         self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Recursive Backtracker"}
+        self.frame_delay = 3
 
     def generate_maze(self) -> Grid:
         cell = self.maze.random_cell()
         stack = [cell]
-        self.logic_data["logic0"] = stack
+        self.logic_data["explored"] = stack
         while stack:
             self.logic_data["working_cell"] = cell
             unvisited_neighbors = [
@@ -39,4 +40,7 @@ class RecursiveBacktracker:
                     if self.showlogic:
                         self.logic_data["working_cell"] = cell
                         self.status_text["Stack Length"] = len(stack)
-                        yield self.maze
+                        self.frame_delay -= 1
+                        if self.frame_delay == 0:
+                            self.frame_delay = 3
+                            yield self.maze
