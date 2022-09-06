@@ -6,6 +6,8 @@ from maze_algorithms.binarytree import BinaryTree
 from maze_algorithms.sidewinder import Sidewinder
 from maze_algorithms.aldousbroder import AldousBroder
 from maze_algorithms.recursivebacktracker import RecursiveBacktracker
+from maze_algorithms.primssimple import PrimsSimple
+from maze_algorithms.primsweighted import PrimsWeighted
 from solve_algorithms.breadthfirst import BreadthFirst
 from grid.grid import Grid
 
@@ -27,33 +29,56 @@ def main():
 ##                                                            ##
 ############################################################  ##
     """
+    amanda_inv = """
+m:    ######  ########     ###     ######  #########
+m:  ##      ##        #####   #####      ##        #
+m:  #  ####  #  #####  ###  #  ###  ####  #  #######
+m:  #  #######  #####  ##  ###  ##  #######  ####
+m:  ##      ##        ##  #####  #  #######     #
+m:  #######  #  ########         #  #######  ####
+m:  #  ####  #  ########  #####  #  ####  #  #######
+m:  ##      ##  ########  #####  ##      ##        #
+m:    # ####   #        #      ##   ### ##  ### ####
+m:
+m:    # #    #      ##    # #    ##     # ##### ##     ## 
+m:   #   ####  #####  ####   ####  ####  #        #####   #
+m:  #  #  ###   ###   ###  #  ###   ###  #  #####  ###  #  #
+m: #  ###  ##    #    ##  ###  ##    ##  #  #####  ##  ###  #
+m:#  #####  #  #   #  #  #####  #  #  #  #  #####  #  #####  #
+m:#         #  #####  #         #  ##    #  #####  #         #
+m:#  #####  #  #####  #  #####  #  ###   #  #####  #  #####  #
+m:#  #####  #  #####  #  #####  #  ####  #        ##  #####  #
+m: ##     ## ##     ## ##     ## ##    ## ########  ##     ##
+    """
     amanda = """
-    ######  ########     ###     ######  ########          
-   ##    ##        ##   ## ##   ##    ## ##                
-   ##       ##                  ##       ##                
-    ######  ########  ##     ## ##       ######            
-         ## ##        ######### ##       ##                
-   ##    ## ##        ##     ## ##    ## ##                
-    ######  ##        ##     ##  ######  ########
-          
-   ###    ##     ##    ###    ##    ## ########     ###    
-  ## ##   ###   ###   ## ##   ###   ##        ##   ## ##   
-          #### ####           ####  ## ##     ##           
-##     ## ## ### ## ##     ## ## ## ## ##     ## ##     ## 
-######### ##     ## ######### ##  #### ##     ## ######### 
-##     ## ##     ## ##     ## ##   ### ##        ##     ## 
-##     ## ##     ## ##     ## ##    ## ########  ##     ## 
+m:    ######  ########     ###     ######  ########          
+m:   ##    ##        ##   ## ##   ##    ## ##                
+m:   ##       ##                  ##       ##                
+m:    ######  ########  ##     ## ##       ######            
+m:         ## ##        ######### ##       ##                
+m:   ##    ## ##        ##     ## ##    ## ##                
+m:    ######  ##        ##     ##  ######  ########
+m:
+m:   ###    ##     ##    ###    ##    ## ########     ###    
+m:  ## ##   ###   ###   ## ##   ###   ##        ##   ## ##   
+m:          #### ####           ####  ## ##     ##           
+m:##     ## ## ### ## ##     ## ## ## ## ##     ## ##     ## 
+m:######### ##     ## ######### ##  #### ##     ## ######### 
+m:##     ## ##     ## ##     ## ##   ### ##        ##     ## 
+m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
     """
 
     show_mazelogic = True
     show_solvelogic = True
-    maze = Grid(100, 27, mask=amanda)
+    maze = Grid(105, 27, mask=amanda_inv)
     # algo = BinaryTree(maze, showlogic=show_mazelogic)
     # algo = Sidewinder(maze, showlogic=show_mazelogic)
     # algo = AldousBroder(maze, showlogic=show_mazelogic)
     # algo = Wilsons(maze, showlogic=show_mazelogic)
     # algo = HuntandKill(maze, showlogic=show_mazelogic)
-    algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
+    # algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
+    # algo = PrimsSimple(maze, showlogic=show_mazelogic)
+    algo = PrimsWeighted(maze, showlogic=show_mazelogic)
     solver = BreadthFirst(maze, showlogic=show_solvelogic)
     try:
         maze: Grid
