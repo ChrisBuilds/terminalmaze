@@ -43,7 +43,9 @@ class Sidewinder:
                     elif direction == "north":
                         working_cell = random.choice(run)
                         self.logic_data["working_cell"] = working_cell
-                        self.maze.link_cells(working_cell, self.maze.get_neighbors(working_cell)["north"])
+                        self.maze.link_cells(
+                            working_cell, self.maze.get_neighbors(working_cell, ignore_mask=True)["north"]
+                        )
                         self.logic_data["last_linked"] = working_cell.neighbors["north"]
                         run.clear()
                     yield self.maze
