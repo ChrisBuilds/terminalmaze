@@ -33,4 +33,5 @@ class PrimsSimple:
                     edge_cells.append(next_cell)
                 yield self.maze
             else:
-                yield self.maze
+                if self.showlogic:
+                    yield self.maze
