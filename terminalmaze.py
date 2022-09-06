@@ -8,6 +8,7 @@ from maze_algorithms.aldousbroder import AldousBroder
 from maze_algorithms.recursivebacktracker import RecursiveBacktracker
 from maze_algorithms.primssimple import PrimsSimple
 from maze_algorithms.primsweighted import PrimsWeighted
+from maze_algorithms.kruskalsrandomized import KruskalsRandomized
 from solve_algorithms.breadthfirst import BreadthFirst
 from grid.grid import Grid
 
@@ -78,7 +79,8 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     # algo = HuntandKill(maze, showlogic=show_mazelogic)
     # algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
     # algo = PrimsSimple(maze, showlogic=show_mazelogic)
-    algo = PrimsWeighted(maze, showlogic=show_mazelogic)
+    # algo = PrimsWeighted(maze, showlogic=show_mazelogic)
+    algo = KruskalsRandomized(maze, showlogic=show_mazelogic)
     solver = BreadthFirst(maze, showlogic=show_solvelogic)
     try:
         maze: Grid
