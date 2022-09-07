@@ -8,10 +8,7 @@ class RecursiveBacktracker:
         self.maze: Grid = maze
         self.showlogic: bool = showlogic
         self.logic_data: dict[str, Cell] = {}
-        self.status_text: dict[str, Union[str, int]] = {
-            "Algorithm": "Recursive Backtracker",
-            "Seed": f"{self.maze.seed}",
-        }
+        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Recursive Backtracker", "Seed": self.maze.seed}
         self.frame_delay = 3
         random.seed(self.maze.seed)
 
