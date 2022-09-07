@@ -233,7 +233,10 @@ class Visual:
             "path": colored.fg(218),  # 133
             "logic0": colored.fg(237),
             "logic1": colored.fg(28),
+            "groups": None,
         }
+        self.group_color_pool = list(range(1, 256))
+        self.group_color_map: dict[int, int] = dict()
         self.visual_grid: list[list[str]] = list()
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_visual()
@@ -261,6 +264,25 @@ class Visual:
             row.append(self.wall)
         self.visual_grid.insert(0, [self.wall for _ in range(len(self.visual_grid[0]))])
         self.visual_grid.append([self.wall for _ in range(len(self.visual_grid[0]))])
+
+    def get_group_color(self, group_id: int) -> int:
+        """If the group id has an assigned color, return the assigned color, else get a random
+        color from the color pool, assign it to the group, and return the color int.
+
+        Args:
+            group_id (int): id for cell group
+
+        Returns:
+            int: colored color int
+        """
+        color = self.group_color_map.get(group_id)
+        if color:
+            return color
+        color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
+        self.group_color_map[group_id] = colored.fg(color)
+        if not self.group_color_pool:
+            self.group_color_pool = list(range(1, 256))
+        return self.group_color_map[group_id]
 
     def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
         """Translate cell coordinates to match row, column indexes in the visual
@@ -303,11 +325,11 @@ class Visual:
                 self.visual_links.add((row + row_offset, column + column_offset))
                 return
 
-    def add_logic_data(self, logic_data: dict[str, Union[list[Cell], Cell]]) -> list[list[str]]:
+    def add_logic_data(self, logic_data: dict[str, Union[list[Cell], Cell, dict[int, list[Cell]]]]) -> list[list[str]]:
         """Apply color to cells and walls to show logic.
 
         Args:
-            logic_data (dict[str, Union[list[Cell], Cell]]): label : cell pairs for various logical
+            logic_data (dict[str, Union[list[Cell], Cell, dict[int, list[Cell]]]]): label : cell pairs for various logical
             indicators.
 
         Returns:
@@ -317,20 +339,39 @@ class Visual:
         for label, data in logic_data.items():
             if isinstance(data, list):
                 translated_cells = set(self.translate_cell_coords(cell) for cell in data)
-                for visual_coordinates in self.visual_links:
-                    visual_y, visual_x = visual_coordinates
-                    if (
-                        (visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells
-                    ) or (
-                        (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
-                    ):
-                        translated_cells.add(visual_coordinates)
-                for visual_coordinates in translated_cells:
+                cells_and_passages = self.find_passages(translated_cells)
+                for visual_coordinates in cells_and_passages:
                     self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+
+            elif isinstance(data, dict):
+                for group, cells in data.items():
+                    group_color = self.get_group_color(group)
+                    translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
+                    cells_and_passages = self.find_passages(translated_cells)
+                    for visual_coordinates in cells_and_passages:
+                        self.apply_color(colored_visual_grid, visual_coordinates, group_color)
+
             else:
                 visual_coordinates = self.translate_cell_coords(data)
                 self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
         return colored_visual_grid
+
+    def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
+        """Identify passages between linked cells.
+
+        Args:
+            translated_cells (set[tuple[int, int]]): Visual coordinates for cells
+
+        Returns:
+            set[tuple[int, int]]: translated cells with passages added
+        """
+        for visual_coordinates in self.visual_links:
+            visual_y, visual_x = visual_coordinates
+            if ((visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells) or (
+                (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
+            ):
+                translated_cells.add(visual_coordinates)
+        return translated_cells
 
     def apply_color(
         self, colored_visual_grid: list[list[str]], visual_coordinates: tuple[int, int], color: str
