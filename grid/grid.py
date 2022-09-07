@@ -237,6 +237,7 @@ class Visual:
         }
         self.group_color_pool = list(range(1, 256))
         self.group_color_map: dict[int, int] = dict()
+        self.last_groups: dict[int, list[Cell]] = None
         self.visual_grid: list[list[str]] = list()
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_visual()
@@ -336,6 +337,9 @@ class Visual:
             list[list[str]]: visual grid with colored cells
         """
         colored_visual_grid = [line.copy() for line in self.visual_grid]
+        if not logic_data.get("groups", None):
+            self.color_cell_groups(colored_visual_grid)
+
         for label, data in logic_data.items():
             if isinstance(data, list):
                 translated_cells = set(self.translate_cell_coords(cell) for cell in data)
@@ -343,18 +347,29 @@ class Visual:
                 for visual_coordinates in cells_and_passages:
                     self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
 
-            elif isinstance(data, dict):
-                for group, cells in data.items():
-                    group_color = self.get_group_color(group)
-                    translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
-                    cells_and_passages = self.find_passages(translated_cells)
-                    for visual_coordinates in cells_and_passages:
-                        self.apply_color(colored_visual_grid, visual_coordinates, group_color)
+            elif label == "groups" and isinstance(data, dict):
+                self.last_groups = data
+                self.color_cell_groups(colored_visual_grid)
 
             else:
                 visual_coordinates = self.translate_cell_coords(data)
                 self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+
         return colored_visual_grid
+
+    def color_cell_groups(self, colored_visual_grid: list[list[str]]) -> None:
+        """Apply color to groups of cells.
+
+        Args:
+            colored_visual_grid (list[list[str]]): copy of self.visual_grid
+        """
+        if self.last_groups:
+            for group, cells in self.last_groups.items():
+                group_color = self.get_group_color(group)
+                translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
+                cells_and_passages = self.find_passages(translated_cells)
+                for visual_coordinates in cells_and_passages:
+                    self.apply_color(colored_visual_grid, visual_coordinates, group_color)
 
     def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
         """Identify passages between linked cells.
