@@ -9,11 +9,13 @@ from maze_algorithms.recursivebacktracker import RecursiveBacktracker
 from maze_algorithms.primssimple import PrimsSimple
 from maze_algorithms.primsweighted import PrimsWeighted
 from maze_algorithms.kruskalsrandomized import KruskalsRandomized
+from maze_algorithms.ellers import Ellers
 from solve_algorithms.breadthfirst import BreadthFirst
 from grid.grid import Grid
 
 from time import sleep
 import sys
+import random
 
 
 def main():
@@ -72,6 +74,8 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     show_mazelogic = True
     show_solvelogic = True
     maze = Grid(105, 27, mask=amanda_inv)
+    seed = int().from_bytes(random.randbytes(5), byteorder="big")
+    maze.seed = seed
     # algo = BinaryTree(maze, showlogic=show_mazelogic)
     # algo = Sidewinder(maze, showlogic=show_mazelogic)
     # algo = AldousBroder(maze, showlogic=show_mazelogic)
@@ -80,7 +84,8 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     # algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
     # algo = PrimsSimple(maze, showlogic=show_mazelogic)
     # algo = PrimsWeighted(maze, showlogic=show_mazelogic)
-    algo = KruskalsRandomized(maze, showlogic=show_mazelogic)
+    # algo = KruskalsRandomized(maze, showlogic=show_mazelogic)
+    algo = Ellers(maze, showlogic=show_mazelogic)
     solver = BreadthFirst(maze, showlogic=show_solvelogic)
     try:
         maze: Grid
