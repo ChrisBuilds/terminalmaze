@@ -13,7 +13,8 @@ class Sidewinder:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Sidewinder"}
+        self.status_text = {"Algorithm": "Sidewinder", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         run: list[Cell] = []

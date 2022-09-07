@@ -10,7 +10,8 @@ class Wilsons:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Wilons"}
+        self.status_text = {"Algorithm": "Wilons", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         walk: list[Cell] = []

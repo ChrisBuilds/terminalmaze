@@ -13,7 +13,8 @@ class BinaryTree:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Binary Tree"}
+        self.status_text = {"Algorithm": "Binary Tree", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         for cell in self.maze.each_cell(ignore_mask=True):

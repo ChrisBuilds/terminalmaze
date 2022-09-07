@@ -8,7 +8,8 @@ class PrimsWeighted:
         self.maze: Grid = maze
         self.showlogic: bool = showlogic
         self.logic_data: dict[str, Cell] = {}
-        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Prims Weighted"}
+        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Prims Weighted", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Grid:
         self.last_linked = []

@@ -13,7 +13,8 @@ class KruskalsRandomized:
         self.group_to_cell_map_logic: defaultdict[int, list[Cell]] = defaultdict(list)  # group : [cells]
         self.cell_to_group_map: dict[tuple[int, int], int] = {}  # cell_address : group
         self.logic_data["groups"] = self.group_to_cell_map_logic
-        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Kruskal's Randomized"}
+        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Kruskal's Randomized", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Grid:
         links: list[tuple[Cell, Cell]] = list()

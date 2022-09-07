@@ -42,7 +42,8 @@ class HuntandKill:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Hunt And Kill"}
+        self.status_text = {"Algorithm": "Hunt And Kill", "Seed": self.maze.seed}
+        random.seed(self.maze.seed)
         self.frame_time = time.time()
 
     def generate_maze(self) -> Generator[Grid, None, None]:
