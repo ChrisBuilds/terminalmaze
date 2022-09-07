@@ -11,10 +11,11 @@ class AldousBroder:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Aldous Broder"}
+        self.status_text = {"Algorithm": "Aldous Broder", "Seed": self.maze.seed}
         self.last_linked = list()
         self.logic_data["last_linked"] = self.last_linked
         self.frame_time = time.time()
+        random.seed(self.maze.seed)
 
     def generate_maze(self):
         unvisited = set(self.maze.each_cell())
