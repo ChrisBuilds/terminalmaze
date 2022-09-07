@@ -4,17 +4,16 @@ from typing import Union
 
 
 class RecursiveBacktracker:
-    def __init__(self, maze: Grid, showlogic: bool = False, seed: int = None) -> None:
+    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
         self.maze: Grid = maze
         self.showlogic: bool = showlogic
-        self.seed = seed
-        random.seed(self.seed)
         self.logic_data: dict[str, Cell] = {}
         self.status_text: dict[str, Union[str, int]] = {
             "Algorithm": "Recursive Backtracker",
-            "Seed": f"{seed}",
+            "Seed": f"{self.maze.seed}",
         }
         self.frame_delay = 3
+        random.seed(self.maze.seed)
 
     def generate_maze(self) -> Grid:
         cell = self.maze.random_cell()
