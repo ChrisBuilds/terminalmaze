@@ -28,6 +28,7 @@ class Grid:
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
         self.visual = Visual(self)
+        self.seed: int = None
 
     def format_mask(self) -> None:
         """Format the mask string for use in other methods."""
@@ -224,7 +225,7 @@ class Visual:
             "working_cell": colored.fg(45),
             "last_linked": colored.fg(218),
             "invalid_neighbors": colored.fg(52),
-            "frontier": colored.fg(72),
+            "frontier": colored.fg(231),
             "explored": colored.fg(218),  # 137
             "position": colored.fg(76),
             "target": colored.fg(202),
