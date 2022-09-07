@@ -7,7 +7,7 @@ class BreadthFirst:
         self.maze = maze
         self.showlogic = showlogic
         self.logic_data = {}
-        self.status_text = {"Algorithm": "Breadth First"}
+        self.status_text = {"Algorithm": "Breadth First", "Seed": self.maze.seed}
 
     def solve(self) -> Generator[Grid, None, None]:
         target = list(self.maze.each_cell())[-1]
@@ -52,6 +52,5 @@ class BreadthFirst:
         self.logic_data["path"] = path
         for step in route:
             path.append(step)
-            self.status_text = {"Algorithm": "Breadth First"}
             self.status_text["Solution Length"] = len(route)
             yield self.maze
