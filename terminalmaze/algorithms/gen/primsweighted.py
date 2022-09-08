@@ -1,4 +1,4 @@
-from grid.grid import Grid, Cell
+from resources.grid import Grid, Cell
 import random
 from typing import Union
 

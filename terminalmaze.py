@@ -1,17 +1,17 @@
 #!/usr/bin/python3
 
-from maze_algorithms.huntandkill import HuntandKill
-from maze_algorithms.wilsons import Wilsons
-from maze_algorithms.binarytree import BinaryTree
-from maze_algorithms.sidewinder import Sidewinder
-from maze_algorithms.aldousbroder import AldousBroder
-from maze_algorithms.recursivebacktracker import RecursiveBacktracker
-from maze_algorithms.primssimple import PrimsSimple
-from maze_algorithms.primsweighted import PrimsWeighted
-from maze_algorithms.kruskalsrandomized import KruskalsRandomized
-from maze_algorithms.ellers import Ellers
-from solve_algorithms.breadthfirst import BreadthFirst
-from grid.grid import Grid
+from terminalmaze.algorithms.gen.huntandkill import HuntandKill
+from terminalmaze.algorithms.gen.wilsons import Wilsons
+from terminalmaze.algorithms.gen.binarytree import BinaryTree
+from terminalmaze.algorithms.gen.sidewinder import Sidewinder
+from terminalmaze.algorithms.gen.aldousbroder import AldousBroder
+from terminalmaze.algorithms.gen.recursivebacktracker import RecursiveBacktracker
+from terminalmaze.algorithms.gen.primssimple import PrimsSimple
+from terminalmaze.algorithms.gen.primsweighted import PrimsWeighted
+from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
+from terminalmaze.algorithms.gen.ellers import Ellers
+from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
+from terminalmaze.resources.grid import Grid
 
 from time import sleep
 import sys
@@ -81,11 +81,11 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     # algo = AldousBroder(maze, showlogic=show_mazelogic)
     # algo = Wilsons(maze, showlogic=show_mazelogic)
     # algo = HuntandKill(maze, showlogic=show_mazelogic)
-    # algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
+    algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
     # algo = PrimsSimple(maze, showlogic=show_mazelogic)
     # algo = PrimsWeighted(maze, showlogic=show_mazelogic)
     # algo = KruskalsRandomized(maze, showlogic=show_mazelogic)
-    algo = Ellers(maze, showlogic=show_mazelogic)
+    # algo = Ellers(maze, showlogic=show_mazelogic)
     solver = BreadthFirst(maze, showlogic=show_solvelogic)
     try:
         maze: Grid

@@ -1,4 +1,4 @@
-from grid.grid import Grid
+from resources.grid import Grid
 from collections.abc import Generator
 
 

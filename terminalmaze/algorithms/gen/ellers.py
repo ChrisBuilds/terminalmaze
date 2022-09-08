@@ -1,5 +1,5 @@
-from tokenize import group
-from grid.grid import Grid, Cell
+from resources.grid import Grid
+from resources.cell import Cell
 import random
 from collections import defaultdict
 from typing import Union
