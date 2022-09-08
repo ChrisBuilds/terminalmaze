@@ -1,13 +1,12 @@
 from terminalmaze.resources.grid import Grid
+from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
 import random
 from typing import Union
 
 
-class RecursiveBacktracker:
+class RecursiveBacktracker(MazeAlgorithm):
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        self.maze: Grid = maze
-        self.showlogic: bool = showlogic
-        self.logic_data = []
+        super().__init__(maze, showlogic)
         self.status_text: dict[str, Union[str, int]] = {
             "Algorithm": "Recursive Backtracker",
             "Seed": self.maze.seed,
@@ -15,26 +14,25 @@ class RecursiveBacktracker:
             "Stack Length": "",
             "State": "",
         }
-        self.frame_delay = 2
-        random.seed(self.maze.seed)
+        self.skip_frames = 2
 
     def generate_maze(self) -> Grid:
         cell = self.maze.random_cell()
         stack = [cell]
-        self.logic_data["explored"] = stack
+        self.visual_effects["explored"] = stack
         while stack:
-            self.logic_data["working_cell"] = cell
+            self.visual_effects["working_cell"] = cell
             unvisited_neighbors = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if not neighbor.links
             ]
-            self.logic_data["invalid_neighbors"] = [
+            self.visual_effects["invalid_neighbors"] = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor.links
             ]
             if unvisited_neighbors:
                 next_cell = random.choice(unvisited_neighbors)
                 self.status_text["State"] = "Walking"
                 self.maze.link_cells(cell, next_cell)
-                self.logic_data["last_linked"] = next_cell
+                self.visual_effects["last_linked"] = next_cell
                 stack.append(next_cell)
                 cell = next_cell
                 self.status_text["Unvisited"] = len(unvisited_neighbors)
@@ -47,9 +45,7 @@ class RecursiveBacktracker:
                     self.status_text["State"] = "Backtracking"
                     cell = stack[-1]
                     if self.showlogic:
-                        self.logic_data["working_cell"] = cell
+                        self.visual_effects["working_cell"] = cell
                         self.status_text["Stack Length"] = len(stack)
-                        self.frame_delay -= 1
-                        if self.frame_delay == 0:
-                            self.frame_delay = 2
+                        if self.frame_wanted:
                             yield self.maze
