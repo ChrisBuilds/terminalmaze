@@ -1,5 +1,4 @@
-from resources.grid import Grid
-from resources.cell import Cell
+from terminalmaze.resources.cell import Cell
 from dataclasses import dataclass
 import colored
 import random
@@ -17,7 +16,7 @@ class Visual:
         style: str
         cells: Union[Cell, list[Cell], dict[int, list[Cell]]]
 
-    def __init__(self, grid: Grid) -> None:
+    def __init__(self, grid) -> None:
         """Prepare a visual representation of the maze graph.
 
         Args:
@@ -131,7 +130,7 @@ class Visual:
                 self.visual_links.add((row + row_offset, column + column_offset))
                 return
 
-    def add_logic_data(self, logic_data: dict[str, Union[list[Cell], Cell, dict[int, list[Cell]]]]) -> list[list[str]]:
+    def add_logic_data(self, logic_data: dict[str, Union[set[Cell], Cell, dict[int, set[Cell]]]]) -> list[list[str]]:
         """Apply color to cells and walls to show logic.
 
         Args:
