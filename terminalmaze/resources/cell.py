@@ -48,3 +48,9 @@ class Cell:
         :return: True if cell is linked else False
         """
         return cell in self.links
+
+    def __hash__(self):
+        return hash((self.row, self.column))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and (other.row, other.column) == (self.row, self.column)

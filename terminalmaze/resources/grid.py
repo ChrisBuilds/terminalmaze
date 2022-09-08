@@ -1,5 +1,5 @@
-from tools.visualmaze import Visual
-from resources.cell import Cell
+from terminalmaze.tools.visualmaze import Visual
+from terminalmaze.resources.cell import Cell
 import random
 import colored
 from collections.abc import Generator

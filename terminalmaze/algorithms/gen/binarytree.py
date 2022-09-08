@@ -1,5 +1,5 @@
 import random
-from resources.grid import Grid
+from terminalmaze.resources.grid import Grid
 from collections.abc import Generator
 
 

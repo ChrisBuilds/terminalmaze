@@ -3,7 +3,7 @@ import time
 from collections.abc import Generator
 
 
-from resources.grid import Grid
+from terminalmaze.resources.grid import Grid
 
 
 class AldousBroder:

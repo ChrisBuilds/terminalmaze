@@ -1,5 +1,5 @@
-from resources.grid import Grid
-from resources.cell import Cell
+from terminalmaze.resources.grid import Grid
+from terminalmaze.resources.cell import Cell
 import random
 from collections import defaultdict
 from typing import Union

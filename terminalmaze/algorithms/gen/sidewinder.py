@@ -2,8 +2,8 @@ from operator import ne
 import random
 from collections.abc import Generator
 
-from resources.grid import Grid
-from resources.cell import Cell
+from terminalmaze.resources.grid import Grid
+from terminalmaze.resources.cell import Cell
 
 
 class Sidewinder:
