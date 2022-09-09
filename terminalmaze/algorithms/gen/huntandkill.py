@@ -18,9 +18,10 @@ import time
 from collections.abc import Generator
 
 from terminalmaze.resources.grid import Grid
+from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
 
 
-class HuntandKill:
+class HuntandKill(MazeAlgorithm):
     """Implements the Hunt and Kill maze generation algorithm.
 
     Attributes
@@ -39,11 +40,8 @@ class HuntandKill:
     """
 
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        self.maze = maze
-        self.showlogic = showlogic
-        self.logic_data = {}
-        self.status_text = {"Algorithm": "Hunt And Kill", "Seed": self.maze.seed}
-        random.seed(self.maze.seed)
+        super().__init__(maze, showlogic)
+        self.status_text["Algorithm"] = "Hunt And Kill"
         self.frame_time = time.time()
 
     def generate_maze(self) -> Generator[Grid, None, None]:
@@ -58,25 +56,25 @@ class HuntandKill:
         unvisited.remove(cell)
         while unvisited:
             self.status_text["Unvisited Cells"] = len(unvisited)
-            self.logic_data["working_cell"] = cell
+            self.visual_effects["working_cell"] = cell
             unvisited_neighbors = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor in unvisited
             ]
             if unvisited_neighbors:
                 neighbor = random.choice(unvisited_neighbors)
                 self.maze.link_cells(cell, neighbor)
-                self.logic_data["last_linked"] = neighbor
+                self.visual_effects["last_linked"] = neighbor
                 unvisited.remove(neighbor)
                 cell = neighbor
                 yield self.maze
 
             else:
                 for cell in unvisited:
-                    self.logic_data["working_cell"] = cell
+                    self.visual_effects["working_cell"] = cell
                     visited_neighbors = [
                         neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and neighbor.links
                     ]
-                    self.logic_data["invalid_neighbors"] = [
+                    self.visual_effects["invalid_neighbors"] = [
                         neighbor
                         for neighbor in self.maze.get_neighbors(cell).values()
                         if neighbor and not neighbor.links
@@ -86,10 +84,10 @@ class HuntandKill:
                             self.frame_time = time.time()
                             yield self.maze
                     if visited_neighbors:
-                        self.logic_data["invalid_neighbors"] = []
+                        self.visual_effects["invalid_neighbors"] = []
                         neighbor = random.choice(visited_neighbors)
                         self.maze.link_cells(cell, neighbor)
-                        self.logic_data["last_linked"] = neighbor
+                        self.visual_effects["last_linked"] = neighbor
                         unvisited.remove(cell)
                         yield self.maze
                         break

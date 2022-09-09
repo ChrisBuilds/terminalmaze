@@ -1,9 +1,10 @@
+from collections import defaultdict
 from terminalmaze.resources.cell import Cell
 from dataclasses import dataclass
 import colored
 import random
 from os import system
-from typing import Union
+from typing import Union, DefaultDict, Optional
 
 
 class Visual:
@@ -40,8 +41,8 @@ class Visual:
             "groups": None,
         }
         self.group_color_pool = list(range(1, 256))
-        self.group_color_map: dict[int, int] = dict()
-        self.last_groups: dict[int, list[Cell]] = None
+        self.group_color_map: dict[int, Union[int, str]] = dict()
+        self.last_groups: Union[dict[int, list[Cell]], dict[int, set[Cell]], dict] = dict()
         self.visual_grid: list[list[str]] = list()
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_visual()
@@ -70,7 +71,7 @@ class Visual:
         self.visual_grid.insert(0, [self.wall for _ in range(len(self.visual_grid[0]))])
         self.visual_grid.append([self.wall for _ in range(len(self.visual_grid[0]))])
 
-    def get_group_color(self, group_id: int) -> int:
+    def get_group_color(self, group_id: int) -> Union[int, str]:
         """If the group id has an assigned color, return the assigned color, else get a random
         color from the color pool, assign it to the group, and return the color int.
 
@@ -130,7 +131,12 @@ class Visual:
                 self.visual_links.add((row + row_offset, column + column_offset))
                 return
 
-    def add_logic_data(self, logic_data: dict[str, Union[set[Cell], Cell, dict[int, set[Cell]]]]) -> list[list[str]]:
+    def add_logic_data(
+        self,
+        logic_data: dict[
+            str, Union[Cell, list[Cell], dict[int, Cell], DefaultDict[int, list[Cell]], DefaultDict[int, set[Cell]]]
+        ],
+    ) -> list[list[str]]:
         """Apply color to cells and walls to show logic.
 
         Args:
@@ -151,13 +157,18 @@ class Visual:
                 for visual_coordinates in cells_and_passages:
                     self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
 
-            elif label == "groups" and isinstance(data, dict):
+            elif label == "groups" and isinstance(data, dict) or isinstance(data, defaultdict):
                 self.last_groups = data
                 self.color_cell_groups(colored_visual_grid)
 
-            else:
+            elif isinstance(data, Cell):
                 visual_coordinates = self.translate_cell_coords(data)
                 self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+            else:
+                raise Exception(
+                    f"Invalid type for 'data' in 'logic_data', \
+                should be dict[str, Union[set[Cell], Cell, dict[int, set[Cell]]]]\ndata = {data}"
+                )
 
         return colored_visual_grid
 
@@ -173,7 +184,7 @@ class Visual:
                 translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
                 cells_and_passages = self.find_passages(translated_cells)
                 for visual_coordinates in cells_and_passages:
-                    self.apply_color(colored_visual_grid, visual_coordinates, group_color)
+                    self.apply_color(colored_visual_grid, visual_coordinates, str(group_color))
 
     def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
         """Identify passages between linked cells.
@@ -207,19 +218,21 @@ class Visual:
 
     def show(
         self,
-        logic_data: dict[str, Union[list[Cell], Cell]],
-        status_text: dict[str, Union[str, int]],
+        visual_effects: dict[
+            str, Union[Cell, list[Cell], dict[int, Cell], DefaultDict[int, list[Cell]], DefaultDict[int, set[Cell]]]
+        ],
+        status_text: dict[str, Union[Optional[str], Optional[int]]],
         showlogic: bool = False,
     ):
         """Apply coloring based on logic data if showlogic, then print the maze.
 
         Args:
-            logic_data (dict[str, Union[list[Cell], Cell]]): cell pairs for various logical
+            logic_data (dict[str, Union[Cell, list[Cell], dict[int, set[Cell]]]]): cell pairs for various logical
             indicators.
             showlogic (bool, optional): Apply coloring based on logic if True, else skip coloring. Defaults to False.
         """
         if showlogic:
-            maze_visual = self.add_logic_data(logic_data)
+            maze_visual = self.add_logic_data(visual_effects)
         else:
             maze_visual = self.visual_grid
         lines = ["".join(line) for line in maze_visual]

@@ -73,7 +73,7 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
 
     show_mazelogic = True
     show_solvelogic = True
-    maze = Grid(105, 27, mask=amanda_inv)
+    maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
     # algo = BinaryTree(maze, showlogic=show_mazelogic)
@@ -90,10 +90,10 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     try:
         maze: Grid
         for maze in algo.generate_maze():
-            maze.visual.show(algo.logic_data, algo.status_text, show_mazelogic)
+            maze.visual.show(algo.visual_effects, algo.status_text, show_mazelogic)
             sleep(0.0135)
         for maze in solver.solve():
-            maze.visual.show(solver.logic_data, solver.status_text, show_solvelogic)
+            maze.visual.show(solver.visual_effects, solver.status_text, show_solvelogic)
             sleep(0.0135)
     except KeyboardInterrupt:
         print("Maze generation stopped.")

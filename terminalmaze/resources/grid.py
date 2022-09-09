@@ -1,3 +1,4 @@
+from optparse import Option
 from terminalmaze.tools.visualmaze import Visual
 from terminalmaze.resources.cell import Cell
 import random
@@ -7,7 +8,7 @@ from typing import Optional
 
 
 class Grid:
-    def __init__(self, width: int = 20, height: int = 10, mask: Optional[list[str]] = None) -> None:
+    def __init__(self, width: int = 20, height: int = 10, mask_string: Optional[str] = None) -> None:
         """
         Create a new grid with the given width and height.
 
@@ -17,31 +18,33 @@ class Grid:
         """
         self.width: int = width
         self.height: int = height
-        self.mask: list[str] = mask
         self.cells: dict[tuple[int, int], Cell] = {}
         self.masked_cells: dict[tuple[int, int], Cell] = {}
         self.unmasked_cells: dict[tuple[int, int], Cell] = {}
-        if self.mask:
-            self.format_mask()
         self.prepare_grid()
+        self.mask_lines: Optional[list[str]] = self.format_mask(mask_string)
+        self.mask_cells()
         self.configure_cells()
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
         self.visual = Visual(self)
-        self.seed: int = None
+        self.seed: Optional[int] = None
 
-    def format_mask(self) -> None:
+    def format_mask(self, mask_string: Optional[str]) -> Optional[list[str]]:
         """Format the mask string for use in other methods."""
+        if not mask_string:
+            return None
         mask_lines = []
-        for line in self.mask.split("\n"):
+        for line in mask_string.split("\n"):
             if line.strip().startswith("m:"):
                 line = line.strip("m:").strip("\n")
                 mask_lines.append(line)
-        self.mask = mask_lines
-        mask_width = len(max(self.mask, key=len))
-        mask_height = len(self.mask)
+        mask_width = len(max(mask_lines, key=len))
+        mask_height = len(mask_lines)
         if mask_width > self.width or mask_height > self.height:
-            self.mask = None
+            return None
+        else:
+            return mask_lines
 
     def prepare_grid(self) -> None:
         """
@@ -54,23 +57,25 @@ class Grid:
                 self.cells[(row, col)] = cell
                 self.unmasked_cells[(row, col)] = cell
 
-        if self.mask:
-            self.mask_cells()
-
     def mask_cells(self) -> None:
         """Translate mask string to cell coordinates centered in the grid. Track masked cells in self.masked_cells
         and unmasked cells in self.unmasked_cells."""
-        mask_midpoint_x = -(-len(max(self.mask)) // 2)
-        mask_midpoint_y = -(-len(self.mask) // 2)
+
+        if not self.mask_lines:
+            return
+        mask_midpoint_x = -(-len(max(self.mask_lines)) // 2)
+        mask_midpoint_y = -(-len(self.mask_lines) // 2)
         grid_midpoint_x = -(-self.width // 2)
         grid_midpoint_y = -(-self.height // 2)
         x_delta = grid_midpoint_x - mask_midpoint_x
         y_delta = grid_midpoint_y - mask_midpoint_y
-        for y, line in enumerate(self.mask):
+        for y, line in enumerate(self.mask_lines):
             for x, symbol in enumerate(line):
                 if symbol == "#":
                     cell_coordinates = (y + y_delta, x + x_delta)
-                    self.masked_cells[cell_coordinates] = self.get_cell(cell_coordinates)
+                    cell = self.get_cell(cell_coordinates)
+                    if cell:
+                        self.masked_cells[cell_coordinates] = cell
                     self.unmasked_cells.pop(cell_coordinates, None)
 
     def configure_cells(self) -> None:
@@ -109,7 +114,7 @@ class Grid:
 
     def get_neighbors(
         self, cell: Cell, ignore_mask=False, existing_only: bool = True, adjacent: bool = True
-    ) -> dict[str, Cell]:
+    ) -> dict[str, Optional[Cell]]:
         """
         Given a cell, return a list of its neighboring cells.
 
@@ -179,9 +184,9 @@ class Grid:
                     yield [self.cells[(row, col)] for col in range(self.width)]
                 else:
                     yield [
-                        self.unmasked_cells.get((row, col), None)
+                        unmasked_cell
                         for col in range(self.width)
-                        if self.unmasked_cells.get((row, col), None)
+                        if (unmasked_cell := self.unmasked_cells.get((row, col), None))
                     ]
         else:
             for row in range(self.height - 1, -1, -1):
@@ -189,9 +194,9 @@ class Grid:
                     yield [self.cells[(row, col)] for col in range(self.width)]
                 else:
                     yield [
-                        self.unmasked_cells.get((row, col), None)
+                        unmasked_cell
                         for col in range(self.width)
-                        if self.unmasked_cells.get((row, col), None)
+                        if (unmasked_cell := self.unmasked_cells.get((row, col), None))
                     ]
 
     def each_cell(self, ignore_mask: bool = False) -> Generator[Cell, None, None]:

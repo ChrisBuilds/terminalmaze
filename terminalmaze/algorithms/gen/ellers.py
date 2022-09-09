@@ -1,25 +1,23 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
+from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
 import random
 from collections import defaultdict
-from typing import Union
+from typing import Generator
 
 
-class Ellers:
+class Ellers(MazeAlgorithm):
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        self.maze: Grid = maze
-        self.showlogic: bool = showlogic
-        self.mask_incompatible = True
-        self.logic_data: dict[str, Cell] = {}
-        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Eller's", "Seed": self.maze.seed}
-        random.seed(self.maze.seed)
+        super().__init__(maze, showlogic)
+        self.ignore_mask = True
+        self.status_text["Algorithm"] = "Eller's"
 
-    def generate_maze(self) -> Grid:
+    def generate_maze(self) -> Generator[Grid, None, None]:
         cell_to_group: dict[tuple[int, int], int] = {}  # cell_address : group
         group_to_cell: defaultdict[int, list[Cell]] = defaultdict(list)  # group : Cell
-        self.logic_data["groups"] = group_to_cell
+        self.visual_effects["groups"] = group_to_cell
         group_id = 0
-        for i, row in enumerate(self.maze.each_row(ignore_mask=self.mask_incompatible)):
+        for i, row in enumerate(self.maze.each_row(ignore_mask=self.ignore_mask)):
             row_groups: defaultdict[int, list[Cell]] = defaultdict(list)
             for cell in row:
                 cell_address = (cell.row, cell.column)
@@ -43,8 +41,8 @@ class Ellers:
                 cell = random.choice(unchecked_cells)
                 cell_address = (cell.row, cell.column)
                 cell_group = cell_to_group[cell_address]
-                for direction, neighbor in self.maze.get_neighbors(cell, ignore_mask=self.mask_incompatible).items():
-                    if direction not in ("east", "west"):
+                for direction, neighbor in self.maze.get_neighbors(cell, ignore_mask=self.ignore_mask).items():
+                    if direction not in ("east", "west") or not neighbor:
                         continue
                     neighbor_address = (neighbor.row, neighbor.column)
                     neighbor_group = cell_to_group[neighbor_address]
@@ -71,7 +69,9 @@ class Ellers:
                 cells_to_drop = random.randint(1, cell_count)
                 while cells_to_drop:
                     cell = group_cells.pop(random.randint(0, len(group_cells) - 1))
-                    neighbor = self.maze.get_neighbors(cell, ignore_mask=self.mask_incompatible)["south"]
+                    neighbor = self.maze.get_neighbors(cell, ignore_mask=self.ignore_mask)["south"]
+                    if not neighbor:
+                        continue
                     neighbor_address = (neighbor.row, neighbor.column)
                     cell_to_group[neighbor_address] = group
                     group_to_cell[cell_to_group[(cell.row, cell.column)]].append(neighbor)

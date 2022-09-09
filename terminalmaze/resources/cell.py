@@ -1,3 +1,6 @@
+from typing import Optional
+
+
 class Cell:
     def __init__(self, row: int, col: int) -> None:
         """
@@ -9,7 +12,7 @@ class Cell:
         self.row: int = row
         self.column: int = col
         self.links: set["Cell"] = set()
-        self.neighbors: dict[str, "Cell"] = {}
+        self.neighbors: dict[str, Optional["Cell"]] = {}
 
     def link(self, cell: "Cell", bidi: bool = True) -> None:
         """

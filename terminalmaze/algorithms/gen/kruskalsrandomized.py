@@ -1,22 +1,21 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
+from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+
 import random
 from collections import defaultdict
-from typing import Union
+from typing import Generator
 
 
-class KruskalsRandomized:
+class KruskalsRandomized(MazeAlgorithm):
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        self.maze: Grid = maze
-        self.showlogic: bool = showlogic
-        self.logic_data: dict[str, Cell] = {}
+        super().__init__(maze, showlogic)
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
         self.cell_to_group_map: dict[Cell, int] = {}  # cell_address : group
-        self.logic_data["groups"] = self.group_to_cell_map_logic
-        self.status_text: dict[str, Union[str, int]] = {"Algorithm": "Kruskal's Randomized", "Seed": self.maze.seed}
-        random.seed(self.maze.seed)
+        self.visual_effects["groups"] = self.group_to_cell_map_logic
+        self.status_text["Algorithm"] = "Kruskal's Randomized"
 
-    def generate_maze(self) -> Grid:
+    def generate_maze(self) -> Generator[Grid, None, None]:
         links: set[tuple[Cell, Cell]] = set()
         groups = list()
         group_id = 0
@@ -28,7 +27,7 @@ class KruskalsRandomized:
             group_id += 1
             # find all links
             for neighbor in self.maze.get_neighbors(cell).values():
-                if (neighbor, cell) not in links:  # check if reversed link is already in list
+                if (neighbor, cell) not in links and neighbor:  # check if reversed link is already in list
                     links.add((cell, neighbor))
 
         while len(groups) > 1:
