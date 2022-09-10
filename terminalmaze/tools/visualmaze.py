@@ -130,10 +130,10 @@ class Visual:
         pending_effects = sorted(visual_effects.values())
         while pending_effects:
             current_effect = pending_effects.pop(0)
-            if isinstance(current_effect, ve.Single):
+            if isinstance(current_effect, ve.ColorSingleCell):
                 colored_visual_grid = self.color_single_cell(colored_visual_grid, current_effect)
 
-            elif isinstance(current_effect, ve.Multiple):
+            elif isinstance(current_effect, ve.ColorMultipleCells):
                 colored_visual_grid = self.color_multiple_cells(colored_visual_grid, current_effect)
 
             elif isinstance(current_effect, ve.RandomColorGroup):
@@ -170,6 +170,8 @@ class Visual:
                 if back_cell not in trail_cells:
                     trail_cells.append(back_cell)
                 cells_and_passage = list(self.find_passages({front_cell, back_cell}))
+                if len(cells_and_passage) < 3:
+                    continue
                 cells_and_passage.remove(front_cell)
                 cells_and_passage.remove(back_cell)
                 passage = cells_and_passage[0]
@@ -182,7 +184,7 @@ class Visual:
         return colored_visual_grid
 
     def color_multiple_cells(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.Multiple
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorMultipleCells
     ) -> list[list[str]]:
         """Color multiple cells the same color.
 
@@ -202,7 +204,9 @@ class Visual:
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         return colored_visual_grid
 
-    def color_single_cell(self, colored_visual_grid: list[list[str]], visual_effect: ve.Single) -> list[list[str]]:
+    def color_single_cell(
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorSingleCell
+    ) -> list[list[str]]:
         """Color a single cell the given color.
 
         Args:
@@ -286,27 +290,37 @@ class Visual:
         colored_visual_grid[y][x] = f"{color}{chr(9608)}"
         return colored_visual_grid
 
+    def format_status(self, status_text: dict[str, Union[Optional[str], Optional[int]]]) -> str:
+        status_string = ""
+        for label, value in status_text.items():
+            status_string += f" {label}: {value} |"
+        status_string = status_string.strip("|").strip()
+        return status_string
+
     def show(
         self,
         visual_effects: dict[str, ve.VisualEffect],
         status_text: dict[str, Union[Optional[str], Optional[int]]],
         showlogic: bool = False,
-    ):
+        status_only: bool = False,
+    ) -> None:
         """Apply coloring based on logic data if showlogic, then print the maze.
 
         Args:
             visual_effects (dict[str, ve.Effect]): Effects for cells to be colored
             showlogic (bool, optional): Apply visual effects. Defaults to False.
+            staus_only(bool, optional): Show only the status text. Used when showlogic is
+            False and some output is desired during maze generation.
         """
+        if status_only:
+            print(self.format_status(status_text), end="\r")
+            return
         if showlogic:
             maze_visual = self.add_visual_effects(visual_effects)
         else:
             maze_visual = self.visual_grid
         lines = ["".join(line) for line in maze_visual]
-        status_string = ""
-        for label, value in status_text.items():
-            status_string += f" {label}: {value} |"
-        status_string = status_string.strip("|").strip()
+
         system("clear")
         print("\n".join(lines))
-        print(status_string)
+        print(self.format_status(status_text))
