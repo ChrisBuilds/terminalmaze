@@ -63,4 +63,22 @@ class RandomColorGroup(Effect):
     groups: Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]]
 
 
-VisualEffect = Union[Single, Multiple, RandomColorGroup]
+@dataclass
+class TrailingColor(Effect):
+    """Color cells with a trailing effect based on a list of colors provided such that cells[0] receives
+    colors[0], cells[1] receives colors[1], etc. If cells and colors are different lenghts, the shortest
+    list will be used.
+
+    Args:
+        layer (int): Colors and effects are drawn in layer order. Higher layers are drawn
+        over lower layers.
+        cells (list[Cell]): List of cells to be colored.
+        colors (list[int]): List of colored.fg integers specifying the color. (0 -> 255)
+
+    """
+
+    cells: list[Cell]
+    colors: list[int]
+
+
+VisualEffect = Union[Single, Multiple, RandomColorGroup, TrailingColor]
