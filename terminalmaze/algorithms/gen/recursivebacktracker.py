@@ -28,6 +28,34 @@ class RecursiveBacktracker(MazeAlgorithm):
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
         ve_lastlinked = ve.Single(layer=1, color=218, cell=cell)
         self.visual_effects["last_linked"] = ve_lastlinked
+        ve_trail = ve.TrailingColor(
+            layer=1,
+            colors=[
+                240,
+                241,
+                242,
+                243,
+                244,
+                245,
+                246,
+                247,
+                248,
+                249,
+                250,
+                251,
+                252,
+                253,
+                254,
+                224,
+                225,
+                225,
+                219,
+                219,
+                218,
+            ],
+            cells=[],
+        )
+        self.visual_effects["head_trail"] = ve_trail
         while stack:
             ve_workingcell.cell = cell
             unvisited_neighbors = [
@@ -45,6 +73,7 @@ class RecursiveBacktracker(MazeAlgorithm):
                 cell = next_cell
                 self.status_text["Unvisited"] = len(unvisited_neighbors)
                 self.status_text["Stack Length"] = len(stack)
+                ve_trail.cells = stack[-len(ve_trail.colors) :][::-1]
                 if self.showlogic:
                     yield self.maze
 
@@ -55,6 +84,7 @@ class RecursiveBacktracker(MazeAlgorithm):
                     cell = stack[-1]
                     if self.showlogic:
                         ve_workingcell.cell = cell
+                        ve_trail.cells = []
                         self.status_text["Stack Length"] = len(stack)
                         if self.frame_wanted():
                             yield self.maze
