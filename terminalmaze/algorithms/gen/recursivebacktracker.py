@@ -56,5 +56,5 @@ class RecursiveBacktracker(MazeAlgorithm):
                     if self.showlogic:
                         ve_workingcell.cell = cell
                         self.status_text["Stack Length"] = len(stack)
-                        if self.frame_wanted:
+                        if self.frame_wanted():
                             yield self.maze
