@@ -17,7 +17,7 @@ class Visual:
         """
         self.grid = grid
         self.wall = f"{colored.fg(240)}{chr(9608)}"
-        self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
+        self.path = f"{colored.fg(6)}{chr(9608)}"
         self.group_color_pool = list(range(0, 257))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]] = dict()
@@ -141,9 +141,45 @@ class Visual:
                     self.last_groups = current_effect.groups
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
 
+            elif isinstance(current_effect, ve.TrailingColor):
+                colored_visual_grid = self.color_trail_effect(colored_visual_grid, current_effect)
+
         return colored_visual_grid
 
-    # def color_trail_effect(self, colored_visual_grid: list[list[str]], visual_effect: ve.Effect) -> list[list[str]]:
+    def color_trail_effect(
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.TrailingColor
+    ) -> list[list[str]]:
+        """Color cells with a trailing effect based on a list of colors provided such that cells[0] receives
+        colors[0], cells[1] receives colors[1], etc. If cells and colors are different lenghts, the shortest
+        list will be used.
+
+            Args:
+                colored_visual_grid (list[list[str]]): List of cells to be colored.
+                visual_effect (ve.TrailingColor): Dataclass
+
+            Returns:
+                list[list[str]]: Colored visual grid.
+        """
+        trail_cells = list()
+        for i, cell in enumerate(visual_effect.cells):
+            if i != len(visual_effect.cells) - 1:
+                front_cell = self.translate_cell_coords(cell)
+                back_cell = self.translate_cell_coords(visual_effect.cells[i + 1])
+                if front_cell not in trail_cells:
+                    trail_cells.append(front_cell)
+                if back_cell not in trail_cells:
+                    trail_cells.append(back_cell)
+                cells_and_passage = list(self.find_passages({front_cell, back_cell}))
+                cells_and_passage.remove(front_cell)
+                cells_and_passage.remove(back_cell)
+                passage = cells_and_passage[0]
+                if passage not in trail_cells:
+                    trail_cells.insert(trail_cells.index(front_cell) + 1, passage)
+        for visual_coordinates, color in zip(trail_cells, visual_effect.colors):
+            color_str = colored.fg(color)
+            colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
+
+        return colored_visual_grid
 
     def color_multiple_cells(
         self, colored_visual_grid: list[list[str]], visual_effect: ve.Multiple
