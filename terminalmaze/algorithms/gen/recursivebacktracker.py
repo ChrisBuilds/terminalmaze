@@ -1,6 +1,6 @@
-from terminalmaze.resources.grid import Grid
+from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
-from terminalmaze.tools.visualmaze import Effect
+import terminalmaze.tools.visualeffects as ve
 import random
 from typing import Union, Generator, Optional
 
@@ -20,33 +20,33 @@ class RecursiveBacktracker(MazeAlgorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         cell = self.maze.random_cell()
         stack = [cell]
-        ve_stack = Effect(label="multiple", layer=0, color=218, cells=stack)
+        ve_stack = ve.Multiple(layer=0, color=218, cells=stack)
         self.visual_effects["stack"] = ve_stack
-        ve_workingcell = Effect(label="single", layer=1, color=218, cell=cell)
+        ve_workingcell = ve.Single(layer=1, color=218, cell=cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = Effect(label="multiple", layer=1, color=52, cells=None)
+        ve_invalidneighbors = ve.Multiple(layer=1, color=52, cells=[])
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = Effect(label="single", layer=1, color=218)
+        ve_lastlinked = ve.Single(layer=1, color=218, cell=cell)
+        self.visual_effects["last_linked"] = ve_lastlinked
         while stack:
             ve_workingcell.cell = cell
             unvisited_neighbors = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and not neighbor.links
             ]
-            invalid_neighbors = [
+            ve_invalidneighbors.cells = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and not neighbor.links
             ]
-            self.visual_effects["invalid_neighbors"].cells = invalid_neighbors
             if unvisited_neighbors:
                 next_cell = random.choice(unvisited_neighbors)
                 self.status_text["State"] = "Walking"
                 self.maze.link_cells(cell, next_cell)
                 ve_lastlinked.cell = next_cell
-                self.visual_effects["last_linked"] = ve_lastlinked
                 stack.append(next_cell)
                 cell = next_cell
                 self.status_text["Unvisited"] = len(unvisited_neighbors)
                 self.status_text["Stack Length"] = len(stack)
-                yield self.maze
+                if self.showlogic:
+                    yield self.maze
 
             else:
                 stack.pop()

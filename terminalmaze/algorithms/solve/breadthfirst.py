@@ -1,5 +1,6 @@
 from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.solve.solvealgorithm import SolveAlgorithm
+import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
 
 
@@ -10,20 +11,27 @@ class BreadthFirst(SolveAlgorithm):
 
     def solve(self) -> Generator[Grid, None, None]:
         target = list(self.maze.each_cell())[-1]
-        self.visual_effects["target"] = target
         start = list(self.maze.each_cell())[0]
         frontier = [start]
         explored: dict[Cell, Cell] = {start: start}
         visited: list[Cell] = []
-        self.visual_effects["explored"] = visited
-        self.visual_effects["frontier"] = frontier
+        ve_frontier = ve.Multiple(layer=0, color=231, cells=frontier)
+        self.visual_effects["frontier"] = ve_frontier
+        ve_visited = ve.Multiple(layer=0, color=218, cells=visited)
+        self.visual_effects["visited"] = ve_visited
+        ve_target = ve.Single(layer=0, color=202, cell=target)
+        self.visual_effects["target"] = ve_target
+        ve_position = ve.Single(layer=0, color=218, cell=start)
+        self.visual_effects["position"] = ve_position
+        ve_path = ve.Multiple(layer=1, color=159, cells=[])
+        self.visual_effects["path"] = ve_path
         frame_gap = 1
         while frontier:
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
             position = frontier.pop(0)
             visited.append(position)
-            self.visual_effects["position"] = position
+            ve_position.cell = position
             edges = [neighbor for neighbor in position.links if neighbor not in explored and neighbor not in frontier]
             for cell in edges:
                 explored[cell] = position
@@ -34,11 +42,11 @@ class BreadthFirst(SolveAlgorithm):
                 frame_gap = 5
                 self.status_text["Frontier"] = len(frontier)
                 self.status_text["Visited"] = len(visited)
-                yield self.maze
+                if self.showlogic:
+                    yield self.maze
 
-        self.visual_effects.pop("explored", None)
-        self.visual_effects.pop("frontier", None)
-        self.visual_effects.pop("position", None)
+        del self.visual_effects["frontier"]
+        del self.visual_effects["position"]
         position = target
         route: list[Cell] = [target]
         if target not in explored:
@@ -48,8 +56,12 @@ class BreadthFirst(SolveAlgorithm):
             position = explored[position]
         route.reverse()
         path: list[Cell] = list()
-        self.visual_effects["path"] = path
+        ve_path.cells = path
         for step in route:
             path.append(step)
             self.status_text["Solution Length"] = len(route)
-            yield self.maze
+            if self.showlogic:
+                yield self.maze
+        if not self.showlogic:
+            del self.visual_effects["visited"]
+        yield self.maze
