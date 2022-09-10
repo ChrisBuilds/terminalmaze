@@ -1,4 +1,4 @@
-from terminalmaze.resources.grid import Grid, Cell
+from terminalmaze.resources.grid import Grid
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
 import terminalmaze.tools.visualeffects as ve
 import random
