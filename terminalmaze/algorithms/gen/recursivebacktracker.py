@@ -1,4 +1,4 @@
-from terminalmaze.resources.grid import Grid
+from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
 import terminalmaze.tools.visualeffects as ve
 import random
@@ -11,7 +11,7 @@ class RecursiveBacktracker(MazeAlgorithm):
         self.status_text: dict[str, Union[Optional[str], Optional[int]]] = {
             "Algorithm": "Recursive Backtracker",
             "Seed": self.maze.seed,
-            "Unvisited": "",
+            "Pending Paths": "",
             "Stack Length": "",
             "State": "",
         }
@@ -20,71 +20,58 @@ class RecursiveBacktracker(MazeAlgorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         cell = self.maze.random_cell()
         stack = [cell]
-        ve_stack = ve.Multiple(layer=0, color=218, cells=stack)
+        backtracked: list[Cell] = list()
+        stacktrail: list[Cell] = list()
+        ve_stack = ve.ColorMultipleCells(layer=0, color=218, cells=stack)
         self.visual_effects["stack"] = ve_stack
-        ve_workingcell = ve.Single(layer=1, color=218, cell=cell)
+        ve_workingcell = ve.ColorSingleCell(layer=1, color=218, cell=cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = ve.Multiple(layer=1, color=52, cells=[])
-        self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = ve.Single(layer=1, color=218, cell=cell)
-        self.visual_effects["last_linked"] = ve_lastlinked
-        ve_trail = ve.TrailingColor(
+        # ve_invalidneighbors = ve.ColorMultipleCells(layer=1, color=52, cells=[])
+        # self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
+        # ve_lastlinked = ve.ColorSingleCell(layer=1, color=218, cell=cell)
+        # self.visual_effects["last_linked"] = ve_lastlinked
+        ve_stacktrail = ve.TrailingColor(
             layer=1,
-            colors=[
-                240,
-                241,
-                242,
-                243,
-                244,
-                245,
-                246,
-                247,
-                248,
-                249,
-                250,
-                251,
-                252,
-                253,
-                254,
-                224,
-                225,
-                225,
-                219,
-                219,
-                218,
-            ],
-            cells=[],
+            colors=[200, 200, 201, 201, 204, 204, 205, 205, 205, 206, 206, 207, 207],
+            cells=stacktrail,
         )
-        self.visual_effects["head_trail"] = ve_trail
+        self.visual_effects["stack_trail"] = ve_stacktrail
+        ve_backtracktrail = ve.TrailingColor(
+            layer=2, colors=[224, 224, 188, 188, 158, 158, 159, 159, 86, 86, 44, 44, 6], cells=[]
+        )
+        self.visual_effects["backtrack_trail"] = ve_backtracktrail
         while stack:
             ve_workingcell.cell = cell
-            unvisited_neighbors = [
-                neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and not neighbor.links
-            ]
-            ve_invalidneighbors.cells = [
-                neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and not neighbor.links
-            ]
+            neighbors = [neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor]
+            unvisited_neighbors = [neighbor for neighbor in neighbors if not neighbor.links]
+            # ve_invalidneighbors.cells = [neighbor for neighbor in neighbors if neighbor.links]
             if unvisited_neighbors:
+                if ve_backtracktrail.cells:
+                    ve_backtracktrail.cells.pop(-1)
                 next_cell = random.choice(unvisited_neighbors)
                 self.status_text["State"] = "Walking"
                 self.maze.link_cells(cell, next_cell)
-                ve_lastlinked.cell = next_cell
+                ve_stacktrail.cells.insert(0, next_cell)
+                ve_stacktrail.cells = ve_stacktrail.cells[: len(ve_stacktrail.colors)]
+                # ve_lastlinked.cell = next_cell
                 stack.append(next_cell)
                 cell = next_cell
-                self.status_text["Unvisited"] = len(unvisited_neighbors)
+                self.status_text["Pending Paths"] = len(unvisited_neighbors)
                 self.status_text["Stack Length"] = len(stack)
-                ve_trail.cells = stack[-len(ve_trail.colors) :][::-1]
-                if self.showlogic:
-                    yield self.maze
+                yield self.maze
 
             else:
-                stack.pop()
+                if ve_stacktrail.cells:
+                    ve_stacktrail.cells.pop(-1)
+                ve_backtracktrail.cells.insert(0, stack.pop())
+                if ve_backtracktrail.cells[0] in ve_stacktrail.cells:
+                    ve_stacktrail.cells.remove(ve_backtracktrail.cells[0])
+                ve_backtracktrail.cells = ve_backtracktrail.cells[: len(ve_backtracktrail.colors)]
                 if stack:
                     self.status_text["State"] = "Backtracking"
                     cell = stack[-1]
                     if self.showlogic:
                         ve_workingcell.cell = cell
-                        ve_trail.cells = []
                         self.status_text["Stack Length"] = len(stack)
                         if self.frame_wanted():
                             yield self.maze
