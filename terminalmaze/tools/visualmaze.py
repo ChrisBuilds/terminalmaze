@@ -7,6 +7,19 @@ from os import system
 from typing import Union, DefaultDict, Optional
 
 
+@dataclass
+class Effect:
+    label: str
+    layer: int
+    color: int
+    cell: Optional[Cell] = None
+    cells: Optional[list[Cell]] = None
+    groups: Optional[Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]]] = None
+
+    def __lt__(self, other: "Effect"):
+        return self.layer < other.layer
+
+
 class Visual:
     """Visual representation of the maze graph and operations on the visual."""
 
@@ -40,9 +53,9 @@ class Visual:
             "logic1": colored.fg(28),
             "groups": None,
         }
-        self.group_color_pool = list(range(1, 256))
-        self.group_color_map: dict[int, Union[int, str]] = dict()
-        self.last_groups: Union[dict[int, list[Cell]], dict[int, set[Cell]], dict] = dict()
+        self.group_color_pool = list(range(0, 257))
+        self.group_color_map: dict[int, int] = dict()
+        self.last_groups: Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]] = dict()
         self.visual_grid: list[list[str]] = list()
         self.visual_links: set[tuple[int, int]] = set()
         self.prepare_visual()
@@ -71,7 +84,7 @@ class Visual:
         self.visual_grid.insert(0, [self.wall for _ in range(len(self.visual_grid[0]))])
         self.visual_grid.append([self.wall for _ in range(len(self.visual_grid[0]))])
 
-    def get_group_color(self, group_id: int) -> Union[int, str]:
+    def get_group_color(self, group_id: int) -> str:
         """If the group id has an assigned color, return the assigned color, else get a random
         color from the color pool, assign it to the group, and return the color int.
 
@@ -79,16 +92,19 @@ class Visual:
             group_id (int): id for cell group
 
         Returns:
-            int: colored color int
+            str: colored.fg() color string
         """
         color = self.group_color_map.get(group_id)
         if color:
-            return color
+            return colored.fg(color)
+
         color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
-        self.group_color_map[group_id] = colored.fg(color)
+        self.group_color_map[group_id] = color
+
         if not self.group_color_pool:
             self.group_color_pool = list(range(1, 256))
-        return self.group_color_map[group_id]
+
+        return colored.fg(self.group_color_map[group_id])
 
     def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
         """Translate cell coordinates to match row, column indexes in the visual
@@ -99,14 +115,17 @@ class Visual:
         """
         row = cell.row
         column = cell.column
+
         if row == 0:
             row = 1
         else:
             row = (row * 2) + 1
+
         if column == 0:
             column = 1
         else:
             column = (column * 2) + 1
+
         return row, column
 
     def link_cells(self, cell_a: Cell, cell_b: Cell) -> None:
@@ -126,65 +145,87 @@ class Visual:
         for direction, offset in offsets.items():
             row_offset, column_offset = offset
             row, column = self.translate_cell_coords(cell_a)
+
             if cell_b is cell_a.neighbors[direction]:
                 self.visual_grid[row + row_offset][column + column_offset] = self.path
                 self.visual_links.add((row + row_offset, column + column_offset))
                 return
 
-    def add_logic_data(
-        self,
-        logic_data: dict[
-            str, Union[Cell, list[Cell], dict[int, Cell], DefaultDict[int, list[Cell]], DefaultDict[int, set[Cell]]]
-        ],
-    ) -> list[list[str]]:
+    def add_visual_effects(self, visual_effects: dict[str, Effect]) -> list[list[str]]:
         """Apply color to cells and walls to show logic.
 
         Args:
-            logic_data (dict[str, Union[list[Cell], Cell, dict[int, list[Cell]]]]): label : cell pairs for various logical
-            indicators.
+            visual_effects (dict[str, Effect]): Effects for cells to be colored
 
         Returns:
             list[list[str]]: visual grid with colored cells
         """
         colored_visual_grid = [line.copy() for line in self.visual_grid]
-        if not logic_data.get("groups", None):
-            self.color_cell_groups(colored_visual_grid)
 
-        for label, data in logic_data.items():
-            if isinstance(data, list):
-                translated_cells = set(self.translate_cell_coords(cell) for cell in data)
-                cells_and_passages = self.find_passages(translated_cells)
-                for visual_coordinates in cells_and_passages:
-                    self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
+        pending_effects = sorted(visual_effects.values())
+        while pending_effects:
+            current_effect = pending_effects.pop(0)
+            if current_effect.label == "single":
+                colored_visual_grid = self.color_single_cell(colored_visual_grid, current_effect)
 
-            elif label == "groups" and isinstance(data, dict) or isinstance(data, defaultdict):
-                self.last_groups = data
-                self.color_cell_groups(colored_visual_grid)
+            elif current_effect.label == "multiple":
+                colored_visual_grid = self.color_multiple_cells(colored_visual_grid, current_effect)
 
-            elif isinstance(data, Cell):
-                visual_coordinates = self.translate_cell_coords(data)
-                self.apply_color(colored_visual_grid, visual_coordinates, self.color_map[label])
-            else:
-                raise Exception(
-                    f"Invalid type for 'data' in 'logic_data', \
-                should be dict[str, Union[set[Cell], Cell, dict[int, set[Cell]]]]\ndata = {data}"
-                )
+            elif current_effect.label == "groups":
+                if current_effect.groups:
+                    self.last_groups = current_effect.groups
+                    colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
+
+        if not visual_effects.get("groups", None):
+            colored_visual_grid = self.color_cell_groups(colored_visual_grid)
 
         return colored_visual_grid
 
-    def color_cell_groups(self, colored_visual_grid: list[list[str]]) -> None:
+    def color_multiple_cells(self, colored_visual_grid: list[list[str]], visual_effect: Effect) -> list[list[str]]:
+        if not visual_effect.cells:
+            return colored_visual_grid
+        translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
+        cells_and_passages = self.find_passages(translated_cells)
+        color_str = colored.fg(visual_effect.color)
+        for visual_coordinates in cells_and_passages:
+            colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
+        return colored_visual_grid
+
+    def color_single_cell(self, colored_visual_grid: list[list[str]], visual_effect: Effect) -> list[list[str]]:
+        if not visual_effect.cell:
+            return colored_visual_grid
+
+        visual_coordinates = self.translate_cell_coords(visual_effect.cell)
+        if 0 <= visual_effect.color <= 256:
+            color_str = colored.fg(visual_effect.color)
+            colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
+        else:
+            raise ValueError(f"visual_effect.color value: {visual_effect.color} not in valid range (0 - 256)")
+        return colored_visual_grid
+
+    def color_cell_groups(
+        self, colored_visual_grid: list[list[str]], visual_effect: Optional[Effect] = None
+    ) -> list[list[str]]:
         """Apply color to groups of cells.
 
         Args:
             colored_visual_grid (list[list[str]]): copy of self.visual_grid
         """
-        if self.last_groups:
+        groups = None
+        if visual_effect and visual_effect.groups:
+            groups = visual_effect.groups
+
+        elif self.last_groups:
+            groups = self.last_groups
+
+        if groups:
             for group, cells in self.last_groups.items():
                 group_color = self.get_group_color(group)
                 translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
                 cells_and_passages = self.find_passages(translated_cells)
                 for visual_coordinates in cells_and_passages:
-                    self.apply_color(colored_visual_grid, visual_coordinates, str(group_color))
+                    colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, group_color)
+        return colored_visual_grid
 
     def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
         """Identify passages between linked cells.
@@ -205,22 +246,22 @@ class Visual:
 
     def apply_color(
         self, colored_visual_grid: list[list[str]], visual_coordinates: tuple[int, int], color: str
-    ) -> None:
-        """Apply the given color to the character at the given coordinates.
+    ) -> list[list[str]]:
+        """Apply the given color to the character at the given coordinates in the colored_visual_grid
+           and return the grid.
 
         Args:
             colored_visual_grid (list[list[str]]): visual grid copy used for logic coloring
             visual_coordinates (tuple[int, int]): row,column coordinates of the character to be colored
-            color (str): colored.fg() color to apply to the character
+            color (int): colored.fg() color to apply to the character
         """
         y, x = visual_coordinates
         colored_visual_grid[y][x] = f"{color}{chr(9608)}"
+        return colored_visual_grid
 
     def show(
         self,
-        visual_effects: dict[
-            str, Union[Cell, list[Cell], dict[int, Cell], DefaultDict[int, list[Cell]], DefaultDict[int, set[Cell]]]
-        ],
+        visual_effects: dict[str, Effect],
         status_text: dict[str, Union[Optional[str], Optional[int]]],
         showlogic: bool = False,
     ):
@@ -232,7 +273,7 @@ class Visual:
             showlogic (bool, optional): Apply coloring based on logic if True, else skip coloring. Defaults to False.
         """
         if showlogic:
-            maze_visual = self.add_logic_data(visual_effects)
+            maze_visual = self.add_visual_effects(visual_effects)
         else:
             maze_visual = self.visual_grid
         lines = ["".join(line) for line in maze_visual]
