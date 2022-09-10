@@ -148,6 +148,15 @@ class Visual:
     def color_multiple_cells(
         self, colored_visual_grid: list[list[str]], visual_effect: ve.Multiple
     ) -> list[list[str]]:
+        """Color multiple cells the same color.
+
+        Args:
+            colored_visual_grid (list[list[str]]): List of cells to be colored.
+            visual_effect (ve.Multiple): Dataclass
+
+        Returns:
+            list[list[str]]: Colored visual grid.
+        """
         if not visual_effect.cells:
             return colored_visual_grid
         translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
@@ -158,6 +167,18 @@ class Visual:
         return colored_visual_grid
 
     def color_single_cell(self, colored_visual_grid: list[list[str]], visual_effect: ve.Single) -> list[list[str]]:
+        """Color a single cell the given color.
+
+        Args:
+            colored_visual_grid (list[list[str]]): Copy of visual_grid.
+            visual_effect (ve.Single): Dataclass for visual effects.
+
+        Raises:
+            ValueError: color int must be 0 <= color <= 256
+
+        Returns:
+            list[list[str]]: Colored visual grid
+        """
         if not visual_effect.cell:
             return colored_visual_grid
 
@@ -172,11 +193,14 @@ class Visual:
     def color_cell_groups(
         self, colored_visual_grid: list[list[str]], visual_effect: Optional[ve.RandomColorGroup] = None
     ) -> list[list[str]]:
-        """Apply color to groups of cells.
+        """Color cell groups.
 
         Args:
-            visual_effects (dict[str, ve.Effect]): Effects for cells to be colored
-            colored_visual_grid (list[list[str]]): copy of self.visual_grid
+            colored_visual_grid (list[list[str]]): Copy of visual_grid.
+            visual_effect (Optional[ve.RandomColorGroup], optional): Dict mapping group ID's to lists of cells. Defaults to None.
+
+        Returns:
+            list[list[str]]: Colored visual grid
         """
         groups = None
         if visual_effect and visual_effect.groups:
