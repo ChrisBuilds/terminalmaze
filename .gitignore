@@ -96,6 +96,7 @@ cover/
 
 # Profiling
 *.prof
+*.stats
 
 # Translations
 *.mo
