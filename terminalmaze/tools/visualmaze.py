@@ -18,9 +18,9 @@ class Visual:
         self.grid = grid
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"
-        self.group_color_pool = list(range(0, 257))
+        self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
-        self.last_groups: Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]] = dict()
+        self.last_groups: ve.GroupType
         self.visual_grid: list[list[str]] = list()
         self.passages: set[tuple[int, int]] = set()
         self.prepare_visual()
@@ -67,7 +67,7 @@ class Visual:
         self.group_color_map[group_id] = color
 
         if not self.group_color_pool:
-            self.group_color_pool = list(range(1, 256))
+            self.group_color_pool = list(range(0, 256))
 
         return colored.fg(self.group_color_map[group_id])
 
@@ -126,7 +126,6 @@ class Visual:
             list[list[str]]: visual grid with colored cells
         """
         colored_visual_grid = [line.copy() for line in self.visual_grid]
-
         pending_effects = sorted(visual_effects.values())
         while pending_effects:
             current_effect = pending_effects.pop(0)
