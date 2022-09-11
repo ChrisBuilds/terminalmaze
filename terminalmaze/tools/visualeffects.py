@@ -3,6 +3,11 @@ from dataclasses import dataclass
 from typing import DefaultDict, Union
 
 
+GroupType = Union[
+    dict[int, list[Cell]], DefaultDict[int, list[Cell]], dict[int, set[Cell]], DefaultDict[int, set[Cell]]
+]
+
+
 @dataclass
 class Effect:
     """Apply a visual effect to the cell(s).
@@ -52,11 +57,11 @@ class RandomColorGroup(Effect):
 
     Args:
         layer (int): Colors and effects are drawn in layer order. Higher layers are drawn over lower layers.
-        groups (Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]]): Group ID's mapped
+        groups (GroupType): Group ID's mapped
         to lists of cells to be colored.
     """
 
-    groups: Union[dict[int, list[Cell]], DefaultDict[int, list[Cell]]]
+    groups: GroupType
 
 
 @dataclass
