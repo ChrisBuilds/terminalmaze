@@ -6,9 +6,8 @@ from typing import Generator
 
 
 class MazeAlgorithm:
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
+    def __init__(self, maze: Grid) -> None:
         self.maze: Grid = maze
-        self.showlogic: bool = showlogic
         self.visual_effects: dict[str, VisualEffect] = dict()
         self.status_text: dict[str, str | int | None] = dict()
         self.skip_frames = -1
@@ -17,6 +16,9 @@ class MazeAlgorithm:
         random.seed(self.maze.seed)
 
     def generate_maze(self) -> Generator[Grid, None, None]:
+        """
+        Generate a maze by linking cells in the Grid.
+        """
         yield self.maze
 
     def frame_wanted(self) -> bool:
@@ -36,6 +38,12 @@ class MazeAlgorithm:
             return False
 
     def time_elapsed(self) -> str:
+        """
+        Calculate the run time in minutes/seconds and return string representation.
+        Returns
+        -------
+        str : Time in format {minutes}m {seconds}s
+        """
         seconds = time.time() - self.start_time
         minutes = int(seconds // 60)
         seconds = int(seconds % 60)
