@@ -1,9 +1,8 @@
-from unicodedata import name
 from terminalmaze.resources.grid import Grid
 from terminalmaze.tools.visualeffects import VisualEffect
 import random
 import time
-from typing import Union, Generator
+from typing import Generator
 
 
 class MazeAlgorithm:
@@ -11,7 +10,7 @@ class MazeAlgorithm:
         self.maze: Grid = maze
         self.showlogic: bool = showlogic
         self.visual_effects: dict[str, VisualEffect] = dict()
-        self.status_text: dict[str, Union[str, int, None]] = dict()
+        self.status_text: dict[str, str | int | None] = dict()
         self.skip_frames = -1
         self.frames_skipped = -1
         self.start_time = time.time()
