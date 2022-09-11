@@ -1,6 +1,8 @@
+import time
+
 from terminalmaze.resources.cell import Cell
 import terminalmaze.tools.visualeffects as ve
-import colored
+import colored  # type: ignore
 import random
 from os import system
 
@@ -22,6 +24,7 @@ class Visual:
         self.last_groups: ve.GroupType
         self.visual_grid: list[list[str]] = list()
         self.passages: set[tuple[int, int]] = set()
+        self.last_show_time = time.time()
         self.prepare_visual()
 
     def prepare_visual(self) -> None:
@@ -115,19 +118,30 @@ class Visual:
                 self.passages.add((row + row_offset, column + column_offset))
                 return
 
-    def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect]) -> list[list[str]]:
+    def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect], verbosity: int) -> list[list[str]]:
         """Apply color to cells and passages to show logic.
 
         Args:
             visual_effects (dict[str, ve.VisualEffect]): Effects for cells to be colored
+            verbosity : Determines which effects are applied
 
         Returns:
             list[list[str]]: visual grid with colored cells
         """
+        verbosity_category_map = {
+            0: tuple(),
+            1: tuple(),
+            2: (ve.LOGIC,),
+            3: (ve.STYLE,),
+            4: (ve.LOGIC, ve.STYLE),
+        }
         colored_visual_grid = [line.copy() for line in self.visual_grid]
         pending_effects = sorted(visual_effects.values())
         while pending_effects:
             current_effect = pending_effects.pop(0)
+            if current_effect.category not in verbosity_category_map[verbosity]:
+                continue
+
             if isinstance(current_effect, ve.ColorSingleCell):
                 colored_visual_grid = self.color_single_cell(colored_visual_grid, current_effect)
 
@@ -299,26 +313,37 @@ class Visual:
         self,
         visual_effects: dict[str, ve.VisualEffect],
         status_text: dict[str, str | int | None],
-        showlogic: bool = False,
-        status_only: bool = False,
+        verbosity: int,
+        terminal_delay: float,
+        complete: bool = False,
     ) -> None:
-        """Apply coloring based on logic data if showlogic, then print the maze.
-
-        Args:
-            visual_effects (dict[str, ve.Effect]): Effects for cells to be colored
-            showlogic (bool, optional): Apply visual effects. Defaults to False.
-            staus_only(bool, optional): Show only the status text. Used when showlogic is
-            False and some output is desired during maze generation.
         """
-        if status_only:
-            print(self.format_status(status_text), end="\r")
-            return
-        if showlogic:
-            maze_visual = self.add_visual_effects(visual_effects)
-        else:
-            maze_visual = self.visual_grid
-        lines = ["".join(line) for line in maze_visual]
 
+        Parameters
+        ----------
+        visual_effects : Effects to be applied to the maze
+        status_text : Status texts to display below the maze
+        verbosity : Determines which visual effects are applied
+        terminal_delay : Time to sleep between terminal updates
+        complete : Indicates the maze is complete, final image of the maze
+
+        Returns
+        -------
+
+        """
+        if verbosity == 0:
+            print(self.format_status(status_text), end="\r")
+            if not complete:
+                return
+
+        # maze_visual = self.visual_grid
+        maze_visual = self.add_visual_effects(visual_effects, verbosity)
+        lines = ["".join(line) for line in maze_visual]
+        time_since_last_show = time.time() - self.last_show_time
+        if time_since_last_show < terminal_delay:
+            time.sleep(terminal_delay - time_since_last_show)
         system("clear")
         print("\n".join(lines))
         print(self.format_status(status_text))
+
+        self.last_show_time = time.time()

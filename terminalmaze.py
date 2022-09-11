@@ -71,33 +71,33 @@ m:##     ## ##     ## ##     ## ##   ### ##        ##     ##
 m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
     """
 
-    show_mazelogic = True
-    show_solvelogic = True
     solve = True
+    verbosity = 4
+    terminal_delay = 0.0135
     maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
-    # algo = BinaryTree(maze, showlogic=show_mazelogic)
-    # algo = Sidewinder(maze, showlogic=show_mazelogic)
-    # algo = AldousBroder(maze, showlogic=show_mazelogic)
-    # algo = Wilsons(maze, showlogic=show_mazelogic)
-    # algo = HuntandKill(maze, showlogic=show_mazelogic)
-    algo = RecursiveBacktracker(maze, showlogic=show_mazelogic)
-    # algo = PrimsSimple(maze, showlogic=show_mazelogic)
-    # algo = PrimsWeighted(maze, showlogic=show_mazelogic)
-    # algo = KruskalsRandomized(maze, showlogic=show_mazelogic)
-    # algo = Ellers(maze, showlogic=show_mazelogic)
-    solver = BreadthFirst(maze, showlogic=show_solvelogic)
+    # algo = BinaryTree(maze)
+    # algo = Sidewinder(maze)
+    algo = AldousBroder(maze)
+    # algo = Wilsons(maze)
+    # algo = HuntandKill(maze)
+    # algo = RecursiveBacktracker(maze)
+    # algo = PrimsSimple(maze)
+    # algo = PrimsWeighted(maze)
+    # algo = KruskalsRandomized(maze)
+    # algo = Ellers(maze)
+    # solver = BreadthFirst(maze)
     try:
         maze: Grid
         for maze in algo.generate_maze():
-            maze.visual.show(algo.visual_effects, algo.status_text, show_mazelogic, status_only=not show_mazelogic)
-            if show_mazelogic:
-                sleep(0.0135)
-        if solve:
-            for maze in solver.solve():
-                maze.visual.show(solver.visual_effects, solver.status_text, show_solvelogic)
-                sleep(0.0135)
+            maze.visual.show(algo.visual_effects, algo.status_text, verbosity, terminal_delay)
+        else:
+            maze.visual.show(algo.visual_effects, algo.status_text, verbosity, terminal_delay, complete=True)
+            print()
+        # if solve:
+        #    for maze in solver.solve():
+        #        maze.visual.show(solver.visual_effects, solver.status_text, verbosity, terminal_delay)
     except KeyboardInterrupt:
         print("Maze generation stopped.")
         sys.exit()

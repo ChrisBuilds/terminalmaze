@@ -1,9 +1,12 @@
 from terminalmaze.resources.cell import Cell
 from dataclasses import dataclass
-from typing import DefaultDict
+from typing import DefaultDict, Literal
 
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
+LOGIC: Literal["logic"] = "logic"
+STYLE: Literal["style"] = "style"
+Category = Literal["logic", "style"]
 
 
 @dataclass
@@ -12,9 +15,11 @@ class Effect:
 
     Args:
         layer (int): Colors and effects are drawn in layer order. Higher layers are drawn over lower layers.
+        category (ve.Category): Category of the Effect to be applied at specific verbosity levels.
     """
 
     layer: int
+    category: Category
 
     def __lt__(self, other: "Effect"):
         return self.layer < other.layer
