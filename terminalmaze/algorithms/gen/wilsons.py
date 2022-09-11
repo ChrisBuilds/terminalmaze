@@ -1,39 +1,44 @@
 import random
 from typing import Generator
-
-
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+import terminalmaze.tools.visualeffects as ve
 
 
 class Wilsons(MazeAlgorithm):
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
         super().__init__(maze, showlogic)
         self.status_text["Algorithm"] = "Wilons"
+        self.status_text["Seed"] = self.maze.seed
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         walk: list[Cell] = []
         target = self.maze.random_cell()
-        self.visual_effects["logic1"] = target
+        ve_target = ve.ColorSingleCell(layer=0, cell=target, color=218)
+        self.visual_effects["target"] = ve_target
+        ve_walk = ve.ColorMultipleCells(layer=0, cells=[], color=49)
+        self.visual_effects["walk"] = ve_walk
+        ve_workingcell = ve.ColorSingleCell(layer=0, cell=Cell(0, 0), color=14)
+        self.visual_effects["working_cell"] = ve_workingcell
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
         while unvisited_cells:
             walk = []
-            self.visual_effects["logic0"] = walk
+            ve_walk.cells = walk
             walking = True
             working_cell = random.choice(unvisited_cells)
-            self.visual_effects["working_cell"] = working_cell
+            ve_workingcell.cell = working_cell
             walk.append(working_cell)
             frame_delay = 10
             while walking:
                 next_cell = random.choice(list(n for n in self.maze.get_neighbors(working_cell).values() if n))
                 if next_cell in walk:
                     walk = walk[: walk.index(next_cell) + 1]
-                    self.visual_effects["logic0"] = walk
+                    ve_walk.cells = walk
                     working_cell = walk[-1]
-                    self.visual_effects["working_cell"] = working_cell
+                    ve_workingcell.cell = working_cell
                 elif next_cell not in unvisited_cells:
                     walking = False
                     for i, cell in enumerate(walk):
@@ -52,7 +57,7 @@ class Wilsons(MazeAlgorithm):
                 else:
                     walk.append(next_cell)
                     working_cell = next_cell
-                    self.visual_effects["working_cell"] = working_cell
+                    ve_workingcell.cell = working_cell
                     if self.showlogic:
                         self.status_text["Unvisited"] = len(unvisited_cells)
                         self.status_text["Walked"] = len(walk)

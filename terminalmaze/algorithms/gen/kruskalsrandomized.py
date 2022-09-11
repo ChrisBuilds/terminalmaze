@@ -1,6 +1,7 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+import terminalmaze.tools.visualeffects as ve
 
 import random
 from collections import defaultdict
@@ -12,7 +13,6 @@ class KruskalsRandomized(MazeAlgorithm):
         super().__init__(maze, showlogic)
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
         self.cell_to_group_map: dict[Cell, int] = {}  # cell_address : group
-        self.visual_effects["groups"] = self.group_to_cell_map_logic
         self.status_text["Algorithm"] = "Kruskal's Randomized"
 
     def generate_maze(self) -> Generator[Grid, None, None]:
@@ -30,6 +30,9 @@ class KruskalsRandomized(MazeAlgorithm):
                 if (neighbor, cell) not in links and neighbor:  # check if reversed link is already in list
                     links.add((cell, neighbor))
 
+        ve_groups = ve.RandomColorGroup(layer=0, groups=self.group_to_cell_map_logic)
+        self.visual_effects["groups"] = ve_groups
+
         while len(groups) > 1:
             link = links.pop()
             cell_a = link[0]
@@ -43,9 +46,9 @@ class KruskalsRandomized(MazeAlgorithm):
             if cell_a_group == cell_b_group:
                 continue
             self.maze.link_cells(cell_a, cell_b)
-
             self.merge_groups(cell_a, cell_b, groups)
 
+            self.status_text["Time Elapsed"] = self.time_elapsed()
             self.status_text["Available Links"] = len(links)
             self.status_text["Groups"] = len(groups)
             yield self.maze

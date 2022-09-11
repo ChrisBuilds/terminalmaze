@@ -17,8 +17,9 @@ import random
 import time
 from collections.abc import Generator
 
-from terminalmaze.resources.grid import Grid
+from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+import terminalmaze.tools.visualeffects as ve
 
 
 class HuntandKill(MazeAlgorithm):
@@ -54,40 +55,44 @@ class HuntandKill(MazeAlgorithm):
         unvisited = list(self.maze.each_cell())
         cell = random.choice(unvisited)
         unvisited.remove(cell)
+        ve_workingcell = ve.ColorSingleCell(layer=0, cell=cell, color=218)
+        self.visual_effects["working_cell"] = ve_workingcell
+        ve_lastlinked = ve.ColorSingleCell(layer=0, cell=Cell(0, 0), color=218)
+        self.visual_effects["last_linked"] = ve_lastlinked
+        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, cells=list(), color=88)
+        self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
         while unvisited:
             self.status_text["Unvisited Cells"] = len(unvisited)
-            self.visual_effects["working_cell"] = cell
+            ve_workingcell.cell = cell
             unvisited_neighbors = [
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor in unvisited
             ]
             if unvisited_neighbors:
                 neighbor = random.choice(unvisited_neighbors)
                 self.maze.link_cells(cell, neighbor)
-                self.visual_effects["last_linked"] = neighbor
+                ve_lastlinked.cell = neighbor
                 unvisited.remove(neighbor)
                 cell = neighbor
                 yield self.maze
 
             else:
                 for cell in unvisited:
-                    self.visual_effects["working_cell"] = cell
-                    visited_neighbors = [
-                        neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor and neighbor.links
-                    ]
-                    self.visual_effects["invalid_neighbors"] = [
-                        neighbor
-                        for neighbor in self.maze.get_neighbors(cell).values()
-                        if neighbor and not neighbor.links
-                    ]
+                    ve_workingcell.cell = cell
+                    neighbors = [neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor]
+                    visited_neighbors = [neighbor for neighbor in neighbors if neighbor.links]
+                    ve_invalidneighbors.cells = [neighbor for neighbor in neighbors if not neighbor.links]
+
                     if self.showlogic:
                         if time.time() - self.frame_time > 0.018:
                             self.frame_time = time.time()
                             yield self.maze
                     if visited_neighbors:
-                        self.visual_effects["invalid_neighbors"] = []
+                        ve_invalidneighbors.cells = []
                         neighbor = random.choice(visited_neighbors)
                         self.maze.link_cells(cell, neighbor)
-                        self.visual_effects["last_linked"] = neighbor
+                        ve_lastlinked.cell = neighbor
                         unvisited.remove(cell)
                         yield self.maze
                         break
+
+        yield self.maze

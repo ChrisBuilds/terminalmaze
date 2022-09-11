@@ -1,6 +1,7 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
 from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+import terminalmaze.tools.visualeffects as ve
 import random
 from collections import defaultdict
 from typing import Generator
@@ -15,7 +16,8 @@ class Ellers(MazeAlgorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         cell_to_group: dict[tuple[int, int], int] = {}  # cell_address : group
         group_to_cell: defaultdict[int, list[Cell]] = defaultdict(list)  # group : Cell
-        self.visual_effects["groups"] = group_to_cell
+        ve_groups = ve.RandomColorGroup(layer=0, groups=group_to_cell)
+        self.visual_effects["groups"] = ve_groups
         group_id = 0
         for i, row in enumerate(self.maze.each_row(ignore_mask=self.ignore_mask)):
             row_groups: defaultdict[int, list[Cell]] = defaultdict(list)
