@@ -3,7 +3,6 @@ import terminalmaze.tools.visualeffects as ve
 import colored
 import random
 from os import system
-from typing import Union, DefaultDict, Optional
 
 
 class Visual:
@@ -230,7 +229,7 @@ class Visual:
         return colored_visual_grid
 
     def color_cell_groups(
-        self, colored_visual_grid: list[list[str]], visual_effect: Optional[ve.RandomColorGroup] = None
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.RandomColorGroup | None
     ) -> list[list[str]]:
         """Color cell groups.
 
@@ -289,7 +288,7 @@ class Visual:
         colored_visual_grid[y][x] = f"{color}{chr(9608)}"
         return colored_visual_grid
 
-    def format_status(self, status_text: dict[str, Union[Optional[str], Optional[int]]]) -> str:
+    def format_status(self, status_text: dict[str, str | int | None]) -> str:
         status_string = ""
         for label, value in status_text.items():
             status_string += f" {label}: {value} |"
@@ -299,7 +298,7 @@ class Visual:
     def show(
         self,
         visual_effects: dict[str, ve.VisualEffect],
-        status_text: dict[str, Union[Optional[str], Optional[int]]],
+        status_text: dict[str, str | int | None],
         showlogic: bool = False,
         status_only: bool = False,
     ) -> None:

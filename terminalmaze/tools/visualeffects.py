@@ -1,11 +1,9 @@
 from terminalmaze.resources.cell import Cell
 from dataclasses import dataclass
-from typing import DefaultDict, Union
+from typing import DefaultDict
 
 
-GroupType = Union[
-    dict[int, list[Cell]], DefaultDict[int, list[Cell]], dict[int, set[Cell]], DefaultDict[int, set[Cell]]
-]
+GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
 
 
 @dataclass
@@ -81,4 +79,4 @@ class TrailingColor(Effect):
     colors: list[int]
 
 
-VisualEffect = Union[ColorSingleCell, ColorMultipleCells, RandomColorGroup, TrailingColor]
+VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | TrailingColor
