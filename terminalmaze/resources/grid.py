@@ -2,7 +2,7 @@ from optparse import Option
 from terminalmaze.tools.visualmaze import Visual
 from terminalmaze.resources.cell import Cell
 import random
-import colored
+import colored  # type: ignore
 from collections.abc import Generator
 from typing import Optional
 
