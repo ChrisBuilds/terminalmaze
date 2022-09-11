@@ -7,19 +7,19 @@ import terminalmaze.tools.visualeffects as ve
 
 
 class Wilsons(MazeAlgorithm):
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        super().__init__(maze, showlogic)
+    def __init__(self, maze: Grid) -> None:
+        super().__init__(maze)
         self.status_text["Algorithm"] = "Wilons"
         self.status_text["Seed"] = self.maze.seed
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         walk: list[Cell] = []
         target = self.maze.random_cell()
-        ve_target = ve.ColorSingleCell(layer=0, cell=target, color=218)
+        ve_target = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=target, color=218)
         self.visual_effects["target"] = ve_target
-        ve_walk = ve.ColorMultipleCells(layer=0, cells=[], color=49)
+        ve_walk = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=49)
         self.visual_effects["walk"] = ve_walk
-        ve_workingcell = ve.ColorSingleCell(layer=0, cell=Cell(0, 0), color=14)
+        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=14)
         self.visual_effects["working_cell"] = ve_workingcell
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
@@ -41,6 +41,8 @@ class Wilsons(MazeAlgorithm):
                     ve_workingcell.cell = working_cell
                 elif next_cell not in unvisited_cells:
                     walking = False
+                    if "target" in self.visual_effects:
+                        del self.visual_effects["target"]
                     for i, cell in enumerate(walk):
                         if cell == walk[-1]:
                             self.maze.link_cells(cell, next_cell)
@@ -58,18 +60,17 @@ class Wilsons(MazeAlgorithm):
                     walk.append(next_cell)
                     working_cell = next_cell
                     ve_workingcell.cell = working_cell
-                    if self.showlogic:
-                        self.status_text["Unvisited"] = len(unvisited_cells)
-                        self.status_text["Walked"] = len(walk)
-                        self.status_text["Links"] = links
-                        self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
-                        if links < 3:
-                            frame_delay -= 1
-                            if frame_delay == 0:
-                                frame_delay = 40
-                                yield self.maze
-                        else:
-                            frame_delay -= 1
-                            if frame_delay == 0:
-                                frame_delay = 3
-                                yield self.maze
+                    self.status_text["Unvisited"] = len(unvisited_cells)
+                    self.status_text["Walked"] = len(walk)
+                    self.status_text["Links"] = links
+                    self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
+                    if links < 3:
+                        frame_delay -= 1
+                        if frame_delay == 0:
+                            frame_delay = 40
+                            yield self.maze
+                    else:
+                        frame_delay -= 1
+                        if frame_delay == 0:
+                            frame_delay = 3
+                            yield self.maze
