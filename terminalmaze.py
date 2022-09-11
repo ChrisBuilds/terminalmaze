@@ -74,7 +74,6 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     show_mazelogic = True
     show_solvelogic = True
     solve = True
-    verbosity = 0
     maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
