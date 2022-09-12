@@ -6,17 +6,20 @@ from typing import Generator
 
 
 class PrimsWeighted(MazeAlgorithm):
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        super().__init__(maze, showlogic)
+    def __init__(self, maze: Grid) -> None:
+        super().__init__(maze)
         self.status_text["Algorithm"] = "Prims Weighted"
-        self.status_text["Seed"] = self.maze.seed
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         last_linked: list[Cell] = []
-        ve_lastlinked = ve.ColorMultipleCells(layer=0, cells=last_linked, color=49)
+        ve_lastlinked = ve.ColorMultipleCells(layer=1, category=ve.STYLE, cells=last_linked, color=49)
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_links = ve.ColorMultipleCells(layer=0, cells=[], color=14)
+        ve_links = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=[], color=79)
         self.visual_effects["links"] = ve_links
+        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=218)
+        self.visual_effects["working_cell"] = ve_workingcell
+        ve_unlinkedneighbors = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=218)
+        self.visual_effects["unlinked_neighbors"] = ve_unlinkedneighbors
 
         total_cells_unlinked = 0
         cell_weights = {}
@@ -34,6 +37,7 @@ class PrimsWeighted(MazeAlgorithm):
             working_cell: Cell
 
             working_cell, next_cell, cost = min(links, key=lambda link: link[2])
+            ve_workingcell.cell = working_cell
             links.remove((working_cell, next_cell, cost))
             if next_cell.links:
                 continue
@@ -43,6 +47,7 @@ class PrimsWeighted(MazeAlgorithm):
             if len(last_linked) == 10:
                 last_linked.pop(0)
             unlinked_neighbors = list(n for n in self.maze.get_neighbors(next_cell).values() if n and not n.links)
+            ve_unlinkedneighbors.cells = unlinked_neighbors
             if unlinked_neighbors:
                 for neighbor in unlinked_neighbors:
                     links.append((next_cell, neighbor, cell_weights[neighbor]))
@@ -51,7 +56,7 @@ class PrimsWeighted(MazeAlgorithm):
             self.status_text["Unlinked Cells"] = total_cells_unlinked
             yield self.maze
 
-        self.visual_effects = {}
+        self.visual_effects.clear()
         total_cells_unlinked -= 1
         self.status_text["Edges"] = 0
         yield self.maze

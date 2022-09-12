@@ -9,8 +9,8 @@ from typing import Generator
 
 
 class KruskalsRandomized(MazeAlgorithm):
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        super().__init__(maze, showlogic)
+    def __init__(self, maze: Grid) -> None:
+        super().__init__(maze)
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
         self.cell_to_group_map: dict[Cell, int] = {}  # cell_address : group
         self.status_text["Algorithm"] = "Kruskal's Randomized"
@@ -30,11 +30,12 @@ class KruskalsRandomized(MazeAlgorithm):
                 if (neighbor, cell) not in links and neighbor:  # check if reversed link is already in list
                     links.add((cell, neighbor))
 
-        ve_groups = ve.RandomColorGroup(layer=0, groups=self.group_to_cell_map_logic)
+        ve_groups = ve.RandomColorGroup(layer=0, category=ve.LOGIC, groups=self.group_to_cell_map_logic)
         self.visual_effects["groups"] = ve_groups
 
         while len(groups) > 1:
-            link = links.pop()
+            link = random.choice(list(links))
+            links.discard(link)
             cell_a = link[0]
             cell_a_group = self.cell_to_group_map[cell_a]
             cell_b = link[1]
@@ -52,6 +53,7 @@ class KruskalsRandomized(MazeAlgorithm):
             self.status_text["Available Links"] = len(links)
             self.status_text["Groups"] = len(groups)
             yield self.maze
+        yield self.maze
 
     def merge_groups(self, cell_a: Cell, cell_b: Cell, groups):
         cell_a_group = self.cell_to_group_map[cell_a]

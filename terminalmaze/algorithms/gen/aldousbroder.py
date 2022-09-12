@@ -9,23 +9,15 @@ from collections.abc import Generator
 class AldousBroder(MazeAlgorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
-        self.status_text = {
-            "Algorithm": "Aldous Broder",
-            "Seed": self.maze.seed,
-            "Time Elapsed": "",
-            "Unvisited": 0,
-            "Revisited": 0,
-            "Cell": "",
-        }
+        self.status_text["Algorithm"] = "Aldous Broder"
+        self.status_text.update({"Unvisited": 0, "Revisited": 0, "Cell": ""})
         self.frame_time = time.time()
-        self.invalid_visited = None
-        self.last_linked = None
+        self.invalid_visited: list[Cell] = list()
+        self.last_linked: list[Cell] = list()
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unvisited = set(self.maze.each_cell())
         working_cell = unvisited.pop()
-        self.last_linked: list[Cell] = list()
-        self.invalid_visited: list[Cell] = list()
         ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=working_cell, color=218)
         self.visual_effects["working_cell"] = ve_workingcell
         ve_lastlinked = ve.ColorMultipleCells(layer=1, category=ve.STYLE, cells=self.last_linked, color=218)
@@ -54,7 +46,8 @@ class AldousBroder(MazeAlgorithm):
             else:
                 revisited += 1
                 self.status_text["Revisited"] = revisited
-                ve_invalidvisited.cells.append(neighbor)
+                if neighbor not in ve_invalidvisited.cells:
+                    ve_invalidvisited.cells.append(neighbor)
                 ve_invalidvisited.cells = ve_invalidvisited.cells[-50:]
                 time_since_last_frame = time.time() - self.frame_time
                 if time_since_last_frame > 0.0270:
@@ -69,5 +62,13 @@ class AldousBroder(MazeAlgorithm):
 
             working_cell = neighbor
             ve_workingcell.cell = working_cell
-
+        del self.visual_effects["working_cell"]
+        del self.visual_effects["invalid_neighbors"]
+        while ve_invalidvisited.cells or ve_lastlinked.cells:
+            if ve_invalidvisited.cells:
+                ve_invalidvisited.cells.pop(0)
+            if ve_lastlinked.cells:
+                ve_lastlinked.cells.pop(0)
+            self.status_text["Time Elapsed"] = self.time_elapsed()
+            yield self.maze
         yield self.maze

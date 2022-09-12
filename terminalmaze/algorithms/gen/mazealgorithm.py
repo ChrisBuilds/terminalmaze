@@ -10,6 +10,7 @@ class MazeAlgorithm:
         self.maze: Grid = maze
         self.visual_effects: dict[str, VisualEffect] = dict()
         self.status_text: dict[str, str | int | None] = dict()
+        self.status_text = {"Algorithm": "", "Seed": self.maze.seed, "Time Elapsed": ""}
         self.skip_frames = -1
         self.frames_skipped = -1
         self.start_time = time.time()

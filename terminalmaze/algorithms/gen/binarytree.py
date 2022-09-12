@@ -13,7 +13,6 @@ class BinaryTree(MazeAlgorithm):
         """
 
         self.status_text["Algorithm"] = "Binary Tree"
-        self.status_text["Seed"] = self.maze.seed
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unlinked_cells = set(self.maze.each_cell(ignore_mask=True))
@@ -30,12 +29,12 @@ class BinaryTree(MazeAlgorithm):
                 neighbor = random.choice(list(neighbors.values()))
                 if neighbor:
                     self.maze.link_cells(cell, neighbor)
-                    if neighbor in unlinked_cells:
-                        unlinked_cells.remove(neighbor)
-                    if cell in unlinked_cells:
-                        unlinked_cells.remove(cell)
+                    unlinked_cells.discard(neighbor)
+                    unlinked_cells.discard(cell)
                     ve_neighbor.cell = neighbor
-            self.status_text["Time"] = self.time_elapsed()
             self.status_text["Unlinked Cells"] = len(unlinked_cells)
+            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
+
+        self.visual_effects.clear()
         yield self.maze

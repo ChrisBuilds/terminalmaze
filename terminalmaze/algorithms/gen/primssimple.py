@@ -6,11 +6,9 @@ from typing import Generator
 
 
 class PrimsSimple(MazeAlgorithm):
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        super().__init__(maze, showlogic)
+    def __init__(self, maze: Grid) -> None:
+        super().__init__(maze)
         self.status_text["Algorithm"] = "Prims Simplified"
-        self.status_text["Seed"] = self.maze.seed
-        self.status_text["Time Elapsed"] = self.time_elapsed()
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         total_unlinked_cells = len(list(self.maze.each_cell()))
@@ -18,15 +16,15 @@ class PrimsSimple(MazeAlgorithm):
         cell = self.maze.random_cell()
         edge_cells = list()
         edge_cells.append(cell)
-        ve_edges = ve.ColorMultipleCells(layer=0, cells=edge_cells, color=159)
+        ve_edges = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=edge_cells, color=159)
         self.visual_effects["edges"] = ve_edges
-        ve_workingcell = ve.ColorSingleCell(layer=0, cell=cell, color=218)
-        # self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, cells=[], color=52)
-        # self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = ve.ColorSingleCell(layer=0, cell=cell, color=159)
+        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=cell, color=218)
+        self.visual_effects["working_cell"] = ve_workingcell
+        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=52)
+        self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
+        ve_lastlinked = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=cell, color=159)
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_oldedges = ve.ColorMultipleCells(layer=0, cells=[], color=218)
+        ve_oldedges = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=[], color=218)
         self.visual_effects["old_edges"] = ve_oldedges
 
         while edge_cells:
@@ -50,6 +48,6 @@ class PrimsSimple(MazeAlgorithm):
                     edge_cells.append(next_cell)
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-
-        self.visual_effects = {}
+        self.status_text["Unlinked Cells"] = 0
+        self.visual_effects.clear()
         yield self.maze

@@ -8,15 +8,18 @@ from typing import Generator
 
 
 class Ellers(MazeAlgorithm):
-    def __init__(self, maze: Grid, showlogic: bool = False) -> None:
-        super().__init__(maze, showlogic)
+    def __init__(self, maze: Grid) -> None:
+        super().__init__(maze)
         self.ignore_mask = True
         self.status_text["Algorithm"] = "Eller's"
+        self.status_text["Seed"] = self.maze.seed
+        self.status_text["Unlinked Cells"] = 0
 
     def generate_maze(self) -> Generator[Grid, None, None]:
+        unlinked_cells = set(self.maze.each_cell())
         cell_to_group: dict[tuple[int, int], int] = {}  # cell_address : group
         group_to_cell: defaultdict[int, list[Cell]] = defaultdict(list)  # group : Cell
-        ve_groups = ve.RandomColorGroup(layer=0, groups=group_to_cell)
+        ve_groups = ve.RandomColorGroup(layer=0, category=ve.LOGIC, groups=group_to_cell)
         self.visual_effects["groups"] = ve_groups
         group_id = 0
         for i, row in enumerate(self.maze.each_row(ignore_mask=self.ignore_mask)):
@@ -51,6 +54,9 @@ class Ellers(MazeAlgorithm):
                     if cell in neighbor.links or cell_group == neighbor_group:
                         continue
                     self.maze.link_cells(cell, neighbor)
+                    unlinked_cells.discard(cell)
+                    unlinked_cells.discard(neighbor)
+                    self.status_text["Unlinked Cells"] = len(unlinked_cells)
                     cell_to_group[neighbor_address] = cell_group
                     for group_member in [member for member in row_groups[neighbor_group]]:
                         row_groups[neighbor_group].remove(group_member)
@@ -79,6 +85,9 @@ class Ellers(MazeAlgorithm):
                     group_to_cell[cell_to_group[(cell.row, cell.column)]].append(neighbor)
                     cells_to_drop -= 1
                     self.maze.link_cells(cell, neighbor)
+                    unlinked_cells.discard(cell)
+                    unlinked_cells.discard(neighbor)
+                    self.status_text["Unlinked Cells"] = len(unlinked_cells)
                     yield self.maze
 
         yield self.maze

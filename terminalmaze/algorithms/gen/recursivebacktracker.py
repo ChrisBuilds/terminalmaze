@@ -8,13 +8,8 @@ from typing import Union, Generator, Optional
 class RecursiveBacktracker(MazeAlgorithm):
     def __init__(self, maze: Grid, showlogic: bool = False) -> None:
         super().__init__(maze, showlogic)
-        self.status_text: dict[str, Union[Optional[str], Optional[int]]] = {
-            "Algorithm": "Recursive Backtracker",
-            "Seed": self.maze.seed,
-            "Pending Paths": "",
-            "Stack Length": "",
-            "State": "",
-        }
+        self.status_text["Algorithm"] = "Recursive Backtracker"
+        self.status_text.update({"Pending Paths": "", "Stack Length": "", "State": ""})
         self.skip_frames = 2
 
     def generate_maze(self) -> Generator[Grid, None, None]:
@@ -58,6 +53,7 @@ class RecursiveBacktracker(MazeAlgorithm):
                 cell = next_cell
                 self.status_text["Pending Paths"] = len(unvisited_neighbors)
                 self.status_text["Stack Length"] = len(stack)
+                self.status_text["Time Elapsed"] = self.time_elapsed()
                 yield self.maze
 
             else:
@@ -74,4 +70,5 @@ class RecursiveBacktracker(MazeAlgorithm):
                         ve_workingcell.cell = cell
                         self.status_text["Stack Length"] = len(stack)
                         if self.frame_wanted():
+                            self.status_text["Time Elapsed"] = self.time_elapsed()
                             yield self.maze

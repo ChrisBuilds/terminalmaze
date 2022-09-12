@@ -70,16 +70,15 @@ m:######### ##     ## ######### ##  #### ##     ## #########
 m:##     ## ##     ## ##     ## ##   ### ##        ##     ## 
 m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
     """
-
     solve = True
-    verbosity = 4
+    verbosity = 2
     terminal_delay = 0.0135
     maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
     # algo = BinaryTree(maze)
-    # algo = Sidewinder(maze)
-    algo = AldousBroder(maze)
+    algo = Sidewinder(maze)
+    # algo = AldousBroder(maze)
     # algo = Wilsons(maze)
     # algo = HuntandKill(maze)
     # algo = RecursiveBacktracker(maze)

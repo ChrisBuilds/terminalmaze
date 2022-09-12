@@ -9,8 +9,7 @@ import terminalmaze.tools.visualeffects as ve
 class Wilsons(MazeAlgorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
-        self.status_text["Algorithm"] = "Wilons"
-        self.status_text["Seed"] = self.maze.seed
+        self.status_text["Algorithm"] = "Wilsons"
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         walk: list[Cell] = []
@@ -53,6 +52,7 @@ class Wilsons(MazeAlgorithm):
                         self.status_text["Unvisited"] = len(unvisited_cells)
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
+                        self.status_text["Time Elapsed"] = self.time_elapsed()
                         yield self.maze
                     self.visual_effects.pop("logic1", None)
                     links += 1
@@ -68,9 +68,13 @@ class Wilsons(MazeAlgorithm):
                         frame_delay -= 1
                         if frame_delay == 0:
                             frame_delay = 40
+                            self.status_text["Time Elapsed"] = self.time_elapsed()
                             yield self.maze
                     else:
                         frame_delay -= 1
                         if frame_delay == 0:
                             frame_delay = 3
+                            self.status_text["Time Elapsed"] = self.time_elapsed()
                             yield self.maze
+        self.visual_effects.clear()
+        yield self.maze
