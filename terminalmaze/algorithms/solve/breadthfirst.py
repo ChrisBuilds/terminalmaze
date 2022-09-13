@@ -8,6 +8,7 @@ class BreadthFirst(SolveAlgorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Breadth First"
+        self.skipped_frames = 0
 
     def solve(self) -> Generator[Grid, None, None]:
         target = list(self.maze.each_cell())[-1]
@@ -32,7 +33,6 @@ class BreadthFirst(SolveAlgorithm):
             cells=[],
         )
         self.visual_effects["path_trail"] = ve_path_trail
-        frame_gap = 1
         while frontier:
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
@@ -43,16 +43,14 @@ class BreadthFirst(SolveAlgorithm):
             for cell in edges:
                 explored[cell] = position
             frontier.extend(edges)
-            frame_gap -= 1
-            if frame_gap == 0:
-                frame_gap = len(frontier)
-                frame_gap = 5
-                self.status_text["Frontier"] = len(frontier)
-                self.status_text["Visited"] = len(visited)
-                self.status_text["Time Elapsed"] = self.time_elapsed()
+            self.status_text["Frontier"] = len(frontier)
+            self.status_text["Visited"] = len(visited)
+            self.status_text["Time Elapsed"] = self.time_elapsed()
+            if self.frame_wanted():
+                self.skip_frames = len(frontier) // 4
                 yield self.maze
-        self.status_text["Frontier"] = 0
 
+        self.status_text["Frontier"] = 0
         del self.visual_effects["frontier"]
         del self.visual_effects["position"]
         position = target

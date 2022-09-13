@@ -9,6 +9,7 @@ class PrimsSimple(MazeAlgorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Prims Simplified"
+        self.skip_frames = 1
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         total_unlinked_cells = len(list(self.maze.each_cell()))
@@ -47,7 +48,8 @@ class PrimsSimple(MazeAlgorithm):
                 if unlinked_neighbors:
                     edge_cells.append(next_cell)
             self.status_text["Time Elapsed"] = self.time_elapsed()
-            yield self.maze
+            if self.frame_wanted_relative(edge_cells, divisor=10):
+                yield self.maze
         self.status_text["Unlinked Cells"] = 0
         self.visual_effects.clear()
         yield self.maze
