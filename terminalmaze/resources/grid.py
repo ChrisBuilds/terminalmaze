@@ -14,7 +14,7 @@ class Grid:
 
         :param width: the number of columns in the grid
         :param height: the number of rows in the grid
-        :param mask: mask to apply
+        :param mask_string: mask to apply
         """
         self.width: int = width
         self.height: int = height
@@ -105,8 +105,7 @@ class Grid:
         :param cell: a tuple of the form (row, column)
         :return: The cell object
         """
-        row = cell[0]
-        column = cell[1]
+
         if cell in self.cells:
             return self.cells[cell]
         else:
