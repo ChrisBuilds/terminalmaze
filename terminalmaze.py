@@ -12,66 +12,31 @@ from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.ellers import Ellers
 from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
 from terminalmaze.resources.grid import Grid
+from terminalmaze.config import tm_config, tm_masks
 
 from time import sleep
 import sys
 import random
 
 
+def get_mask() -> str | None:
+    """
+    Check the masks directory for the configured mask and return the mask as a string.
+    Returns
+    -------
+    str | None : mask string if found, else None
+    """
+    if tm_config["global"]["mask"] in tm_masks:
+        with open(tm_masks[tm_config["global"]["mask"]], "r") as mask_file:
+            mask = mask_file.read()
+    else:
+        mask = None
+    return mask
+
+
 def main():
-    python = """
-m:##  ############################################################
-m:##                                                            ##  
-m:##  ########  ##    ## ######## ##     ##  #######  ##    ##  ##
-m:##  ##     ##  ##  ##     ##    ##     ##        ## ###   ##  ##
-m:##              ####      ##    ##     ## ##     ## ####  ##  ##
-m:##  ########     ##       ##    ######### ##     ## ## ## ##  ##
-m:##  ##           ##       ##    ##     ## ##     ## ##  ####  ##
-m:##  ##           ##       ##    ##     ## ##        ##   ###  ##
-m:##  ##           ##       ##    ##     ##  #######  ##    ##  ##
-m:##                                                            ##
-m:############################################################  ##
-    """
-    amanda_inv = """
-m:    ######  ########     ###     ######  #########
-m:  ##      ##        #####   #####      ##        #
-m:  #  ####  #  #####  ###  #  ###  ####  #  #######
-m:  #  #######  #####  ##  ###  ##  #######  ####
-m:  ##      ##        ##  #####  #  #######     #
-m:  #######  #  ########         #  #######  ####
-m:  #  ####  #  ########  #####  #  ####  #  #######
-m:  ##      ##  ########  #####  ##      ##        #
-m:    # ####   #        #      ##   ### ##  ### ####
-m:
-m:    # #    #      ##    # #    ##     # ##### ##     ## 
-m:   #   ####  #####  ####   ####  ####  #        #####   #
-m:  #  #  ###   ###   ###  #  ###   ###  #  #####  ###  #  #
-m: #  ###  ##    #    ##  ###  ##    ##  #  #####  ##  ###  #
-m:#  #####  #  #   #  #  #####  #  #  #  #  #####  #  #####  #
-m:#         #  #####  #         #  ##    #  #####  #         #
-m:#  #####  #  #####  #  #####  #  ###   #  #####  #  #####  #
-m:#  #####  #  #####  #  #####  #  ####  #        ##  #####  #
-m: ##     ## ##     ## ##     ## ##    ## ########  ##     ##
-    """
-    amanda = """
-m:    ######  ########     ###     ######  ########          
-m:   ##    ##        ##   ## ##   ##    ## ##                
-m:   ##       ##                  ##       ##                
-m:    ######  ########  ##     ## ##       ######            
-m:         ## ##        ######### ##       ##                
-m:   ##    ## ##        ##     ## ##    ## ##                
-m:    ######  ##        ##     ##  ######  ########
-m:
-m:   ###    ##     ##    ###    ##    ## ########     ###    
-m:  ## ##   ###   ###   ## ##   ###   ##        ##   ## ##   
-m:          #### ####           ####  ## ##     ##           
-m:##     ## ## ### ## ##     ## ## ## ## ##     ## ##     ## 
-m:######### ##     ## ######### ##  #### ##     ## ######### 
-m:##     ## ##     ## ##     ## ##   ### ##        ##     ## 
-m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
-    """
-    solve = True
-    maze = Grid(105, 27, mask_string=amanda_inv)
+    solve = tm_config["global"]["run_solver"]
+    maze = Grid(105, 27, mask_string=get_mask())
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
     # algo = BinaryTree(maze)
