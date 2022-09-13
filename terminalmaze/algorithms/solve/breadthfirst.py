@@ -1,10 +1,10 @@
 from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.solve.solvealgorithm import SolveAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
 
 
-class BreadthFirst(SolveAlgorithm):
+class BreadthFirst(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Breadth First"
@@ -46,8 +46,7 @@ class BreadthFirst(SolveAlgorithm):
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
             self.status_text["Time Elapsed"] = self.time_elapsed()
-            if self.frame_wanted():
-                self.skip_frames = len(frontier) // 4
+            if self.frame_wanted_relative(frontier, divisor=4):
                 yield self.maze
 
         self.status_text["Frontier"] = 0

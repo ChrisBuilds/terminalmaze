@@ -2,11 +2,11 @@ import random
 from typing import Generator
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 
 
-class Wilsons(MazeAlgorithm):
+class Wilsons(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Wilsons"

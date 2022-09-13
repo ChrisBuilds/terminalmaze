@@ -1,4 +1,4 @@
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.resources.grid import Grid, Cell
 import terminalmaze.tools.visualeffects as ve
 import random
@@ -6,7 +6,7 @@ import time
 from collections.abc import Generator
 
 
-class AldousBroder(MazeAlgorithm):
+class AldousBroder(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Aldous Broder"

@@ -1,6 +1,6 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 
 import random
@@ -8,7 +8,7 @@ from collections import defaultdict
 from typing import Generator
 
 
-class KruskalsRandomized(MazeAlgorithm):
+class KruskalsRandomized(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}

@@ -1,15 +1,15 @@
 from terminalmaze.resources.grid import Grid
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 import random
 from typing import Generator
 
 
-class PrimsSimple(MazeAlgorithm):
+class PrimsSimple(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Prims Simplified"
-        self.skip_frames = 1
+        self.skip_frames = 0
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         total_unlinked_cells = len(list(self.maze.each_cell()))

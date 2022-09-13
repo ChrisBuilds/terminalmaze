@@ -1,11 +1,11 @@
 from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 import random
-from typing import Union, Generator, Optional
+from typing import Generator
 
 
-class RecursiveBacktracker(MazeAlgorithm):
+class RecursiveBacktracker(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Recursive Backtracker"

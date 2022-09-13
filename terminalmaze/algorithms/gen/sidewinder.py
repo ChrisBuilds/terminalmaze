@@ -3,11 +3,11 @@ from collections.abc import Generator
 
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 
 
-class Sidewinder(MazeAlgorithm):
+class Sidewinder(Algorithm):
     def __init__(self, maze: Grid):
         """
         For each row, randomly link cells in a run of cells to their north or east neighbor.

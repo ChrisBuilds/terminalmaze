@@ -18,11 +18,11 @@ import time
 from collections.abc import Generator
 
 from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 
 
-class HuntandKill(MazeAlgorithm):
+class HuntandKill(Algorithm):
     """Implements the Hunt and Kill maze generation algorithm.
 
     Attributes

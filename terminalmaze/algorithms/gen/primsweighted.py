@@ -1,18 +1,20 @@
 from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 import random
 from typing import Generator
 
 
-class PrimsWeighted(MazeAlgorithm):
+class PrimsWeighted(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Prims Weighted"
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         last_linked: list[Cell] = []
-        ve_lastlinked = ve.ColorMultipleCells(layer=1, category=ve.STYLE, cells=last_linked, color=49)
+        ve_lastlinked = ve.TrailingColor(
+            layer=1, category=ve.STYLE, cells=last_linked, colors=[47, 47, 48, 48, 48, 49, 49, 49, 49, 50, 50]
+        )
         self.visual_effects["last_linked"] = ve_lastlinked
         ve_links = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=[], color=79)
         self.visual_effects["links"] = ve_links
@@ -43,9 +45,9 @@ class PrimsWeighted(MazeAlgorithm):
                 continue
             self.maze.link_cells(working_cell, next_cell)
             total_cells_unlinked -= 1
-            last_linked.append(next_cell)
+            last_linked.insert(0, next_cell)
             if len(last_linked) == 10:
-                last_linked.pop(0)
+                last_linked.pop()
             unlinked_neighbors = list(n for n in self.maze.get_neighbors(next_cell).values() if n and not n.links)
             ve_unlinkedneighbors.cells = unlinked_neighbors
             if unlinked_neighbors:

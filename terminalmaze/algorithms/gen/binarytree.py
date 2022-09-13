@@ -1,11 +1,11 @@
 import random
 from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
 
 
-class BinaryTree(MazeAlgorithm):
+class BinaryTree(Algorithm):
     def __init__(self, maze: Grid):
         super().__init__(maze)
         """

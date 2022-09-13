@@ -1,13 +1,13 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.gen.mazealgorithm import MazeAlgorithm
+from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 import random
 from collections import defaultdict
 from typing import Generator
 
 
-class Ellers(MazeAlgorithm):
+class Ellers(Algorithm):
     def __init__(self, maze: Grid) -> None:
         super().__init__(maze)
         self.ignore_mask = True
