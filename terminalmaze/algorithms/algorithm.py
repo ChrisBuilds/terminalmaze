@@ -39,13 +39,22 @@ class Algorithm:
         if not divisor >= 1 and isinstance(divisor, int):
             raise ValueError(divisor)
 
+        skip_frames_now = len(relative_to) // divisor
         if self.frames_skipped >= self.skip_frames:
             self.frames_skipped = 0
-            self.skip_frames = len(relative_to) // divisor
+            self.skip_frames = skip_frames_now
             return True
+        # adjust skip_frames if relative_to length drops below frames_skipped between shown frames
+        elif self.skip_frames > skip_frames_now:
+            self.skip_frames = skip_frames_now
+            if self.frames_skipped > self.skip_frames:
+                self.frames_skipped = 0
+                return True
         else:
             self.frames_skipped += 1
             return False
+
+        return True
 
     def frame_wanted(self) -> bool:
         """Return True if the number of frames skipped is equal to the
