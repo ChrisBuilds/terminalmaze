@@ -1,0 +1,4 @@
+[global]
+maze_verbosity = 4
+solve_verbosity = 4
+terminal_delay = 0.0135
