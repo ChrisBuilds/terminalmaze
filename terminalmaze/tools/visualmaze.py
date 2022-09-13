@@ -2,9 +2,11 @@ import time
 
 from terminalmaze.resources.cell import Cell
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import tm_config
 import colored  # type: ignore
 import random
 from os import system
+from typing import Literal
 
 
 class Visual:
@@ -247,9 +249,8 @@ class Visual:
     ) -> list[list[str]]:
         """Color cell groups.
 
-        Args:
-            colored_visual_grid (list[list[str]]): Copy of visual_grid.
-            visual_effect (Optional[ve.RandomColorGroup], optional): Dict mapping group ID's to lists of cells. Defaults to None.
+        Args: colored_visual_grid (list[list[str]]): Copy of visual_grid. visual_effect (Optional[
+        ve.RandomColorGroup], optional): Dict mapping group ID's to lists of cells. Defaults to None.
 
         Returns:
             list[list[str]]: Colored visual grid
@@ -303,6 +304,17 @@ class Visual:
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
+        """
+        Create a status string from the status_text dict.
+
+        Parameters
+        ----------
+        status_text : dict of label:value pairs for status updates
+
+        Returns
+        -------
+        str : status string
+        """
         status_string = ""
         for label, value in status_text.items():
             status_string += f" {label}: {value} |"
@@ -313,8 +325,7 @@ class Visual:
         self,
         visual_effects: dict[str, ve.VisualEffect],
         status_text: dict[str, str | int | None],
-        verbosity: int,
-        terminal_delay: float,
+        subject=Literal["maze", "solve"],
         complete: bool = False,
     ) -> None:
         """
@@ -323,14 +334,19 @@ class Visual:
         ----------
         visual_effects : Effects to be applied to the maze
         status_text : Status texts to display below the maze
-        verbosity : Determines which visual effects are applied
-        terminal_delay : Time to sleep between terminal updates
+        subject : Determines the config to use, either maze or solve
         complete : Indicates the maze is complete, final image of the maze
 
         Returns
         -------
 
         """
+        terminal_delay = tm_config["global"]["terminal_delay"]
+        if subject == "maze":
+            verbosity = tm_config["global"]["maze_verbosity"]
+        else:
+            verbosity = tm_config["global"]["solve_verbosity"]
+
         if verbosity == 0:
             print(self.format_status(status_text), end="\r")
             if not complete:
