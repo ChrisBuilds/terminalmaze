@@ -71,9 +71,6 @@ m:##     ## ##     ## ##     ## ##   ### ##        ##     ##
 m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
     """
     solve = True
-    maze_verbosity = 3
-    solve_verbosity = 4
-    terminal_delay = 0.0135
     maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
@@ -82,8 +79,8 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     # algo = AldousBroder(maze)
     # algo = Wilsons(maze)
     # algo = HuntandKill(maze)
-    # algo = RecursiveBacktracker(maze)
-    algo = PrimsSimple(maze)
+    algo = RecursiveBacktracker(maze)
+    # algo = PrimsSimple(maze)
     # algo = PrimsWeighted(maze)
     # algo = KruskalsRandomized(maze)
     # algo = Ellers(maze)
@@ -91,17 +88,15 @@ m:##     ## ##     ## ##     ## ##    ## ########  ##     ##
     try:
         maze: Grid
         for maze in algo.generate_maze():
-            maze.visual.show(algo.visual_effects, algo.status_text, maze_verbosity, terminal_delay)
+            maze.visual.show(algo.visual_effects, algo.status_text, subject="maze")
         else:
-            maze.visual.show(algo.visual_effects, algo.status_text, maze_verbosity, terminal_delay, complete=True)
+            maze.visual.show(algo.visual_effects, algo.status_text, subject="maze", complete=True)
             print()
         if solve:
             for maze in solver.solve():
-                maze.visual.show(solver.visual_effects, solver.status_text, solve_verbosity, terminal_delay)
+                maze.visual.show(solver.visual_effects, solver.status_text, subject="solve")
             else:
-                maze.visual.show(
-                    solver.visual_effects, solver.status_text, solve_verbosity, terminal_delay, complete=True
-                )
+                maze.visual.show(solver.visual_effects, solver.status_text, subject="solve", complete=True)
                 print()
     except KeyboardInterrupt:
         print("Maze generation stopped.")
