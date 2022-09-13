@@ -5,7 +5,7 @@ import time
 from typing import Generator
 
 
-class MazeAlgorithm:
+class Algorithm:
     def __init__(self, maze: Grid) -> None:
         self.maze: Grid = maze
         self.visual_effects: dict[str, VisualEffect] = dict()
