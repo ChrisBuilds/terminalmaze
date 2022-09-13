@@ -71,32 +71,38 @@ m:##     ## ##     ## ##     ## ##   ### ##        ##     ##
 m:##     ## ##     ## ##     ## ##    ## ########  ##     ##     
     """
     solve = True
-    verbosity = 2
+    maze_verbosity = 3
+    solve_verbosity = 4
     terminal_delay = 0.0135
     maze = Grid(105, 27, mask_string=amanda_inv)
     seed = int().from_bytes(random.randbytes(5), byteorder="big")
     maze.seed = seed
     # algo = BinaryTree(maze)
-    algo = Sidewinder(maze)
+    # algo = Sidewinder(maze)
     # algo = AldousBroder(maze)
     # algo = Wilsons(maze)
     # algo = HuntandKill(maze)
     # algo = RecursiveBacktracker(maze)
-    # algo = PrimsSimple(maze)
+    algo = PrimsSimple(maze)
     # algo = PrimsWeighted(maze)
     # algo = KruskalsRandomized(maze)
     # algo = Ellers(maze)
-    # solver = BreadthFirst(maze)
+    solver = BreadthFirst(maze)
     try:
         maze: Grid
         for maze in algo.generate_maze():
-            maze.visual.show(algo.visual_effects, algo.status_text, verbosity, terminal_delay)
+            maze.visual.show(algo.visual_effects, algo.status_text, maze_verbosity, terminal_delay)
         else:
-            maze.visual.show(algo.visual_effects, algo.status_text, verbosity, terminal_delay, complete=True)
+            maze.visual.show(algo.visual_effects, algo.status_text, maze_verbosity, terminal_delay, complete=True)
             print()
-        # if solve:
-        #    for maze in solver.solve():
-        #        maze.visual.show(solver.visual_effects, solver.status_text, verbosity, terminal_delay)
+        if solve:
+            for maze in solver.solve():
+                maze.visual.show(solver.visual_effects, solver.status_text, solve_verbosity, terminal_delay)
+            else:
+                maze.visual.show(
+                    solver.visual_effects, solver.status_text, solve_verbosity, terminal_delay, complete=True
+                )
+                print()
     except KeyboardInterrupt:
         print("Maze generation stopped.")
         sys.exit()
