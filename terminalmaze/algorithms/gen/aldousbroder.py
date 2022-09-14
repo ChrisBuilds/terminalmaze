@@ -88,4 +88,5 @@ class AldousBroder(Algorithm):
                 ve_lastlinked.cells.pop(0)
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
+        self.status_text["State"] = "Complete"
         yield self.maze
