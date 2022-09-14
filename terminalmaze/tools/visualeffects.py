@@ -7,6 +7,7 @@ GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set
 LOGIC: Literal["logic"] = "logic"
 STYLE: Literal["style"] = "style"
 Category = Literal["logic", "style"]
+Theme = dict[str, dict[str, int | list[int]]]
 
 
 @dataclass
