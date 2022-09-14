@@ -7,24 +7,39 @@ from collections.abc import Generator
 
 
 class AldousBroder(Algorithm):
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Aldous Broder"
-        self.status_text.update({"Unvisited": 0, "Revisited": 0, "Cell": ""})
+        self.status_text.update({"Unvisited": 0, "Revisited": 0, "Cell": "", "State": ""})
         self.frame_time = time.time()
         self.invalid_visited: list[Cell] = list()
         self.last_linked: list[Cell] = list()
+        self.theme = theme["aldous_broder"]
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unvisited = set(self.maze.each_cell())
         working_cell = unvisited.pop()
-        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=working_cell, color=218)
+        ve_workingcell = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=working_cell, color=self.theme["workingcell"]  # type: ignore [arg-type]
+        )
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_lastlinked = ve.ColorMultipleCells(layer=1, category=ve.STYLE, cells=self.last_linked, color=218)
+        ve_lastlinked = ve.ColorMultipleCells(
+            layer=1,
+            category=ve.STYLE,
+            cells=self.last_linked,
+            color=self.theme["lastlinked"],  # type: ignore [arg-type]
+        )
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=159)
+        ve_invalidneighbors = ve.ColorMultipleCells(
+            layer=0, category=ve.LOGIC, cells=[], color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
+        )
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_invalidvisited = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=self.invalid_visited, color=159)
+        ve_invalidvisited = ve.ColorMultipleCells(
+            layer=0,
+            category=ve.STYLE,
+            cells=self.invalid_visited,
+            color=self.theme["invalidvisited"],  # type: ignore [arg-type]
+        )
         self.visual_effects["invalid_visited"] = ve_invalidvisited
         revisited = 0
         while unvisited:
@@ -42,10 +57,12 @@ class AldousBroder(Algorithm):
                 self.status_text["Unvisited"] = len(unvisited)
                 self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                 self.status_text["Time Elapsed"] = self.time_elapsed()
+                self.status_text["State"] = "Linking"
                 yield self.maze
             else:
                 revisited += 1
                 self.status_text["Revisited"] = revisited
+                self.status_text["State"] = "Searching"
                 if neighbor not in ve_invalidvisited.cells:
                     ve_invalidvisited.cells.append(neighbor)
                 ve_invalidvisited.cells = ve_invalidvisited.cells[-50:]
