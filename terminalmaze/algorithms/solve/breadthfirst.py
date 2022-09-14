@@ -5,9 +5,15 @@ from collections.abc import Generator
 
 
 class BreadthFirst(Algorithm):
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
+        self.theme = theme["breadthfirst"]
         self.status_text["Algorithm"] = "Breadth First"
+        self.status_text["Elapsed Time"] = ""
+        self.status_text["Frontier"] = 0
+        self.status_text["Visited"] = 0
+        self.status_text["Position"] = ""
+        self.status_text["State"] = ""
         self.skipped_frames = 0
 
     def solve(self) -> Generator[Grid, None, None]:
@@ -16,29 +22,40 @@ class BreadthFirst(Algorithm):
         frontier = [start]
         explored: dict[Cell, Cell] = {start: start}
         visited: list[Cell] = []
-        ve_frontier = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, color=231, cells=frontier)
+        ve_frontier = ve.ColorMultipleCells(
+            layer=0, category=ve.LOGIC, color=self.theme["frontier"], cells=frontier  # type: ignore [arg-type]
+        )
         self.visual_effects["frontier"] = ve_frontier
-        ve_visited = ve.ColorMultipleCells(layer=0, category=ve.STYLE, color=218, cells=visited)
+        ve_visited = ve.ColorMultipleCells(
+            layer=0, category=ve.STYLE, color=self.theme["visited"], cells=visited  # type: ignore [arg-type]
+        )
         self.visual_effects["visited"] = ve_visited
-        ve_target = ve.ColorSingleCell(layer=0, category=ve.LOGIC, color=202, cell=target)
+        ve_target = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, color=self.theme["target"], cell=target  # type: ignore [arg-type]
+        )
         self.visual_effects["target"] = ve_target
-        ve_position = ve.ColorSingleCell(layer=0, category=ve.LOGIC, color=218, cell=start)
-        self.visual_effects["position"] = ve_position
-        ve_path = ve.ColorMultipleCells(layer=1, category=ve.LOGIC, color=159, cells=[])
-        self.visual_effects["path"] = ve_path
-        ve_path_trail = ve.TrailingColor(
+        ve_workingcell = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, color=self.theme["workingcell"], cell=start  # type: ignore [arg-type]
+        )
+        self.visual_effects["position"] = ve_workingcell
+        ve_solutionpath = ve.ColorMultipleCells(
+            layer=1, category=ve.LOGIC, color=self.theme["solutionpath"], cells=[]  # type: ignore [arg-type]
+        )
+        self.visual_effects["path"] = ve_solutionpath
+        ve_pathtrail = ve.TrailingColor(
             layer=2,
             category=ve.STYLE,
-            colors=[155, 156, 156, 156, 156, 156, 156, 156, 157, 157, 157, 157, 157, 157, 158, 158, 158, 158, 159],
+            colors=self.theme["pathtrail"],  # type: ignore [arg-type]
             cells=[],
         )
-        self.visual_effects["path_trail"] = ve_path_trail
+        self.visual_effects["path_trail"] = ve_pathtrail
         while frontier:
+            self.status_text["State"] = "Exploring"
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
             position = frontier.pop(0)
             visited.append(position)
-            ve_position.cell = position
+            ve_workingcell.cell = position
             edges = [neighbor for neighbor in position.links if neighbor not in explored and neighbor not in frontier]
             for cell in edges:
                 explored[cell] = position
@@ -57,19 +74,21 @@ class BreadthFirst(Algorithm):
         if target not in explored:
             return
         while position != start:
+            self.status_text["State"] = "Pathing"
             route.append(explored[position])
             position = explored[position]
         route.reverse()
         path: list[Cell] = list()
-        ve_path.cells = path
+        ve_solutionpath.cells = path
         for step in route:
+            self.status_text["State"] = "Solved"
             path.append(step)
-            ve_path_trail.cells = path[-len(ve_path_trail.colors) :][::-1]
+            ve_pathtrail.cells = path[-len(ve_pathtrail.colors) :][::-1]
             self.status_text["Solution Length"] = len(route)
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-        while ve_path_trail.cells:
-            ve_path_trail.cells.pop()
+        while ve_pathtrail.cells:
+            ve_pathtrail.cells.pop()
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         self.status_text["Time Elapsed"] = self.time_elapsed()

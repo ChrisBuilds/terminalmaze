@@ -6,9 +6,13 @@ from typing import Generator
 
 
 class PrimsSimple(Algorithm):
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
+        self.theme = theme["prims_simple"]
         self.status_text["Algorithm"] = "Prims Simplified"
+        self.status_text["Time Elapsed"] = ""
+        self.status_text["Unlinked Cells"] = 0
+        self.status_text["State"] = ""
         self.skip_frames = 0
 
     def generate_maze(self) -> Generator[Grid, None, None]:
@@ -17,18 +21,29 @@ class PrimsSimple(Algorithm):
         cell = self.maze.random_cell()
         edge_cells = list()
         edge_cells.append(cell)
-        ve_edges = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=edge_cells, color=159)
+        ve_edges = ve.ColorMultipleCells(
+            layer=0, category=ve.STYLE, cells=edge_cells, color=self.theme["edges"]  # type: ignore [arg-type]
+        )
         self.visual_effects["edges"] = ve_edges
-        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=cell, color=218)
+        ve_workingcell = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["workingcell"]  # type: ignore [arg-type]
+        )
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=52)
+        ve_invalidneighbors = ve.ColorMultipleCells(
+            layer=0, category=ve.LOGIC, cells=[], color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
+        )
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=cell, color=159)
+        ve_lastlinked = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["lastlinked"]  # type: ignore [arg-type]
+        )
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_oldedges = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=[], color=218)
+        ve_oldedges = ve.ColorMultipleCells(
+            layer=0, category=ve.STYLE, cells=[], color=self.theme["oldedges"]  # type: ignore [arg-type]
+        )
         self.visual_effects["old_edges"] = ve_oldedges
 
         while edge_cells:
+            self.status_text["State"] = "Linking"
             working_cell = edge_cells.pop(random.randrange(len(edge_cells)))
             ve_oldedges.cells.append(working_cell)
             ve_oldedges.cells = ve_oldedges.cells[-len(edge_cells) :]
@@ -51,5 +66,6 @@ class PrimsSimple(Algorithm):
             if self.frame_wanted_relative(edge_cells, divisor=10):
                 yield self.maze
         self.status_text["Unlinked Cells"] = 0
+        self.status_text["State:"] = "Complete"
         self.visual_effects.clear()
         yield self.maze

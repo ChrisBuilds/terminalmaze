@@ -37,11 +37,15 @@ class HuntandKill(Algorithm):
         when maze logic checks are performed.
     """
 
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Hunt And Kill"
+        self.status_text["Time Elapsed"] = ""
+        self.status_text["Unvisited Cells"] = 0
+        self.status_text["State"] = ""
         self.link_trail: list[Cell] = []
-        self.frame_time = time.time()
+        self.skip_frames = 3
+        self.theme = theme["hunt_and_kill"]
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         """Generates a maze by linking Cells in a Grid according to the Hunt and Kill maze generation
@@ -53,20 +57,28 @@ class HuntandKill(Algorithm):
         unvisited = list(self.maze.each_cell())
         cell = random.choice(unvisited)
         unvisited.remove(cell)
-        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=cell, color=218)
+        ve_workingcell = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["workingcell"]  # type: ignore [arg-type]
+        )
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_lastlinked = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=49)
+        ve_lastlinked = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["lastlinked"]  # type: ignore [arg-type]
+        )
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_invalidneighbors = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=list(), color=88)
+        ve_invalidneighbors = ve.ColorMultipleCells(
+            layer=0, category=ve.LOGIC, cells=list(), color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
+        )
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
         ve_linktrail = ve.TrailingColor(
             layer=1,
             category=ve.STYLE,
-            colors=[46, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50],
+            colors=self.theme["linktrail"],  # type: ignore [arg-type]
             cells=self.link_trail,
         )
         self.visual_effects["linktrail"] = ve_linktrail
-        ve_huntcells = ve.ColorMultipleCells(layer=0, category=ve.STYLE, cells=list(), color=49)
+        ve_huntcells = ve.ColorMultipleCells(
+            layer=0, category=ve.STYLE, cells=list(), color=self.theme["huntcells"]  # type: ignore [arg-type]
+        )
         self.visual_effects["huntcells"] = ve_huntcells
         while unvisited:
             self.status_text["Unvisited Cells"] = len(unvisited)
@@ -75,6 +87,7 @@ class HuntandKill(Algorithm):
                 neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor in unvisited
             ]
             if unvisited_neighbors:
+                self.status_text["State"] = "Linking"
                 neighbor = random.choice(unvisited_neighbors)
                 self.maze.link_cells(cell, neighbor)
                 ve_linktrail.cells.insert(0, neighbor)
@@ -89,16 +102,16 @@ class HuntandKill(Algorithm):
 
             else:
                 for cell in unvisited[:]:
+                    self.status_text["State"] = "Hunting"
+                    if ve_linktrail.cells:
+                        ve_linktrail.cells.pop()
                     ve_workingcell.cell = cell
                     neighbors = [neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor]
                     visited_neighbors = [neighbor for neighbor in neighbors if neighbor.links]
                     ve_invalidneighbors.cells = [neighbor for neighbor in neighbors if not neighbor.links]
                     ve_huntcells.cells.insert(0, cell)
                     ve_huntcells.cells = ve_huntcells.cells[:10]
-                    if time.time() - self.frame_time > 0.018:
-                        if ve_linktrail.cells:
-                            ve_linktrail.cells.pop()
-                        self.frame_time = time.time()
+                    if self.frame_wanted():
                         yield self.maze
                     if visited_neighbors:
                         ve_invalidneighbors.cells = []
@@ -122,5 +135,5 @@ class HuntandKill(Algorithm):
                 ve_huntcells.cells.pop()
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-
+        self.status_text["State"] = "Complete"
         yield self.maze

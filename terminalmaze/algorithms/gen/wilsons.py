@@ -7,18 +7,30 @@ import terminalmaze.tools.visualeffects as ve
 
 
 class Wilsons(Algorithm):
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
+        self.theme = theme["wilsons"]
         self.status_text["Algorithm"] = "Wilsons"
+        self.status_text["Time Elapsed"] = ""
+        self.status_text["Unvisited"] = 0
+        self.status_text["Walked"] = 0
+        self.status_text["Cell"] = ""
+        self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         walk: list[Cell] = []
         target = self.maze.random_cell()
-        ve_target = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=target, color=218)
+        ve_target = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=target, color=self.theme["target"]  # type: ignore [arg-type]
+        )
         self.visual_effects["target"] = ve_target
-        ve_walk = ve.ColorMultipleCells(layer=0, category=ve.LOGIC, cells=[], color=49)
+        ve_walk = ve.ColorMultipleCells(
+            layer=0, category=ve.LOGIC, cells=[], color=self.theme["walk"]  # type: ignore [arg-type]
+        )
         self.visual_effects["walk"] = ve_walk
-        ve_workingcell = ve.ColorSingleCell(layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=14)
+        ve_workingcell = ve.ColorSingleCell(
+            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["workingcell"]  # type: ignore [arg-type]
+        )
         self.visual_effects["working_cell"] = ve_workingcell
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
@@ -32,6 +44,7 @@ class Wilsons(Algorithm):
             walk.append(working_cell)
             frame_delay = 10
             while walking:
+                self.status_text["State"] = "Searching"
                 next_cell = random.choice(list(n for n in self.maze.get_neighbors(working_cell).values() if n))
                 if next_cell in walk:
                     walk = walk[: walk.index(next_cell) + 1]
@@ -39,6 +52,7 @@ class Wilsons(Algorithm):
                     working_cell = walk[-1]
                     ve_workingcell.cell = working_cell
                 elif next_cell not in unvisited_cells:
+                    self.status_text["State"] = "Linking"
                     walking = False
                     if "target" in self.visual_effects:
                         del self.visual_effects["target"]

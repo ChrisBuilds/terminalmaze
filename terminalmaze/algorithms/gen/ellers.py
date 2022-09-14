@@ -8,12 +8,14 @@ from typing import Generator
 
 
 class Ellers(Algorithm):
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
         self.ignore_mask = True
+        self.theme = theme["ellers"]
         self.status_text["Algorithm"] = "Eller's"
         self.status_text["Seed"] = self.maze.seed
         self.status_text["Unlinked Cells"] = 0
+        self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unlinked_cells = set(self.maze.each_cell())
@@ -43,6 +45,7 @@ class Ellers(Algorithm):
                     links_to_make = 0
             unchecked_cells = [cell for cell in row]
             while links_to_make:
+                self.status_text["State"] = "Merging Groups"
                 cell = random.choice(unchecked_cells)
                 cell_address = (cell.row, cell.column)
                 cell_group = cell_to_group[cell_address]
@@ -67,6 +70,7 @@ class Ellers(Algorithm):
                     if not row_groups[neighbor_group]:
                         del row_groups[neighbor_group]
                     links_to_make -= 1
+                    self.status_text["Time Elapsed"] = self.time_elapsed()
                     yield self.maze
                     break
             if i == self.maze.height - 1:
@@ -76,6 +80,7 @@ class Ellers(Algorithm):
                 cell_count = len(group_cells)
                 cells_to_drop = random.randint(1, cell_count)
                 while cells_to_drop:
+                    self.status_text["State"] = "Dropping"
                     cell = group_cells.pop(random.randint(0, len(group_cells) - 1))
                     neighbor = self.maze.get_neighbors(cell, ignore_mask=self.ignore_mask)["south"]
                     if not neighbor:
@@ -88,6 +93,9 @@ class Ellers(Algorithm):
                     unlinked_cells.discard(cell)
                     unlinked_cells.discard(neighbor)
                     self.status_text["Unlinked Cells"] = len(unlinked_cells)
+                    self.status_text["Time Elapsed"] = self.time_elapsed()
                     yield self.maze
 
+        self.status_text["State"] = "Complete"
+        self.status_text["Time Elapsed"] = self.time_elapsed()
         yield self.maze
