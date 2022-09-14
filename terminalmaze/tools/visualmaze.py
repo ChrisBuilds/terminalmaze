@@ -12,15 +12,15 @@ from typing import Literal
 class Visual:
     """Visual representation of the maze graph and operations on the visual."""
 
-    def __init__(self, grid) -> None:
+    def __init__(self, grid, theme) -> None:
         """Prepare a visual representation of the maze graph.
 
         Args:
             grid (Grid): Maze
         """
         self.grid = grid
-        self.wall = f"{colored.fg(240)}{chr(9608)}"
-        self.path = f"{colored.fg(6)}{chr(9608)}"
+        self.wall = f"{colored.fg(theme['wall'])}{chr(9608)}"
+        self.path = f"{colored.fg(theme['path'])}{chr(9608)}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
