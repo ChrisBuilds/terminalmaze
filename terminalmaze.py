@@ -46,13 +46,14 @@ def parse_args() -> argparse.ArgumentParser:
         "height",
         metavar="HEIGHT",
         type=int,
-        help="int > 0: height of the maze grid in lines, multiply desired height by 2 (each cell has a wall)",
+        help="int > 0: height of the maze grid in lines",
     )
     parser.add_argument(
         "width",
         metavar="WIDTH",
         type=int,
-        help="int > 0: width of the maze grid in characters, multiply desired width by 2 (each cell has a wall",
+        help="int > 0: width of the maze grid in characters, actual width is WIDTH*2 (due to maze walls). "
+        "Ex: A square maze will be height=10, width=5",
     )
     parser.add_argument(
         "maze_algorithm",
@@ -78,7 +79,7 @@ def parse_args() -> argparse.ArgumentParser:
         "--theme",
         metavar="THEME",
         type=str,
-        help="Name of a theme in the themes folder, without the file extension .toml",
+        help="Name of a theme in the themes directory, without the file extension .toml",
         required=False,
         default="default",
     )
@@ -87,9 +88,38 @@ def parse_args() -> argparse.ArgumentParser:
         "--seed",
         metavar="SEED",
         type=int,
-        help="Seed to pass to random generator, use to reproduce mazes",
+        help="Seed to pass to random generator",
         required=False,
         default=None,
+    ),
+    parser.add_argument(
+        "-mk",
+        "--mask",
+        metavar="MASK",
+        type=str,
+        help="Name of a mask in the masks directory",
+        required=False,
+        default=None,
+    ),
+    parser.add_argument(
+        "-mv",
+        "--mazeverbosity",
+        metavar="MAZEVERBOSITY",
+        type=int,
+        help="Maze verbosity is a number 0-4 with determines which visual effects are shown. "
+        "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
+        "3 = Style visual effects, 4 = Logic and Style visual effects",
+        required=False,
+    ),
+    parser.add_argument(
+        "-sv",
+        "--solveverbosity",
+        metavar="SOLVEVERBOSITY",
+        type=int,
+        help="Solve verbosity is a number 0-4 with determines which visual effects are shown. "
+        "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
+        "3 = Style visual effects, 4 = Logic and Style visual effects",
+        required=False,
     )
     args = parser.parse_args()
     return args
