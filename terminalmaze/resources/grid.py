@@ -1,5 +1,6 @@
 from optparse import Option
 from terminalmaze.tools.visualmaze import Visual
+import terminalmaze.tools.visualeffects as ve
 from terminalmaze.resources.cell import Cell
 import random
 import colored  # type: ignore
@@ -8,7 +9,13 @@ from typing import Optional
 
 
 class Grid:
-    def __init__(self, width: int = 20, height: int = 10, mask_string: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        theme: ve.Theme,
+        mask_string: str | None = None,
+    ) -> None:
         """
         Create a new grid with the given width and height.
 
@@ -27,7 +34,7 @@ class Grid:
         self.configure_cells()
         self.wall = f"{colored.fg(240)}{chr(9608)}"
         self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
-        self.visual = Visual(self)
+        self.visual = Visual(self, theme)
         self.seed: Optional[int] = None
 
     def format_mask(self, mask_string: Optional[str]) -> Optional[list[str]]:
