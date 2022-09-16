@@ -74,6 +74,7 @@ class HuntandKill(Algorithm):
             category=ve.STYLE,
             colors=self.theme["linktrail"],  # type: ignore [arg-type]
             cells=self.link_trail,
+            traveldir=0,
         )
         self.visual_effects["linktrail"] = ve_linktrail
         ve_huntcells = ve.ColorMultipleCells(

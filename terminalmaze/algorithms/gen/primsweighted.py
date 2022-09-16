@@ -18,7 +18,11 @@ class PrimsWeighted(Algorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         lastlinked: list[Cell] = []
         ve_lastlinked = ve.TrailingColor(
-            layer=1, category=ve.STYLE, cells=lastlinked, colors=self.theme["lastlinked"]  # type: ignore [arg-type]
+            layer=1,
+            category=ve.STYLE,
+            cells=lastlinked,
+            colors=self.theme["lastlinked"],  # type: ignore [arg-type]
+            traveldir=0,
         )
         self.visual_effects["last_linked"] = ve_lastlinked
         ve_links = ve.ColorMultipleCells(
