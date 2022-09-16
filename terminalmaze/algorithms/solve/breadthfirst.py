@@ -43,10 +43,7 @@ class BreadthFirst(Algorithm):
         )
         self.visual_effects["path"] = ve_solutionpath
         ve_pathtrail = ve.TrailingColor(
-            layer=2,
-            category=ve.STYLE,
-            colors=self.theme["pathtrail"],  # type: ignore [arg-type]
-            cells=[],
+            layer=2, category=ve.STYLE, colors=self.theme["pathtrail"], cells=[], traveldir=-1  # type: ignore [arg-type]
         )
         self.visual_effects["path_trail"] = ve_pathtrail
         while frontier:
