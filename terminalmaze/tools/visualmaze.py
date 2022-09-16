@@ -133,8 +133,8 @@ class Visual:
         verbosity_category_map = {
             0: tuple(),
             1: tuple(),
-            2: (ve.LOGIC,),
-            3: (ve.STYLE,),
+            2: (ve.LOGIC, ve.LOGICSTYLE),
+            3: (ve.STYLE, ve.LOGICSTYLE),
             4: (ve.LOGIC, ve.STYLE),
         }
         colored_visual_grid = [line.copy() for line in self.visual_grid]
@@ -194,7 +194,13 @@ class Visual:
         for visual_coordinates, color in zip(trail_cells, visual_effect.colors):
             color_str = colored.fg(color)
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
-
+        if visual_effect.traveldir:
+            if visual_effect.traveldir == 1:
+                rotate_color = visual_effect.colors.pop(0)
+                visual_effect.colors.insert(-1, rotate_color)
+            elif visual_effect.traveldir == -1:
+                rotate_color = visual_effect.colors.pop(-1)
+                visual_effect.colors.insert(0, rotate_color)
         return colored_visual_grid
 
     def color_multiple_cells(
@@ -325,7 +331,7 @@ class Visual:
         self,
         visual_effects: dict[str, ve.VisualEffect],
         status_text: dict[str, str | int | None],
-        subject=Literal["maze", "solve"],
+        verbosity: int,
         complete: bool = False,
     ) -> None:
         """
@@ -334,7 +340,7 @@ class Visual:
         ----------
         visual_effects : Effects to be applied to the maze
         status_text : Status texts to display below the maze
-        subject : Determines the config to use, either maze or solve
+        verbosity : Determines which visual effects are shown
         complete : Indicates the maze is complete, final image of the maze
 
         Returns
@@ -342,17 +348,12 @@ class Visual:
 
         """
         terminal_delay = tm_config["global"]["terminal_delay"]
-        if subject == "maze":
-            verbosity = tm_config["global"]["maze_verbosity"]
-        else:
-            verbosity = tm_config["global"]["solve_verbosity"]
 
         if verbosity == 0:
             print(self.format_status(status_text), end="\r")
             if not complete:
                 return
 
-        # maze_visual = self.visual_grid
         maze_visual = self.add_visual_effects(visual_effects, verbosity)
         lines = ["".join(line) for line in maze_visual]
         time_since_last_show = time.time() - self.last_show_time
