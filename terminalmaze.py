@@ -41,7 +41,12 @@ def parse_args() -> argparse.ArgumentParser:
     -------
     args (argparse.ArgumentParser) : arguments parsed
     """
-    parser = argparse.ArgumentParser(description="Generate and solve mazes in the terminal")
+
+    maze_algo_help = "\n".join(MAZE_ALGORITHMS.keys())
+    solve_algo_help = "\n".join(SOLVE_ALGORITHMS.keys())
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawTextHelpFormatter, description="Generate and solve mazes in the terminal"
+    )
     parser.add_argument(
         "height",
         metavar="HEIGHT",
@@ -59,17 +64,21 @@ def parse_args() -> argparse.ArgumentParser:
         "maze_algorithm",
         metavar="MAZE_ALGORITHM",
         type=str,
-        help=f"The maze algorithm used for maze generation. Use -ma with no parameters for a list of supported "
-        f"algorithms",
-        choices=list(MAZE_ALGORITHMS.keys()),
+        help=f"""The maze algorithm used for maze generation. 
+Supported Maze Algorithms
+-------------------------
+{maze_algo_help}""",
+        choices=MAZE_ALGORITHMS.keys(),
     )
     parser.add_argument(
         "-sa",
         "--solve_algorithm",
         metavar="ALGORITHM",
         type=str,
-        help="The solve algorithm used to solve the maze. Use -ma with no parameters for a list of supported "
-        f"algorithms",
+        help=f"""The solve algorithm used to solve the maze. 
+Supported Solve Algorithms
+--------------------------
+{solve_algo_help}""",
         required=False,
         default=None,
         choices=list(SOLVE_ALGORITHMS.keys()),
@@ -110,6 +119,8 @@ def parse_args() -> argparse.ArgumentParser:
         "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
         required=False,
+        choices=[0, 1, 2, 3, 4],
+        default=3,
     ),
     parser.add_argument(
         "-sv",
@@ -120,20 +131,29 @@ def parse_args() -> argparse.ArgumentParser:
         "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
         required=False,
+        choices=[0, 1, 2, 3, 4],
+        default=4,
     )
     args = parser.parse_args()
     return args
 
 
-def get_mask() -> str | None:
+def get_mask(args) -> str | None:
     """
     Check the masks directory for the configured mask and return the mask as a string.
     Returns
     -------
     str | None : mask string if found, else None
     """
-    if tm_config["global"]["mask"] in tm_masks:
-        with open(tm_masks[tm_config["global"]["mask"]], "r") as mask_file:
+    mask_name = ""
+    if args.mask is None:
+        return None
+    if ".mask" in args.mask:
+        mask_name = args.mask.split(".")[0]
+    else:
+        mask_name = args.mask
+    if mask_name in tm_masks:
+        with open(tm_masks[mask_name], "r") as mask_file:
             mask = mask_file.read()
     else:
         mask = None
@@ -165,27 +185,30 @@ def main():
     else:
         solve_algorithm = None
 
-    maze = Grid(args.height, args.width, theme[args.maze_algorithm], mask_string=get_mask())
+    maze = Grid(args.height, args.width, theme[args.maze_algorithm], mask_string=get_mask(args))
     if not args.seed:
         seed = int().from_bytes(random.randbytes(5), byteorder="big")
     else:
         seed = args.seed
     maze.seed = seed
-
+    mazeverb = args.mazeverbosity
+    solveverb = args.solveverbosity
     try:
         maze_generator = maze_algorithm(maze, theme)
         for maze in maze_generator.generate_maze():
-            maze.visual.show(maze_generator.visual_effects, maze_generator.status_text, subject="maze")
+            maze.visual.show(maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb)
         else:
-            maze.visual.show(maze_generator.visual_effects, maze_generator.status_text, subject="maze", complete=True)
+            maze.visual.show(
+                maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb, complete=True
+            )
             print()
         if solve_algorithm:
             solve_generator = solve_algorithm(maze, theme)
             for maze in solve_generator.solve():
-                maze.visual.show(solve_generator.visual_effects, solve_generator.status_text, subject="solve")
+                maze.visual.show(solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb)
             else:
                 maze.visual.show(
-                    solve_generator.visual_effects, solve_generator.status_text, subject="solve", complete=True
+                    solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb, complete=True
                 )
                 print()
 
