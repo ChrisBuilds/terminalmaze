@@ -1,6 +1,4 @@
 [global]
-maze_verbosity = 2
-solve_verbosity = 3
-run_solver = true
-terminal_delay = 0.0135
-mask = "spaceamanda_inverted"
+# Time in seconds between terminal refresh, increase if terminal is flickering
+terminal_delay = 0.015
+
