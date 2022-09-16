@@ -35,11 +35,19 @@ class RecursiveBacktracker(Algorithm):
         )
         self.visual_effects["last_linked"] = ve_lastlinked
         ve_stacktrail = ve.TrailingColor(
-            layer=1, category=ve.STYLE, colors=self.theme["stacktrail"], cells=stacktrail  # type: ignore [arg-type]
+            layer=1,
+            category=ve.STYLE,
+            colors=self.theme["stacktrail"],  # type: ignore [arg-type]
+            cells=stacktrail,
+            traveldir=0,
         )
         self.visual_effects["stack_trail"] = ve_stacktrail
         ve_backtracktrail = ve.TrailingColor(
-            layer=2, category=ve.STYLE, colors=self.theme["backtracktrail"], cells=[]  # type: ignore [arg-type]
+            layer=2,
+            category=ve.STYLE,
+            colors=self.theme["backtracktrail"],  # type: ignore [arg-type]
+            cells=[],
+            traveldir=0,
         )
         self.visual_effects["backtrack_trail"] = ve_backtracktrail
         while stack:
