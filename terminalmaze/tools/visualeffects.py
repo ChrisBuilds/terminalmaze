@@ -6,7 +6,8 @@ from typing import DefaultDict, Literal
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
 LOGIC: Literal["logic"] = "logic"
 STYLE: Literal["style"] = "style"
-Category = Literal["logic", "style"]
+LOGICSTYLE: Literal["logicstyle"] = "logicstyle"
+Category = Literal["logic", "style", "logicstyle"]
 Theme = dict[str, dict[str, int | list[int]]]
 
 
@@ -78,11 +79,13 @@ class TrailingColor(Effect):
         layer (int): Colors and effects are drawn in layer order. Higher layers are drawn over lower layers.
         cells (list[Cell]): List of cells to be colored.
         colors (list[int]): List of colored.fg integers specifying the color. (0 -> 255)
+        traveldir (int): Direction the colors will rotate across the trail: -1 = forward, 0 = None, 1 = backward
 
     """
 
     cells: list[Cell]
     colors: list[int]
+    traveldir: int
 
 
 VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | TrailingColor
