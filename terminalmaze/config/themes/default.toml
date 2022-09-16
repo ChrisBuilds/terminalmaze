@@ -199,16 +199,15 @@ walk = 49
 # Verbosity - LOGIC: color of the current cell being assessed for linking
 workingcell = 14
 
+# Verbosity - STYLE: color of trail at front of new walk being linked
+linktrail = [105,105,111,111,39,39,39,38,38,44,44,49]
+
 ########################################################################
 ########################    Solve Algorithms    ########################
 ########################################################################
+# NOTE: Path and Wall color cannot be set by Solve algorithms, must be set by the
+#       maze algorithm responsible for the maze.
 [breadthfirst]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
-
-# Verbosity - All: color of the paths (linked cells)
-path = 6
-
 # Verbosity - LOGIC: color of cells on the outer edge of the search area
 frontier = 231
 

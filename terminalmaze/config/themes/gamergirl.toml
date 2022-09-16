@@ -136,10 +136,10 @@ lastlinked = [47, 47, 48, 48, 48, 49, 49, 49, 49, 50, 50]
 ###########################
 [recursive_backtracker]
 # Verbosity - All: color of the walls and unlinked cells
-wall = 231
+wall = 240
 
 # Verbosity - All: color of the paths (linked cells)
-path = 14
+path = 6
 
 # Verbosity - STYLE: color of the path on the first pass, before backtracking
 stack = 218
@@ -199,16 +199,15 @@ walk = 49
 # Verbosity - LOGIC: color of the current cell being assessed for linking
 workingcell = 14
 
+# Verbosity - STYLE: color of trail at front of new walk being linked
+linktrail = [105,105,111,111,39,39,39,38,38,44,44,49]
+
 ########################################################################
 ########################    Solve Algorithms    ########################
 ########################################################################
+# NOTE: Path and Wall color cannot be set by Solve algorithms, must be set by the
+#       maze algorithm responsible for the maze.
 [breadthfirst]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
-
-# Verbosity - All: color of the paths (linked cells)
-path = 6
-
 # Verbosity - LOGIC: color of cells on the outer edge of the search area
 frontier = 231
 
@@ -227,4 +226,4 @@ solutionpath = 159
 # Verbosity - STYLE: gradient color at the front of the solution path
 # (color at index 0 is the front color)
 #   number of colored cells will be up to the length of this list
-pathtrail = [155, 156, 156, 156, 156, 156, 156, 156, 157, 157, 157, 157, 157, 157, 158, 158, 158, 158, 159]
+pathtrail = [212,213,213,207,207,165,165,170,170,170,169,169,169,167,167,167,167,166,166,166,172,172,178,184,184,190,190,226,226,226,154,154,154,118,118,120,120,121,121,122,122,123,159]
