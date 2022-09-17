@@ -32,10 +32,15 @@ class Wilsons(Algorithm):
             layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["workingcell"]  # type: ignore [arg-type]
         )
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_linktrail = ve.TrailingColor(
-            layer=1, category=ve.STYLE, cells=[], colors=self.theme["linktrail"], traveldir=0  # type: ignore [arg-type]
+        ve_linktransition = ve.ColorTransition(
+            layer=1,
+            category=ve.STYLE,
+            cells=[],
+            colors=self.theme["linktransition"],  # type: ignore [arg-type]
+            transitioning=dict(),
+            frames_per_color=10,
         )
-        self.visual_effects["linktrail"] = ve_linktrail
+        self.visual_effects["linktransition"] = ve_linktransition
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
@@ -63,17 +68,15 @@ class Wilsons(Algorithm):
                     for i, cell in enumerate(walk):
                         if cell == walk[-1]:
                             self.maze.link_cells(cell, next_cell)
-                            ve_linktrail.cells.insert(0, next_cell)
                         else:
                             self.maze.link_cells(cell, walk[i + 1])
-                            ve_linktrail.cells.insert(0, walk[i + 1])
-                        ve_linktrail.cells = ve_linktrail.cells[: len(ve_linktrail.colors)]
                         unvisited_cells.remove(cell)
                         self.status_text["Unvisited"] = len(unvisited_cells)
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                         self.status_text["Time Elapsed"] = self.time_elapsed()
                         yield self.maze
+                    ve_linktransition.cells = walk[:]
                     self.visual_effects.pop("logic1", None)
                     links += 1
                 else:
@@ -90,16 +93,14 @@ class Wilsons(Algorithm):
                         if frame_delay == 0:
                             frame_delay = 40
                             self.status_text["Time Elapsed"] = self.time_elapsed()
-                            if ve_linktrail.cells:
-                                ve_linktrail.cells.pop()
                             yield self.maze
                     else:
                         frame_delay -= 1
                         if frame_delay == 0:
                             frame_delay = 3
                             self.status_text["Time Elapsed"] = self.time_elapsed()
-                            if ve_linktrail.cells:
-                                ve_linktrail.cells.pop()
                             yield self.maze
+        while ve_linktransition.transitioning:
+            yield self.maze
         self.visual_effects.clear()
         yield self.maze
