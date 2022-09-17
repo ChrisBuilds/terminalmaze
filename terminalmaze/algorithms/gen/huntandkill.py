@@ -69,7 +69,7 @@ class HuntandKill(Algorithm):
             layer=0, category=ve.LOGIC, cells=list(), color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
         )
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_linktrail = ve.TrailingColor(
+        ve_linktrail = ve.ColorTrail(
             layer=1,
             category=ve.STYLE,
             colors=self.theme["linktrail"],  # type: ignore [arg-type]
