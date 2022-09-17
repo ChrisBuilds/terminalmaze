@@ -42,10 +42,15 @@ class BreadthFirst(Algorithm):
             layer=1, category=ve.LOGIC, color=self.theme["solutionpath"], cells=[]  # type: ignore [arg-type]
         )
         self.visual_effects["path"] = ve_solutionpath
-        ve_pathtrail = ve.TrailingColor(
-            layer=2, category=ve.STYLE, colors=self.theme["pathtrail"], cells=[], traveldir=-1  # type: ignore [arg-type]
+        ve_pathtransition = ve.ColorTransition(
+            layer=2,
+            category=ve.STYLE,
+            colors=self.theme["pathtransition"],  # type: ignore [arg-type]
+            cells=[],
+            transitioning=dict(),
+            frames_per_color=3,
         )
-        self.visual_effects["path_trail"] = ve_pathtrail
+        self.visual_effects["pathtransition"] = ve_pathtransition
         while frontier:
             self.status_text["State"] = "Exploring"
             self.status_text["Frontier"] = len(frontier)
@@ -80,12 +85,11 @@ class BreadthFirst(Algorithm):
         for step in route:
             self.status_text["State"] = "Solved"
             path.append(step)
-            ve_pathtrail.cells = path[-len(ve_pathtrail.colors) :][::-1]
+            ve_pathtransition.cells.append(step)
             self.status_text["Solution Length"] = len(route)
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-        while ve_pathtrail.cells:
-            ve_pathtrail.cells.pop()
+        while ve_pathtransition.transitioning:
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         self.status_text["Time Elapsed"] = self.time_elapsed()
