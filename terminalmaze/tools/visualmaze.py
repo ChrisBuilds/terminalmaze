@@ -135,7 +135,7 @@ class Visual:
             1: tuple(),
             2: (ve.LOGIC, ve.LOGICSTYLE),
             3: (ve.STYLE, ve.LOGICSTYLE),
-            4: (ve.LOGIC, ve.STYLE),
+            4: (ve.LOGIC, ve.STYLE, ve.LOGICSTYLE),
         }
         colored_visual_grid = [line.copy() for line in self.visual_grid]
         pending_effects = sorted(visual_effects.values())
@@ -155,21 +155,56 @@ class Visual:
                     self.last_groups = current_effect.groups
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
 
-            elif isinstance(current_effect, ve.TrailingColor):
-                colored_visual_grid = self.color_trail_effect(colored_visual_grid, current_effect)
+            elif isinstance(current_effect, ve.ColorTrail):
+                colored_visual_grid = self.color_trail(colored_visual_grid, current_effect)
+
+            elif isinstance(current_effect, ve.ColorTransition):
+                colored_visual_grid = self.color_transition(colored_visual_grid, current_effect)
 
         return colored_visual_grid
 
-    def color_trail_effect(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.TrailingColor
+    def color_transition(
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorTransition
     ) -> list[list[str]]:
+        if visual_effect.cells:
+            translated_cells = set()
+            for cell in visual_effect.cells:
+                translated_cells.add(self.translate_cell_coords(cell))
+
+            visual_effect.cells.clear()
+            cells_and_passages = self.find_passages(translated_cells | visual_effect.transitioning.keys())
+            for key in visual_effect.transitioning.keys():
+                cells_and_passages.discard(key)
+            visual_effect.transitioning |= {visual_coordinates: [0, 0] for visual_coordinates in cells_and_passages}
+        transition_complete = []
+        for visual_coordinate, transition_details in visual_effect.transitioning.items():
+            color_index, frames_until_transition = transition_details
+            if frames_until_transition:
+                visual_effect.transitioning[visual_coordinate][1] -= 1
+                color = colored.fg(visual_effect.colors[color_index])
+            else:
+                visual_effect.transitioning[visual_coordinate][1] = visual_effect.frames_per_color
+                if color_index == len(visual_effect.colors) - 1:
+                    transition_complete.append(visual_coordinate)
+                    color = None
+                else:
+                    color = colored.fg(visual_effect.colors[color_index])
+                    visual_effect.transitioning[visual_coordinate][0] += 1
+            if color:
+                colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinate, color)
+
+        for visual_coordinate in transition_complete:
+            del visual_effect.transitioning[visual_coordinate]
+        return colored_visual_grid
+
+    def color_trail(self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorTrail) -> list[list[str]]:
         """Color cells with a trailing effect based on a list of colors provided such that cells[0] receives
         colors[0], cells[1] receives colors[1], etc. If cells and colors are different lenghts, the shortest
         list will be used.
 
             Args:
                 colored_visual_grid (list[list[str]]): List of cells to be colored.
-                visual_effect (ve.TrailingColor): Dataclass
+                visual_effect (ve.ColorTrail): Dataclass
 
             Returns:
                 list[list[str]]: Colored visual grid.

@@ -70,7 +70,7 @@ class RandomColorGroup(Effect):
 
 
 @dataclass
-class TrailingColor(Effect):
+class ColorTrail(Effect):
     """Color cells with a trailing effect based on a list of colors provided such that cells[0] receives
     colors[0], cells[1] receives colors[1], etc. If cells and colors are different lenghts, the shortest
     list will be used.
@@ -88,4 +88,23 @@ class TrailingColor(Effect):
     traveldir: int
 
 
-VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | TrailingColor
+@dataclass
+class ColorTransition(Effect):
+    """Color cells with a transitioning color with a transition speed based on frames per color.
+
+    Args:
+        layer (int): Colors and effects are drawn in layer order. Higher layers are drawn over lower layers.
+        cells (list[Cell]): List of cells to be colored.
+        transitioning dict[tuple[int, int], list[int]]: Used by the visualizing function to handle cells
+        colors (list[int]): List of colored.fg integers specifying the color. (0 -> 255), 0 index is the first
+                            color used for the transition
+        frames_per_color (int): The number of frames to show each color prior to transitioning
+    """
+
+    cells: list[Cell]
+    transitioning: dict[tuple[int, int], list[int]]
+    colors: list[int]
+    frames_per_color: int = 1
+
+
+VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | ColorTrail | ColorTransition
