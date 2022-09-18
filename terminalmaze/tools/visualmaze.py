@@ -28,6 +28,7 @@ class Visual:
         self.visual_grid: list[list[str]] = list()
         self.passages: set[tuple[int, int]] = set()
         self.last_show_time = time.time()
+        self.start_time = time.time()
         self.prepare_visual()
 
     def prepare_visual(self) -> None:
@@ -66,7 +67,7 @@ class Visual:
         """
         color = self.group_color_map.get(group_id)
         if color:
-            return self.color_map.get(color)
+            return self.color_map[color]
 
         color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
         self.group_color_map[group_id] = color
@@ -74,7 +75,7 @@ class Visual:
         if not self.group_color_pool:
             self.group_color_pool = list(range(0, 256))
 
-        return self.color_map.get(self.group_color_map[group_id])
+        return self.color_map[self.group_color_map[group_id]]
 
     def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
         """Translate cell coordinates to match row, column indexes in the visual
@@ -228,7 +229,7 @@ class Visual:
                 if passage not in trail_cells:
                     trail_cells.insert(trail_cells.index(front_cell) + 1, passage)
         for visual_coordinates, color in zip(trail_cells, visual_effect.colors):
-            color_str = self.color_map.get(color)
+            color_str = self.color_map[color]
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         if visual_effect.traveldir:
             if visual_effect.traveldir == 1:
@@ -255,7 +256,7 @@ class Visual:
             return colored_visual_grid
         translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
         cells_and_passages = self.find_passages(translated_cells)
-        color_str = self.color_map.get(visual_effect.color)
+        color_str = self.color_map[visual_effect.color]
         for visual_coordinates in cells_and_passages:
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         return colored_visual_grid
@@ -280,7 +281,7 @@ class Visual:
 
         visual_coordinates = self.translate_cell_coords(visual_effect.cell)
         if 0 <= visual_effect.color <= 256:
-            color_str = self.color_map.get(visual_effect.color)
+            color_str = self.color_map[visual_effect.color]
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         else:
             raise ValueError(f"visual_effect.color value: {visual_effect.color} not in valid range (0 - 256)")
@@ -363,6 +364,18 @@ class Visual:
         status_string = status_string.strip("|").strip()
         return status_string
 
+    def time_elapsed(self) -> str:
+        """
+        Calculate the run time in minutes/seconds and return string representation.
+        Returns
+        -------
+        str : Time in format {minutes}m {seconds}s
+        """
+        seconds = time.time() - self.start_time
+        minutes = int(seconds // 60)
+        seconds = int(seconds % 60)
+        return f"{minutes}m {seconds}s"
+
     def show(
         self,
         visual_effects: dict[str, ve.VisualEffect],
@@ -397,6 +410,7 @@ class Visual:
             time.sleep(terminal_delay - time_since_last_show)
         system("clear")
         print("\n".join(lines))
+        status_text["Time Elapsed"] = self.time_elapsed()
         print(f"{colored.attr('reset')}{self.format_status(status_text)}")
 
         self.last_show_time = time.time()

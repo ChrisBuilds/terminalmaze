@@ -40,7 +40,6 @@ class HuntandKill(Algorithm):
     def __init__(self, maze: Grid, theme: ve.Theme) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Hunt And Kill"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Unvisited Cells"] = 0
         self.status_text["State"] = ""
         self.link_trail: list[Cell] = []
@@ -73,7 +72,7 @@ class HuntandKill(Algorithm):
             layer=0,
             category=ve.STYLE,
             cells=list(),
-            colors=self.theme["linktrans"],
+            colors=self.theme["linktrans"],  # type: ignore [arg-type]
             frames_per_color=2,
             transitioning=dict(),
         )
@@ -82,7 +81,7 @@ class HuntandKill(Algorithm):
             layer=0,
             category=ve.STYLE,
             cells=list(),
-            colors=self.theme["hunttrans"],
+            colors=self.theme["hunttrans"],  # type: ignore [arg-type]
             frames_per_color=2,
             transitioning=dict(),
         )
@@ -102,7 +101,6 @@ class HuntandKill(Algorithm):
                 ve_lastlinked.cell = neighbor
                 unvisited.remove(neighbor)
                 cell = neighbor
-                self.status_text["Time Elapsed"] = self.time_elapsed()
                 yield self.maze
 
             else:
@@ -122,7 +120,6 @@ class HuntandKill(Algorithm):
                         ve_linktrans.cells.append(neighbor)
                         ve_lastlinked.cell = neighbor
                         unvisited.remove(cell)
-                        self.status_text["Time Elapsed"] = self.time_elapsed()
                         yield self.maze
                         break
 
@@ -130,7 +127,6 @@ class HuntandKill(Algorithm):
         del self.visual_effects["working_cell"]
         del self.visual_effects["invalid_neighbors"]
         while ve_hunttrans.transitioning:
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         self.status_text["State"] = "Complete"
         yield self.maze

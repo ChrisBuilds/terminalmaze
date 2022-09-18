@@ -11,7 +11,6 @@ class Wilsons(Algorithm):
         super().__init__(maze)
         self.theme = theme["wilsons"]
         self.status_text["Algorithm"] = "Wilsons"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Unvisited"] = 0
         self.status_text["Walked"] = 0
         self.status_text["Cell"] = ""
@@ -74,7 +73,6 @@ class Wilsons(Algorithm):
                         self.status_text["Unvisited"] = len(unvisited_cells)
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
-                        self.status_text["Time Elapsed"] = self.time_elapsed()
                         yield self.maze
                     ve_linktransition.cells = walk[:]
                     self.visual_effects.pop("logic1", None)
@@ -92,13 +90,11 @@ class Wilsons(Algorithm):
                         frame_delay -= 1
                         if frame_delay == 0:
                             frame_delay = 40
-                            self.status_text["Time Elapsed"] = self.time_elapsed()
                             yield self.maze
                     else:
                         frame_delay -= 1
                         if frame_delay == 0:
                             frame_delay = 3
-                            self.status_text["Time Elapsed"] = self.time_elapsed()
                             yield self.maze
         while ve_linktransition.transitioning:
             yield self.maze

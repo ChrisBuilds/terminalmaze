@@ -10,7 +10,6 @@ class PrimsWeighted(Algorithm):
         super().__init__(maze)
         self.theme = theme["prims_weighted"]
         self.status_text["Algorithm"] = "Prims Weighted"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Edges"] = 0
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
@@ -69,7 +68,6 @@ class PrimsWeighted(Algorithm):
             if unlinked_neighbors:
                 for neighbor in unlinked_neighbors:
                     links.append((next_cell, neighbor, cell_weights[neighbor]))
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             self.status_text["Edges"] = len(links)
             self.status_text["Unlinked Cells"] = total_cells_unlinked
             yield self.maze

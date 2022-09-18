@@ -13,7 +13,6 @@ class BinaryTree(Algorithm):
         """
 
         self.status_text["Algorithm"] = "Binary Tree"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
         self.theme = theme["binary_tree"]
@@ -42,7 +41,6 @@ class BinaryTree(Algorithm):
                     unlinked_cells.discard(cell)
                     ve_neighbor.cell = neighbor
             self.status_text["Unlinked Cells"] = len(unlinked_cells)
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
 
         self.visual_effects.clear()

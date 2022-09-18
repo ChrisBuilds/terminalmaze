@@ -15,7 +15,6 @@ class Sidewinder(Algorithm):
         super().__init__(maze)
         self.theme = theme["sidewinder"]
         self.status_text["Algorithm"] = "Sidewinder"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Unvisited Cells"] = 0
         self.status_text["State"] = ""
 
@@ -70,7 +69,6 @@ class Sidewinder(Algorithm):
                             self.maze.link_cells(working_cell, neighbor_north)
                             ve_lastlinked.cell = neighbor_north
                         run.clear()
-                    self.status_text["Time Elapsed"] = self.time_elapsed()
                     yield self.maze
         self.visual_effects.clear()
         self.status_text["State"] = "Complete"

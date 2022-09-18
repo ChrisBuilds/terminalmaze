@@ -15,7 +15,6 @@ class KruskalsRandomized(Algorithm):
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
         self.cell_to_group_map: dict[Cell, int] = {}  # cell_address : group
         self.status_text["Algorithm"] = "Kruskal's Randomized"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Available Links"] = 0
         self.status_text["Groups"] = 0
         self.status_text["State"] = ""
@@ -55,7 +54,6 @@ class KruskalsRandomized(Algorithm):
             self.maze.link_cells(cell_a, cell_b)
             self.merge_groups(cell_a, cell_b, groups)
 
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             self.status_text["Available Links"] = len(links)
             self.status_text["Groups"] = len(groups)
             yield self.maze

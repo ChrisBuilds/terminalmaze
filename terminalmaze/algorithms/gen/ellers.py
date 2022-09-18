@@ -70,7 +70,6 @@ class Ellers(Algorithm):
                     if not row_groups[neighbor_group]:
                         del row_groups[neighbor_group]
                     links_to_make -= 1
-                    self.status_text["Time Elapsed"] = self.time_elapsed()
                     yield self.maze
                     break
             if i == self.maze.height - 1:
@@ -93,9 +92,7 @@ class Ellers(Algorithm):
                     unlinked_cells.discard(cell)
                     unlinked_cells.discard(neighbor)
                     self.status_text["Unlinked Cells"] = len(unlinked_cells)
-                    self.status_text["Time Elapsed"] = self.time_elapsed()
                     yield self.maze
 
         self.status_text["State"] = "Complete"
-        self.status_text["Time Elapsed"] = self.time_elapsed()
         yield self.maze

@@ -9,7 +9,6 @@ class BreadthFirst(Algorithm):
         super().__init__(maze)
         self.theme = theme["breadthfirst"]
         self.status_text["Algorithm"] = "Breadth First"
-        self.status_text["Elapsed Time"] = ""
         self.status_text["Frontier"] = 0
         self.status_text["Visited"] = 0
         self.status_text["Position"] = ""
@@ -22,7 +21,7 @@ class BreadthFirst(Algorithm):
         frontier = [start]
         explored: dict[Cell, Cell] = {start: start}
         visited: list[Cell] = []
-        transitions = set()
+        transitions: set[Cell] = set()
         ve_frontier = ve.ColorMultipleCells(
             layer=0, category=ve.LOGIC, color=self.theme["frontier"], cells=frontier  # type: ignore [arg-type]
         )
@@ -34,7 +33,7 @@ class BreadthFirst(Algorithm):
         ve_visited_transition = ve.ColorTransition(
             layer=1,
             category=ve.STYLE,
-            colors=self.theme["pathtransition"],
+            colors=self.theme["pathtransition"],  # type: ignore [arg-type]
             cells=[],
             frames_per_color=10,
             transitioning=dict(),
@@ -85,7 +84,6 @@ class BreadthFirst(Algorithm):
             frontier.extend(edges)
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             if self.frame_wanted_relative(frontier, divisor=4):
                 yield self.maze
 
@@ -108,10 +106,7 @@ class BreadthFirst(Algorithm):
             path.append(step)
             ve_solutiontransition.cells.append(step)
             self.status_text["Solution Length"] = len(route)
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         while ve_solutiontransition.transitioning:
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-        self.status_text["Time Elapsed"] = self.time_elapsed()
         yield self.maze

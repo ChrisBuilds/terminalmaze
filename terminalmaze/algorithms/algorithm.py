@@ -71,15 +71,3 @@ class Algorithm:
         else:
             self.frames_skipped += 1
             return False
-
-    def time_elapsed(self) -> str:
-        """
-        Calculate the run time in minutes/seconds and return string representation.
-        Returns
-        -------
-        str : Time in format {minutes}m {seconds}s
-        """
-        seconds = time.time() - self.start_time
-        minutes = int(seconds // 60)
-        seconds = int(seconds % 60)
-        return f"{minutes}m {seconds}s"

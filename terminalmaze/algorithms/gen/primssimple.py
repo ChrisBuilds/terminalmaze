@@ -10,7 +10,6 @@ class PrimsSimple(Algorithm):
         super().__init__(maze)
         self.theme = theme["prims_simple"]
         self.status_text["Algorithm"] = "Prims Simplified"
-        self.status_text["Time Elapsed"] = ""
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
         self.skip_frames = 0
@@ -62,7 +61,6 @@ class PrimsSimple(Algorithm):
                 unlinked_neighbors = list(n for n in self.maze.get_neighbors(next_cell).values() if n and not n.links)
                 if unlinked_neighbors:
                     edge_cells.append(next_cell)
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             if self.frame_wanted_relative(edge_cells, divisor=10):
                 yield self.maze
         self.status_text["Unlinked Cells"] = 0

@@ -56,7 +56,6 @@ class AldousBroder(Algorithm):
                     ve_invalidvisited.cells.pop(0)
                 self.status_text["Unvisited"] = len(unvisited)
                 self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
-                self.status_text["Time Elapsed"] = self.time_elapsed()
                 self.status_text["State"] = "Linking"
                 yield self.maze
             else:
@@ -71,7 +70,6 @@ class AldousBroder(Algorithm):
                     self.frame_time = time.time()
                     self.status_text["Unvisited"] = len(unvisited)
                     self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
-                    self.status_text["Time Elapsed"] = self.time_elapsed()
 
                     if self.last_linked:
                         self.last_linked.pop(0)
@@ -86,7 +84,6 @@ class AldousBroder(Algorithm):
                 ve_invalidvisited.cells.pop(0)
             if ve_lastlinked.cells:
                 ve_lastlinked.cells.pop(0)
-            self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         self.status_text["State"] = "Complete"
         yield self.maze

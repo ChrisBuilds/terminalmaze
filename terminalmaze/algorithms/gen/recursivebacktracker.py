@@ -38,7 +38,7 @@ class RecursiveBacktracker(Algorithm):
             category=ve.STYLE,
             cells=[],
             transitioning=dict(),
-            colors=self.theme["stacktrail"],
+            colors=self.theme["stacktrail"],  # type: ignore [arg-type]
             frames_per_color=3,
         )
         self.visual_effects["stacktrans"] = ve_stacktrans
@@ -47,7 +47,7 @@ class RecursiveBacktracker(Algorithm):
             category=ve.STYLE,
             cells=[],
             transitioning=dict(),
-            colors=self.theme["backtracktrail"],
+            colors=self.theme["backtracktrail"],  # type: ignore [arg-type]
             frames_per_color=3,
         )
         self.visual_effects["backtrans"] = ve_backtrans
@@ -66,7 +66,6 @@ class RecursiveBacktracker(Algorithm):
                 cell = next_cell
                 self.status_text["Pending Paths"] = len(unvisited_neighbors)
                 self.status_text["Stack Length"] = len(stack)
-                self.status_text["Time Elapsed"] = self.time_elapsed()
                 yield self.maze
 
             else:
@@ -78,7 +77,6 @@ class RecursiveBacktracker(Algorithm):
                     ve_workingcell.cell = cell
                     self.status_text["Stack Length"] = len(stack)
                     if self.frame_wanted():
-                        self.status_text["Time Elapsed"] = self.time_elapsed()
                         yield self.maze
         self.status_text["Stack Length"] = 0
         self.status_text["Pending Paths"] = 0
