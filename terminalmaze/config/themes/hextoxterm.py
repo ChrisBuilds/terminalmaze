@@ -2,7 +2,7 @@
 
 """Convert RGB Hex colors to their closest XTerm-256 color."""
 
-import colored
+import colored  # type: ignore
 
 xterm_to_hex_map = {
     0: "#000000",
