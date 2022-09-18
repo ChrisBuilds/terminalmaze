@@ -19,8 +19,9 @@ class Visual:
             grid (Grid): Maze
         """
         self.grid = grid
-        self.wall = f"{colored.fg(theme['wall'])}{chr(9608)}"
-        self.path = f"{colored.fg(theme['path'])}{chr(9608)}"
+        self.color_map: dict[int, str] = {i: colored.fg(i) for i in range(256)}
+        self.wall = f"{self.color_map.get(theme['wall'])}{chr(9608)}"
+        self.path = f"{self.color_map.get(theme['path'])}{chr(9608)}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
@@ -65,7 +66,7 @@ class Visual:
         """
         color = self.group_color_map.get(group_id)
         if color:
-            return colored.fg(color)
+            return self.color_map.get(color)
 
         color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
         self.group_color_map[group_id] = color
@@ -73,7 +74,7 @@ class Visual:
         if not self.group_color_pool:
             self.group_color_pool = list(range(0, 256))
 
-        return colored.fg(self.group_color_map[group_id])
+        return self.color_map.get(self.group_color_map[group_id])
 
     def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
         """Translate cell coordinates to match row, column indexes in the visual
@@ -181,14 +182,14 @@ class Visual:
             color_index, frames_until_transition = transition_details
             if frames_until_transition:
                 visual_effect.transitioning[visual_coordinate][1] -= 1
-                color = colored.fg(visual_effect.colors[color_index])
+                color = self.color_map.get(visual_effect.colors[color_index])
             else:
                 visual_effect.transitioning[visual_coordinate][1] = visual_effect.frames_per_color
                 if color_index == len(visual_effect.colors) - 1:
                     transition_complete.append(visual_coordinate)
                     color = None
                 else:
-                    color = colored.fg(visual_effect.colors[color_index])
+                    color = self.color_map.get(visual_effect.colors[color_index])
                     visual_effect.transitioning[visual_coordinate][0] += 1
             if color:
                 colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinate, color)
@@ -227,7 +228,7 @@ class Visual:
                 if passage not in trail_cells:
                     trail_cells.insert(trail_cells.index(front_cell) + 1, passage)
         for visual_coordinates, color in zip(trail_cells, visual_effect.colors):
-            color_str = colored.fg(color)
+            color_str = self.color_map.get(color)
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         if visual_effect.traveldir:
             if visual_effect.traveldir == 1:
@@ -254,7 +255,7 @@ class Visual:
             return colored_visual_grid
         translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
         cells_and_passages = self.find_passages(translated_cells)
-        color_str = colored.fg(visual_effect.color)
+        color_str = self.color_map.get(visual_effect.color)
         for visual_coordinates in cells_and_passages:
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         return colored_visual_grid
@@ -279,7 +280,7 @@ class Visual:
 
         visual_coordinates = self.translate_cell_coords(visual_effect.cell)
         if 0 <= visual_effect.color <= 256:
-            color_str = colored.fg(visual_effect.color)
+            color_str = self.color_map.get(visual_effect.color)
             colored_visual_grid = self.apply_color(colored_visual_grid, visual_coordinates, color_str)
         else:
             raise ValueError(f"visual_effect.color value: {visual_effect.color} not in valid range (0 - 256)")
@@ -396,6 +397,6 @@ class Visual:
             time.sleep(terminal_delay - time_since_last_show)
         system("clear")
         print("\n".join(lines))
-        print(self.format_status(status_text))
+        print(f"{colored.attr('reset')}{self.format_status(status_text)}")
 
         self.last_show_time = time.time()
