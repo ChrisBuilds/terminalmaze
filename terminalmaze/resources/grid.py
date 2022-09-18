@@ -70,7 +70,7 @@ class Grid:
 
         if not self.mask_lines:
             return
-        mask_midpoint_x = -(-len(max(self.mask_lines)) // 2)
+        mask_midpoint_x = -(-len(max(self.mask_lines, key=len)) // 2)
         mask_midpoint_y = -(-len(self.mask_lines) // 2)
         grid_midpoint_x = -(-self.width // 2)
         grid_midpoint_y = -(-self.height // 2)
