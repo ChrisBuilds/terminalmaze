@@ -22,6 +22,7 @@ class BreadthFirst(Algorithm):
         frontier = [start]
         explored: dict[Cell, Cell] = {start: start}
         visited: list[Cell] = []
+        transitions = set()
         ve_frontier = ve.ColorMultipleCells(
             layer=0, category=ve.LOGIC, color=self.theme["frontier"], cells=frontier  # type: ignore [arg-type]
         )
@@ -30,6 +31,15 @@ class BreadthFirst(Algorithm):
             layer=0, category=ve.STYLE, color=self.theme["visited"], cells=visited  # type: ignore [arg-type]
         )
         self.visual_effects["visited"] = ve_visited
+        ve_visited_transition = ve.ColorTransition(
+            layer=1,
+            category=ve.STYLE,
+            colors=self.theme["pathtransition"],
+            cells=[],
+            frames_per_color=10,
+            transitioning=dict(),
+        )
+        self.visual_effects["visited_transition"] = ve_visited_transition
         ve_target = ve.ColorSingleCell(
             layer=0, category=ve.LOGIC, color=self.theme["target"], cell=target  # type: ignore [arg-type]
         )
@@ -48,15 +58,26 @@ class BreadthFirst(Algorithm):
             colors=self.theme["pathtransition"],  # type: ignore [arg-type]
             cells=[],
             transitioning=dict(),
-            frames_per_color=3,
+            frames_per_color=1,
         )
         self.visual_effects["pathtransition"] = ve_pathtransition
+        ve_solutiontransition = ve.ColorTransition(
+            layer=2,
+            category=ve.STYLE,
+            colors=self.theme["solutiontransition"],  # type: ignore [arg-type]
+            cells=[],
+            transitioning=dict(),
+            frames_per_color=1,
+        )
+        self.visual_effects["solutiontransition"] = ve_solutiontransition
         while frontier:
             self.status_text["State"] = "Exploring"
             self.status_text["Frontier"] = len(frontier)
             self.status_text["Visited"] = len(visited)
             position = frontier.pop(0)
             visited.append(position)
+            if position not in transitions:
+                ve_visited_transition.cells.append(position)
             ve_workingcell.cell = position
             edges = [neighbor for neighbor in position.links if neighbor not in explored and neighbor not in frontier]
             for cell in edges:
@@ -69,7 +90,7 @@ class BreadthFirst(Algorithm):
                 yield self.maze
 
         self.status_text["Frontier"] = 0
-        del self.visual_effects["frontier"]
+        # del self.visual_effects["frontier"]
         del self.visual_effects["position"]
         position = target
         route: list[Cell] = [target]
@@ -85,11 +106,11 @@ class BreadthFirst(Algorithm):
         for step in route:
             self.status_text["State"] = "Solved"
             path.append(step)
-            ve_pathtransition.cells.append(step)
+            ve_solutiontransition.cells.append(step)
             self.status_text["Solution Length"] = len(route)
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
-        while ve_pathtransition.transitioning:
+        while ve_solutiontransition.transitioning:
             self.status_text["Time Elapsed"] = self.time_elapsed()
             yield self.maze
         self.status_text["Time Elapsed"] = self.time_elapsed()
