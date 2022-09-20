@@ -12,7 +12,7 @@ from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.ellers import Ellers
 from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
 from terminalmaze.resources.grid import Grid
-from terminalmaze.config import tm_config, tm_masks, tm_themes
+from terminalmaze.config import tm_masks, tm_themes
 import sys
 import random
 import argparse
@@ -145,7 +145,6 @@ def get_mask(args) -> str | None:
     -------
     str | None : mask string if found, else None
     """
-    mask_name = ""
     if args.mask is None:
         return None
     if ".mask" in args.mask:
