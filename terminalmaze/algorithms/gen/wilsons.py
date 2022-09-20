@@ -37,7 +37,7 @@ class Wilsons(Algorithm):
             cells=[],
             colors=self.theme["linktransition"],  # type: ignore [arg-type]
             transitioning=dict(),
-            frames_per_color=10,
+            frames_per_state=10,
         )
         self.visual_effects["linktransition"] = ve_linktransition
         unvisited_cells = list(self.maze.each_cell())
