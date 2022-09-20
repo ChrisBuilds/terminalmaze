@@ -1,6 +1,7 @@
 from terminalmaze.resources.cell import Cell
 from dataclasses import dataclass
 from typing import DefaultDict, Literal
+import random
 
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
@@ -98,13 +99,35 @@ class ColorTransition(Effect):
         transitioning dict[tuple[int, int], list[int]]: Used by the visualizing function to handle cells
         colors (list[int]): List of colored.fg integers specifying the color. (0 -> 255), 0 index is the first
                             color used for the transition
-        frames_per_color (int): The number of frames to show each color prior to transitioning
+        frames_per_state (int): The number of frames to show each color prior to transitioning
     """
 
     cells: list[Cell]
     transitioning: dict[tuple[int, int], list[int]]
     colors: list[int]
-    frames_per_color: int = 1
+    frames_per_state: int = 1
+
+
+@dataclass
+class CharacterTransition(Effect):
+    cells: list[Cell]
+    transitioning: dict[tuple[int, int], list[int]]
+    characters: list[int]
+    frames_per_state: int = 1
+
+
+def random_binary_chars(length: int) -> list[str]:
+    """
+    Returns a list of 1 and 0 strings, of the given length.
+    Parameters
+    ----------
+    length : int The number of strings to generate
+
+    Returns
+    -------
+    List[str]
+    """
+    return [random.choice(("0", "1")) for _ in range(length)]
 
 
 VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | ColorTrail | ColorTransition
