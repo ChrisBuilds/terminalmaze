@@ -73,7 +73,7 @@ class HuntandKill(Algorithm):
             category=ve.STYLE,
             cells=list(),
             colors=self.theme["linktrans"],  # type: ignore [arg-type]
-            frames_per_color=2,
+            frames_per_state=2,
             transitioning=dict(),
         )
         self.visual_effects["linktrans"] = ve_linktrans
@@ -82,7 +82,7 @@ class HuntandKill(Algorithm):
             category=ve.STYLE,
             cells=list(),
             colors=self.theme["hunttrans"],  # type: ignore [arg-type]
-            frames_per_color=2,
+            frames_per_state=2,
             transitioning=dict(),
         )
         self.visual_effects["hunttrans"] = ve_hunttrans
