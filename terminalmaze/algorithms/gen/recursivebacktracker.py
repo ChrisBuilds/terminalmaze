@@ -39,7 +39,7 @@ class RecursiveBacktracker(Algorithm):
             cells=[],
             transitioning=dict(),
             colors=self.theme["stacktrail"],  # type: ignore [arg-type]
-            frames_per_color=3,
+            frames_per_state=3,
         )
         self.visual_effects["stacktrans"] = ve_stacktrans
         ve_backtrans = ve.ColorTransition(
@@ -48,7 +48,7 @@ class RecursiveBacktracker(Algorithm):
             cells=[],
             transitioning=dict(),
             colors=self.theme["backtracktrail"],  # type: ignore [arg-type]
-            frames_per_color=3,
+            frames_per_state=3,
         )
         self.visual_effects["backtrans"] = ve_backtrans
         while stack:
