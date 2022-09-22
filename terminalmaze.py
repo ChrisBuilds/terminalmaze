@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+import os
 from argparse import Namespace
 from terminalmaze.algorithms.gen.huntandkill import HuntandKill
 from terminalmaze.algorithms.gen.wilsons import Wilsons
@@ -51,14 +52,15 @@ def parse_args() -> Namespace:
         "height",
         metavar="HEIGHT",
         type=int,
-        help="int > 0: height of the maze grid in lines",
+        help="int > 0: Height of the maze grid in lines. Actual height is HEIGHT*2. Use 0 for height and width "
+        "for auto size.",
     )
     parser.add_argument(
         "width",
         metavar="WIDTH",
         type=int,
-        help="int > 0: width of the maze grid in characters, actual width is WIDTH*2 (due to maze walls). "
-        "Ex: A square maze will be height=10, width=5",
+        help="int > 0: Width of the maze grid in characters. Actual width is WIDTH*2. Use 0 for height and width"
+        " for auto size.",
     )
     parser.add_argument(
         "maze_algorithm",
@@ -106,7 +108,7 @@ Supported Solve Algorithms
         "--mask",
         metavar="MASK",
         type=str,
-        help="Name of a mask in the masks directory",
+        help="Name of a mask in the masks directory, without the file extension .mask",
         required=False,
         default=None,
     ),
@@ -115,8 +117,10 @@ Supported Solve Algorithms
         "--mazeverbosity",
         metavar="MAZEVERBOSITY",
         type=int,
-        help="Maze verbosity is a number 0-4 with determines which visual effects are shown. "
-        "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
+        help="Maze verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
+        "configurable in theme files. "
+        "General practice: 0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic "
+        "visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
         required=False,
         choices=[0, 1, 2, 3, 4],
@@ -127,8 +131,10 @@ Supported Solve Algorithms
         "--solveverbosity",
         metavar="SOLVEVERBOSITY",
         type=int,
-        help="Solve verbosity is a number 0-4 with determines which visual effects are shown. "
-        "0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic visual effects, "
+        help="Solve verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
+        "configurable in theme files. "
+        "General practice: 0 = NONE (only status text and final maze), 1 = Solve generation only, 2 = Logic "
+        "visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
         required=False,
         choices=[0, 1, 2, 3, 4],
@@ -184,7 +190,18 @@ def main():
     else:
         solve_algorithm = None
 
-    maze = Grid(args.height, args.width, theme[args.maze_algorithm], mask_string=get_mask(args))
+    if args.height == 0 and args.width == 0:
+        try:
+            columns, lines = os.get_terminal_size()
+            width = columns // 2
+            height = (lines // 2) - 2  # subtract 2 for the status line
+        except OSError:
+            print("Unable to determine terminal size. Specify height and width. See -h for usage.")
+            return
+    else:
+        height = args.height
+        width = args.width
+    maze = Grid(width, height, theme[args.maze_algorithm], mask_string=get_mask(args))
     if not args.seed:
         seed = int().from_bytes(random.randbytes(5), byteorder="big")
     else:
