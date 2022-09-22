@@ -16,6 +16,10 @@ class Algorithm:
         self.start_time = time.time()
         random.seed(self.maze.seed)
 
+    @staticmethod
+    def distance(position: Cell, target: Cell) -> int:
+        return abs(position.row - target.row) + abs(position.column - target.column)
+
     def generate_maze(self) -> Generator[Grid, None, None]:
         """
         Generate a maze by linking cells in the Grid.
@@ -28,7 +32,8 @@ class Algorithm:
 
         Args:
             relative_to (list[Cell]): List of cells on which to base the frame skip.
-            divisor (int): relative to // divisor, used to reduce the number of skipped frames for tuning. Defaults to 1.
+            divisor (int): relative to // divisor, used to reduce the number of skipped frames for tuning.
+            Defaults to 1.
 
         Returns:
             bool: True if frame should be displayed, else False.
