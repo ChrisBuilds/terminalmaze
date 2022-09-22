@@ -12,6 +12,7 @@ from terminalmaze.algorithms.gen.primsweighted import PrimsWeighted
 from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.ellers import Ellers
 from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
+from terminalmaze.algorithms.solve.greedybestfirst import GreedyBestFirst
 from terminalmaze.resources.grid import Grid
 import terminalmaze.config as config
 import sys
@@ -32,7 +33,11 @@ MAZE_ALGORITHMS = {
     "ellers": Ellers,
 }
 
-SOLVE_ALGORITHMS = {"breadth_first": BreadthFirst}
+SOLVE_ALGORITHMS = {
+    "breadth_first": BreadthFirst,
+    "breadth_first_early_exit": BreadthFirst,
+    "greedy_best_first": GreedyBestFirst,
+}
 
 
 def parse_args() -> Namespace:
@@ -49,18 +54,18 @@ def parse_args() -> Namespace:
         formatter_class=argparse.RawTextHelpFormatter, description="Generate and solve mazes in the terminal"
     )
     parser.add_argument(
-        "height",
-        metavar="HEIGHT",
-        type=int,
-        help="int > 0: Height of the maze grid in lines. Actual height is HEIGHT*2. Use 0 for height and width "
-        "for auto size.",
-    )
-    parser.add_argument(
         "width",
         metavar="WIDTH",
         type=int,
         help="int > 0: Width of the maze grid in characters. Actual width is WIDTH*2. Use 0 for height and width"
         " for auto size.",
+    )
+    parser.add_argument(
+        "height",
+        metavar="HEIGHT",
+        type=int,
+        help="int > 0: Height of the maze grid in lines. Actual height is HEIGHT*2. Use 0 for height and width "
+        "for auto size.",
     )
     parser.add_argument(
         "maze_algorithm",
@@ -219,7 +224,10 @@ def main():
             )
             print()
         if solve_algorithm:
-            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm])
+            conditions = None
+            if args.solve_algorithm == "breadth_first_early_exit":
+                conditions = "early_exit"
+            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm], conditions)
             for maze in solve_generator.solve():
                 maze.visual.show(solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb)
             else:
