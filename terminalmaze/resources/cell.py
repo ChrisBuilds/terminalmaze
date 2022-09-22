@@ -57,3 +57,6 @@ class Cell:
 
     def __eq__(self, other):
         return isinstance(other, self.__class__) and (other.row, other.column) == (self.row, self.column)
+
+    def __lt__(self, other):
+        return False
