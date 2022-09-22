@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any, Type, Union
 import pathlib
 import tomli
 from pydantic import BaseModel
@@ -143,7 +143,27 @@ class BreadthFirstTheme(BaseModel):
     solution_transition: Transition
 
 
-THEME = (
+class BreadthFirstEarlyExitTheme(BaseModel):
+    working_cell: LayerColor
+    frontier: LayerColor
+    visited: LayerColor
+    visited_transition: Transition
+    target: LayerColor
+    solution_path: LayerColor
+    solution_transition: Transition
+
+
+class GreedyBestFirst(BaseModel):
+    working_cell: LayerColor
+    frontier: LayerColor
+    visited: LayerColor
+    visited_transition: Transition
+    target: LayerColor
+    solution_path: LayerColor
+    solution_transition: Transition
+
+
+MAZE_THEME = (
     AldousBroderTheme
     | BinaryTreeTheme
     | EllersTheme
@@ -154,8 +174,9 @@ THEME = (
     | RecursiveBacktrackerTheme
     | SideWinderTheme
     | WilsonsTheme
-    | BreadthFirstTheme
 )
+SOLVE_THEME = BreadthFirstTheme | BreadthFirstEarlyExitTheme | GreedyBestFirst
+THEME = Union[MAZE_THEME, SOLVE_THEME]
 
 model_map: dict[str, Type[THEME]] = {
     "aldous_broder": AldousBroderTheme,
@@ -169,6 +190,8 @@ model_map: dict[str, Type[THEME]] = {
     "side_winder": SideWinderTheme,
     "wilsons": WilsonsTheme,
     "breadth_first": BreadthFirstTheme,
+    "breadth_first_early_exit": BreadthFirstEarlyExitTheme,
+    "greedy_best_first": GreedyBestFirst,
 }
 themes: dict[str, dict[str, THEME]] = {theme_name: dict() for theme_name in tm_themes}
 for theme_name, algorithms in tm_themes.items():
