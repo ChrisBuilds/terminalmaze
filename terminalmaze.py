@@ -170,25 +170,19 @@ def get_mask(args) -> str | None:
     return mask
 
 
-def get_theme(args) -> dict[str, dict[str, int | list[int]]]:
-    """
-    Get the theme specified in the config file from the tm_themes import.
-
-    Returns
-    -------
-    dict[str, int | list[int]] : loaded toml file with theme information per algorithm
-    """
-
-    theme_name = args.theme
-    if theme_name not in config.themes:
-        theme_name = "default"
-    return config.themes[theme_name]
-
-
 def main():
     args = parse_args()
     maze_algorithm = MAZE_ALGORITHMS[args.maze_algorithm]
-    theme = get_theme(args)
+    if args.theme in config.themes:
+        theme = config.themes[args.theme]
+    else:
+        print("Unable to locate theme. Verify file exists in themes dir and was spelled correctly.")
+        return
+
+    mask = get_mask(args)
+    if args.mask and not mask:
+        print("Unable to locate mask. Verify file exists in masks dir and was spelled correctly.")
+        return
 
     if args.solve_algorithm:
         solve_algorithm = SOLVE_ALGORITHMS[args.solve_algorithm]
