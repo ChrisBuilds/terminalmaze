@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+from argparse import Namespace
 from terminalmaze.algorithms.gen.huntandkill import HuntandKill
 from terminalmaze.algorithms.gen.wilsons import Wilsons
 from terminalmaze.algorithms.gen.binarytree import BinaryTree
@@ -12,7 +12,7 @@ from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.ellers import Ellers
 from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
 from terminalmaze.resources.grid import Grid
-from terminalmaze.config import tm_masks, tm_themes
+import terminalmaze.config as config
 import sys
 import random
 import argparse
@@ -20,7 +20,7 @@ import argparse
 
 MAZE_ALGORITHMS = {
     "binary_tree": BinaryTree,
-    "sidewinder": Sidewinder,
+    "side_winder": Sidewinder,
     "aldous_broder": AldousBroder,
     "wilsons": Wilsons,
     "hunt_and_kill": HuntandKill,
@@ -34,7 +34,7 @@ MAZE_ALGORITHMS = {
 SOLVE_ALGORITHMS = {"breadth_first": BreadthFirst}
 
 
-def parse_args() -> argparse.ArgumentParser:
+def parse_args() -> Namespace:
     """
     Parse the arguments passed to at the command line.
     Returns
@@ -151,8 +151,8 @@ def get_mask(args) -> str | None:
         mask_name = args.mask.split(".")[0]
     else:
         mask_name = args.mask
-    if mask_name in tm_masks:
-        with open(tm_masks[mask_name], "r") as mask_file:
+    if mask_name in config.tm_masks:
+        with open(config.tm_masks[mask_name], "r") as mask_file:
             mask = mask_file.read()
     else:
         mask = None
@@ -169,15 +169,15 @@ def get_theme(args) -> dict[str, dict[str, int | list[int]]]:
     """
 
     theme_name = args.theme
-    if theme_name not in tm_themes:
+    if theme_name not in config.themes:
         theme_name = "default"
-    return tm_themes[theme_name]
+    return config.themes[theme_name]
 
 
 def main():
     args = parse_args()
-    theme = get_theme(args)
     maze_algorithm = MAZE_ALGORITHMS[args.maze_algorithm]
+    theme = get_theme(args)
 
     if args.solve_algorithm:
         solve_algorithm = SOLVE_ALGORITHMS[args.solve_algorithm]
@@ -193,7 +193,7 @@ def main():
     mazeverb = args.mazeverbosity
     solveverb = args.solveverbosity
     try:
-        maze_generator = maze_algorithm(maze, theme)
+        maze_generator = maze_algorithm(maze, theme[args.maze_algorithm])
         for maze in maze_generator.generate_maze():
             maze.visual.show(maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb)
         else:
@@ -202,7 +202,7 @@ def main():
             )
             print()
         if solve_algorithm:
-            solve_generator = solve_algorithm(maze, theme)
+            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm])
             for maze in solve_generator.solve():
                 maze.visual.show(solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb)
             else:
