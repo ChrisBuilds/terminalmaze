@@ -30,12 +30,14 @@ class ColorCharacter(BaseModel):
 class LayerVerbosity(BaseModel):
     layer: int
     verbosity: list[int]
+    character: str
 
 
 class LayerColor(BaseModel):
     layer: int
     color: int
     verbosity: list[int]
+    character: str
 
 
 class Transition(BaseModel):
