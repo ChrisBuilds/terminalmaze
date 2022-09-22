@@ -1,5 +1,5 @@
 from terminalmaze.resources.cell import Cell
-from typing import DefaultDict, Literal
+from typing import DefaultDict
 from terminalmaze.config import LayerColor, Transition, LayerVerbosity
 
 
@@ -12,7 +12,6 @@ class Effect:
 
     def __init__(self, theme_data: LayerColor | Transition | LayerVerbosity):
         """
-
         Args:
             theme_data (LayerColor | Transition): Colors and effects are drawn in layer order. Higher layers are
         drawn over lower layers.
@@ -32,6 +31,7 @@ class ColorSingleCell(Effect):
         super().__init__(theme_data)
         self.cell: Cell = Cell(0, 0)
         self.color: int = theme_data.color
+        self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
 
@@ -42,6 +42,7 @@ class ColorMultipleCells(Effect):
         super().__init__(theme_data)
         self.cells: list[Cell] = list()
         self.color: int = theme_data.color
+        self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
 
@@ -52,6 +53,7 @@ class RandomColorGroup(Effect):
     def __init__(self, theme_data: LayerVerbosity):
         super().__init__(theme_data)
         self.groups: GroupType
+        self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
 
