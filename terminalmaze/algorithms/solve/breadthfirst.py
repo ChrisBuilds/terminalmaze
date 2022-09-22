@@ -64,7 +64,6 @@ class BreadthFirst(Algorithm):
                 yield self.maze
 
         self.status_text["Frontier"] = 0
-        # del self.visual_effects["frontier"]
         del self.visual_effects["position"]
         position = target
         route: list[Cell] = [target]
