@@ -14,7 +14,7 @@ class KruskalsRandomized(Algorithm):
         super().__init__(maze)
         self.theme = theme
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
-        self.cell_to_group_map: dict[Cell, int] = {}  # cell_address : group
+        self.cell_to_group_map: dict[Cell, int] = dict()  # cell_address : group
         self.status_text["Algorithm"] = "Kruskal's Randomized"
         self.status_text["Available Links"] = 0
         self.status_text["Groups"] = 0
@@ -35,7 +35,7 @@ class KruskalsRandomized(Algorithm):
                 if (neighbor, cell) not in links and neighbor:  # check if reversed link is already in list
                     links.add((cell, neighbor))
 
-        ve_groups = ve.RandomColorGroup(self.theme.group_random_color_layer)
+        ve_groups = ve.RandomColorGroup(self.theme.group_random_color)
         ve_groups.groups = self.group_to_cell_map_logic
         self.visual_effects["groups"] = ve_groups
 
@@ -66,7 +66,7 @@ class KruskalsRandomized(Algorithm):
         cell_a_group = self.cell_to_group_map[cell_a]
         cell_b_group = self.cell_to_group_map[cell_b]
         smaller_group, larger_group = sorted(
-            [cell_a_group, cell_b_group], key=lambda cell_group: len(self.group_to_cell_map_logic[group])
+            [cell_a_group, cell_b_group], key=lambda cell_group: len(self.group_to_cell_map_logic[cell_group])
         )
         self.group_to_cell_map_logic[larger_group].update(self.group_to_cell_map_logic[smaller_group])
         del self.group_to_cell_map_logic[smaller_group]
