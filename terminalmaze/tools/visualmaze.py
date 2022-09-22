@@ -2,20 +2,26 @@ import time
 
 from terminalmaze.resources.cell import Cell
 import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import tm_config
+from terminalmaze.config import tm_config, MAZE_THEME
 import colored  # type: ignore
 import random
-from os import system
+from os import system, get_terminal_size
 
 
 class Visual:
     """Visual representation of the maze graph and operations on the visual."""
 
-    def __init__(self, grid, theme) -> None:
+    def __init__(self, grid, theme: MAZE_THEME):
         """Prepare a visual representation of the maze graph.
 
-        Args:
-            grid (Grid): Maze
+        Parameters
+        ----------
+        theme : theme class from terminalmaze.config
+        grid : terminalmaze.resources.grid.Grid
+
+        Returns
+        -------
+        None
         """
         self.grid = grid
         self.theme = theme
@@ -31,7 +37,45 @@ class Visual:
         self.passages: set[tuple[int, int]] = set()
         self.last_show_time = time.time()
         self.start_time = time.time()
+        self.terminal_width = self.get_terminal_width()
         self.prepare_visual()
+
+    @staticmethod
+    def get_terminal_width() -> int:
+        """
+        Get the terminal size using os.get_terminal_size(). If unable to get terminal size, return 0.
+        Returns
+        -------
+        int : Column width of terminal, or 0 if unable to retrieve terminal size
+        """
+        try:
+            columns, lines = get_terminal_size()
+            return columns
+        except OSError:
+            return 0
+
+    @staticmethod
+    def translate_cell_coords(cell: Cell) -> tuple[int, int]:
+        """Translate cell coordinates to match row, column indexes in the visual
+        grid.
+
+        :param cell: cell to translate
+        :return: ruple (row, column)
+        """
+        row = cell.row
+        column = cell.column
+
+        if row == 0:
+            row = 1
+        else:
+            row = (row * 2) + 1
+
+        if column == 0:
+            column = 1
+        else:
+            column = (column * 2) + 1
+
+        return row, column
 
     def prepare_visual(self) -> None:
         """Prepare a visual representation of the maze graph."""
@@ -78,28 +122,6 @@ class Visual:
             self.group_color_pool = list(range(0, 256))
 
         return self.fg_color_map[self.group_color_map[group_id]]
-
-    def translate_cell_coords(self, cell: Cell) -> tuple[int, int]:
-        """Translate cell coordinates to match row, column indexes in the visual
-        grid.
-
-        :param cell: cell to translate
-        :return: ruple (row, column)
-        """
-        row = cell.row
-        column = cell.column
-
-        if row == 0:
-            row = 1
-        else:
-            row = (row * 2) + 1
-
-        if column == 0:
-            column = 1
-        else:
-            column = (column * 2) + 1
-
-        return row, column
 
     def link_cells(self, cell_a: Cell, cell_b: Cell) -> None:
         """Replace characters for linked cells and the wall between them.
@@ -348,6 +370,8 @@ class Visual:
         for label, value in status_text.items():
             status_string += f" {label}: {value} |"
         status_string = status_string.strip("|").strip()
+        if self.terminal_width:
+            status_string = status_string + (" " * (self.terminal_width - len(status_string)))
         return status_string
 
     def time_elapsed(self) -> str:
