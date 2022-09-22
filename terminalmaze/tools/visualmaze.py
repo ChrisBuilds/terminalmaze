@@ -22,8 +22,8 @@ class Visual:
         self.fg_color_map: dict[int, str] = {i: colored.fg(i) for i in range(256)}
         self.bg_color_map: dict[int, str] = {i: colored.bg(i) for i in range(256)}
         self.reset_color = colored.attr("reset")
-        self.wall = f"{self.fg_color_map.get(theme.wall.color)}{theme.wall.character}"
-        self.path = f"{self.fg_color_map.get(theme.path.color)}{theme.path.character}"
+        self.wall = f"{self.fg_color_map.get(theme.wall.color)}{theme.wall.character}{self.reset_color}"
+        self.path = f"{self.fg_color_map.get(theme.path.color)}{theme.path.character}{self.reset_color}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
@@ -321,13 +321,15 @@ class Visual:
 
         """
         y, x = visual_coordinates
-        current_character = colored_visual_grid[y][x][-1]
-        current_color = colored_visual_grid[y][x][:-1]
+        current_character = colored_visual_grid[y][x].replace(self.reset_color, "")[-1]
+        current_color = colored_visual_grid[y][x].replace(self.reset_color, "")[:-1]
         if character:
             current_character = character
         if color:
             current_color = color
-        colored_visual_grid[y][x] = f"{self.bg_color_map[self.theme.wall.color]}{current_color}{current_character}"
+        colored_visual_grid[y][
+            x
+        ] = f"{self.bg_color_map[self.theme.wall.color]}{current_color}{current_character}{self.reset_color}"
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
@@ -392,9 +394,8 @@ class Visual:
         time_since_last_show = time.time() - self.last_show_time
         if time_since_last_show < terminal_delay:
             time.sleep(terminal_delay - time_since_last_show)
+        status_text["Time Elapsed"] = self.time_elapsed()
         system("clear")
         print("\n".join(lines))
-        status_text["Time Elapsed"] = self.time_elapsed()
         print(f"{colored.attr('reset')}{self.format_status(status_text)}")
-
         self.last_show_time = time.time()
