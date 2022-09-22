@@ -22,8 +22,8 @@ class Visual:
         self.fg_color_map: dict[int, str] = {i: colored.fg(i) for i in range(256)}
         self.bg_color_map: dict[int, str] = {i: colored.bg(i) for i in range(256)}
         self.reset_color = colored.attr("reset")
-        self.wall = f"{self.fg_color_map.get(theme['wall'])}{chr(9608)}"
-        self.path = f"{self.fg_color_map.get(theme['path'])}{chr(9608)}"
+        self.wall = f"{self.fg_color_map.get(theme.wall)}{chr(9608)}"
+        self.path = f"{self.fg_color_map.get(theme.path)}{chr(9608)}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
@@ -159,112 +159,59 @@ class Visual:
                     self.last_groups = current_effect.groups
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
 
-            elif isinstance(current_effect, ve.ColorTrail):
-                colored_visual_grid = self.color_trail(colored_visual_grid, current_effect)
-
-            elif isinstance(current_effect, ve.ColorTransition) or isinstance(current_effect, ve.CharacterTransition):
-                colored_visual_grid = self.color_transition(colored_visual_grid, current_effect)
+            elif isinstance(current_effect, ve.ValueTransition):
+                colored_visual_grid = self.value_transition(colored_visual_grid, current_effect)
 
         return colored_visual_grid
 
-    def color_transition(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorTransition | ve.CharacterTransition
+    def value_transition(
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ValueTransition
     ) -> list[list[str]]:
-        if isinstance(visual_effect, ve.ColorTransition) and visual_effect.colors:
-            mode = "color"
-        elif isinstance(visual_effect, ve.CharacterTransition) and visual_effect.characters:
-            mode = "character"
-        else:
-            visual_effect.cells.clear()
-            return colored_visual_grid
-        color = None
-        character = None
+        def get_value_at_modification_index(i, collection):
+            if i < len(collection):
+                return collection[i]
+            return None
 
-        if visual_effect.cells:
-            translated_cells = set()
-            for cell in visual_effect.cells:
-                translated_cells.add(self.translate_cell_coords(cell))
+        color = character = None
+        translated_cells = set()
+        for cell in visual_effect.cells:
+            translated_cells.add(self.translate_cell_coords(cell))
 
-            visual_effect.cells.clear()
-            cells_and_passages = self.find_passages(translated_cells | visual_effect.transitioning.keys())
-            for key in visual_effect.transitioning.keys():
-                cells_and_passages.discard(key)
-            visual_effect.transitioning |= {visual_coordinates: [0, 0] for visual_coordinates in cells_and_passages}
+        visual_effect.cells.clear()
+        cells_and_passages = self.find_passages(translated_cells | visual_effect.transitioning.keys())
+        for key in visual_effect.transitioning.keys():
+            cells_and_passages.discard(key)
+
+        visual_effect.transitioning |= {
+            visual_coordinates: [0, visual_effect.frames_per_value] for visual_coordinates in cells_and_passages
+        }
         transition_complete = []
         for visual_coordinate, transition_details in visual_effect.transitioning.items():
             modification_index, frames_until_transition = transition_details
             if frames_until_transition:
                 visual_effect.transitioning[visual_coordinate][1] -= 1
-                if mode == "color":
-                    color = self.fg_color_map.get(visual_effect.colors[modification_index])
-                elif mode == "character":
-                    character = visual_effect.characters[modification_index]
-            else:
-                visual_effect.transitioning[visual_coordinate][1] = visual_effect.frames_per_state
-                if mode == "color":
-                    if modification_index == len(visual_effect.colors) - 1:
-                        transition_complete.append(visual_coordinate)
-                    else:
-                        color = self.fg_color_map.get(visual_effect.colors[modification_index])
-                        visual_effect.transitioning[visual_coordinate][0] += 1
-                elif mode == "character":
-                    if modification_index == len(visual_effect.characters) - 1:
-                        transition_complete.append(visual_coordinate)
-                    else:
-                        character = visual_effect.characters[modification_index]
-                        visual_effect.transitioning[visual_coordinate][0] += 1
+                color = get_value_at_modification_index(modification_index, visual_effect.colors)
+                character = get_value_at_modification_index(modification_index, visual_effect.characters)
 
-            if mode == "color" and color:
-                colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinate, color=color)
-            elif mode == "character" and character:
-                if len(character) > 1:
-                    character = random.choice(character)
+            if not visual_effect.transitioning[visual_coordinate][1]:
+                visual_effect.transitioning[visual_coordinate][0] += 1
+                visual_effect.transitioning[visual_coordinate][1] = visual_effect.frames_per_value
+
+            if visual_effect.transitioning[visual_coordinate][0] >= len(
+                visual_effect.colors
+            ) and visual_effect.transitioning[visual_coordinate][0] >= len(visual_effect.characters):
+                transition_complete.append(visual_coordinate)
+
+            if character and len(character) > 1:
+                character = random.choice(character)
+            if character or color:
+                if color:
+                    color = self.fg_color_map.get(color)
                 colored_visual_grid = self.apply_cell_modification(
-                    colored_visual_grid, visual_coordinate, character=character
+                    colored_visual_grid, visual_coordinate, character=character, color=color
                 )
         for visual_coordinate in transition_complete:
             del visual_effect.transitioning[visual_coordinate]
-        return colored_visual_grid
-
-    def color_trail(self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorTrail) -> list[list[str]]:
-        """Color cells with a trailing effect based on a list of colors provided such that cells[0] receives
-        colors[0], cells[1] receives colors[1], etc. If cells and colors are different lenghts, the shortest
-        list will be used.
-
-            Args:
-                colored_visual_grid (list[list[str]]): List of cells to be colored.
-                visual_effect (ve.ColorTrail): Dataclass
-
-            Returns:
-                list[list[str]]: Colored visual grid.
-        """
-        trail_cells = list()
-        for i, cell in enumerate(visual_effect.cells):
-            if i != len(visual_effect.cells) - 1:
-                front_cell = self.translate_cell_coords(cell)
-                back_cell = self.translate_cell_coords(visual_effect.cells[i + 1])
-                if front_cell not in trail_cells:
-                    trail_cells.append(front_cell)
-                if back_cell not in trail_cells:
-                    trail_cells.append(back_cell)
-                cells_and_passage = list(self.find_passages({front_cell, back_cell}))
-                if len(cells_and_passage) < 3:
-                    continue
-                cells_and_passage.remove(front_cell)
-                cells_and_passage.remove(back_cell)
-                passage = cells_and_passage[0]
-                if passage not in trail_cells:
-                    trail_cells.insert(trail_cells.index(front_cell) + 1, passage)
-        for visual_coordinates, color in zip(trail_cells, visual_effect.colors):
-            color_str = self.fg_color_map[color]
-            colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
-        if visual_effect.traveldir:
-            if visual_effect.traveldir == 1:
-                rotate_color = visual_effect.colors.pop(0)
-                visual_effect.colors.insert(-1, rotate_color)
-            elif visual_effect.traveldir == -1:
-                rotate_color = visual_effect.colors.pop(-1)
-                visual_effect.colors.insert(0, rotate_color)
         return colored_visual_grid
 
     def color_multiple_cells(
@@ -387,7 +334,7 @@ class Visual:
             current_character = character
         if color:
             current_color = color
-        colored_visual_grid[y][x] = f"{self.bg_color_map[self.theme['wall']]}{current_color}{current_character}"
+        colored_visual_grid[y][x] = f"{self.bg_color_map[self.theme.wall]}{current_color}{current_character}"
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
