@@ -1,7 +1,6 @@
-from optparse import Option
 from terminalmaze.tools.visualmaze import Visual
-import terminalmaze.tools.visualeffects as ve
 from terminalmaze.resources.cell import Cell
+from terminalmaze.config import MAZE_THEME
 import random
 import colored  # type: ignore
 from collections.abc import Generator
@@ -13,7 +12,7 @@ class Grid:
         self,
         width: int,
         height: int,
-        theme: ve.Theme,
+        theme: MAZE_THEME,
         mask_string: str | None = None,
     ) -> None:
         """
@@ -118,16 +117,13 @@ class Grid:
         else:
             return None
 
-    def get_neighbors(
-        self, cell: Cell, ignore_mask=False, existing_only: bool = True, adjacent: bool = True
-    ) -> dict[str, Optional[Cell]]:
+    def get_neighbors(self, cell: Cell, ignore_mask=False, existing_only: bool = True) -> dict[str, Optional[Cell]]:
         """
         Given a cell, return a list of its neighboring cells.
 
         :param cell: the cell to get the neighbors of
         :param ignore_mask: return masked and unmasked neighbors. Defaults to False.
         :param existing_only: if True, only return direction:Cell pair if neighbor exists. Defaults to True.
-        :param adjacent: ignore diagonal neighbors. Defaults to True
         :return: A dict of {str,Cell} neighbors.
         """
         neighbors = {}
