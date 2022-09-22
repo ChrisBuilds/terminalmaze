@@ -1,15 +1,15 @@
 import random
 from typing import Generator
-from terminalmaze.resources.grid import Grid
-from terminalmaze.resources.cell import Cell
+from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import WilsonsTheme
 
 
 class Wilsons(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: WilsonsTheme) -> None:
         super().__init__(maze)
-        self.theme = theme["wilsons"]
+        self.theme = theme
         self.status_text["Algorithm"] = "Wilsons"
         self.status_text["Unvisited"] = 0
         self.status_text["Walked"] = 0
@@ -17,34 +17,21 @@ class Wilsons(Algorithm):
         self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        walk: list[Cell] = []
         target = self.maze.random_cell()
-        ve_target = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=target, color=self.theme["target"]  # type: ignore [arg-type]
-        )
+        ve_target = ve.ColorSingleCell(ve.LOGIC, self.theme.target)
+        ve_target.cell = target
         self.visual_effects["target"] = ve_target
-        ve_walk = ve.ColorMultipleCells(
-            layer=0, category=ve.LOGICSTYLE, cells=[], color=self.theme["walk"]  # type: ignore [arg-type]
-        )
+        ve_walk = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.walk)
         self.visual_effects["walk"] = ve_walk
-        ve_workingcell = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["workingcell"]  # type: ignore [arg-type]
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_linktransition = ve.ColorTransition(
-            layer=1,
-            category=ve.STYLE,
-            cells=[],
-            colors=self.theme["linktransition"],  # type: ignore [arg-type]
-            transitioning=dict(),
-            frames_per_state=10,
-        )
+        ve_linktransition = ve.ValueTransition(ve.STYLE, self.theme.link_transition)
         self.visual_effects["linktransition"] = ve_linktransition
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
         while unvisited_cells:
-            walk = []
+            walk: list[Cell] = []
             ve_walk.cells = walk
             walking = True
             working_cell = random.choice(unvisited_cells)

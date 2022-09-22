@@ -1,73 +1,42 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import RecursiveBacktrackerTheme
 import random
 from typing import Generator
 
 
 class RecursiveBacktracker(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: RecursiveBacktrackerTheme) -> None:
         super().__init__(maze)
         self.status_text["Algorithm"] = "Recursive Backtracker"
         self.status_text.update({"Pending Paths": "", "Stack Length": "", "State": ""})
         self.skip_frames = 1
-        self.theme = theme["recursive_backtracker"]
+        self.theme = theme
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         cell = self.maze.random_cell()
         stack = [cell]
-        ve_stack = ve.ColorMultipleCells(
-            layer=self.theme["stack"]["layer"],  # type: ignore [arg-type]
-            category=ve.STYLE,
-            color=self.theme["stack"]["color"],  # type: ignore [arg-type]
-            cells=stack,
-        )
+
+        ve_stack = ve.ColorMultipleCells(ve.STYLE, self.theme.stack)
+        ve_stack.cells = stack
         self.visual_effects["stack"] = ve_stack
 
-        ve_workingcell = ve.ColorSingleCell(
-            layer=self.theme["workingcell"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["workingcell"]["color"],  # type: ignore [arg-type]
-            cell=cell,
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
 
-        ve_invalidneighbors = ve.ColorMultipleCells(
-            layer=self.theme["invalid_neighbors"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["invalid_neighbors"]["color"],  # type: ignore [arg-type]
-            cells=[],
-        )
+        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
 
-        ve_lastlinked = ve.ColorSingleCell(
-            layer=self.theme["last_linked"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["last_linked"]["color"],  # type: ignore [arg-type]
-            cell=cell,
-        )
+        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked.cell = cell
         self.visual_effects["last_linked"] = ve_lastlinked
 
-        ve_stack_transition = ve.ValueTransition(
-            layer=self.theme["stack_transition"]["layer"],  # type: ignore [arg-type]
-            category=ve.STYLE,
-            cells=[],
-            transitioning=dict(),
-            colors=self.theme["stack_transition"]["colors"],  # type: ignore [arg-type]
-            characters=self.theme["stack_transition"]["characters"],  # type: ignore [arg-type]
-            frames_per_value=self.theme["stack_transition"]["frames_per_value"],  # type: ignore [arg-type]
-        )
+        ve_stack_transition = ve.ValueTransition(ve.STYLE, self.theme.stack_transition)
         self.visual_effects["stacktrans"] = ve_stack_transition
 
-        ve_backtrack_transition = ve.ValueTransition(
-            layer=self.theme["backtrack_transition"]["layer"],  # type: ignore [arg-type]
-            category=ve.STYLE,
-            cells=[],
-            transitioning=dict(),
-            colors=self.theme["backtrack_transition"]["colors"],  # type: ignore [arg-type]
-            characters=self.theme["backtrack_transition"]["characters"],  # type: ignore [arg-type]
-            frames_per_value=self.theme["backtrack_transition"]["frames_per_value"],  # type: ignore [arg-type]
-        )
+        ve_backtrack_transition = ve.ValueTransition(ve.STYLE, self.theme.backtrack_transition)
         self.visual_effects["backtrans"] = ve_backtrack_transition
 
         while stack:

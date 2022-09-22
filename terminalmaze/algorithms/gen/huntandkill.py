@@ -14,21 +14,16 @@ Classes
 """
 
 import random
-import time
 from collections.abc import Generator
 
 from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import HuntAndKillTheme
 
 
 class HuntandKill(Algorithm):
     """Implements the Hunt and Kill maze generation algorithm.
-
-    Attributes
-    ----------
-    maze : Grid
-        Grid object from the grid module.
 
     Methods
     -------
@@ -37,14 +32,21 @@ class HuntandKill(Algorithm):
         when maze logic checks are performed.
     """
 
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: HuntAndKillTheme) -> None:
+        """Implements the Hunt and Kill maze generation algorithm.
+
+        Attributes
+        ----------
+        maze : Grid
+            Grid object from the grid module.
+        """
         super().__init__(maze)
         self.status_text["Algorithm"] = "Hunt And Kill"
         self.status_text["Unvisited Cells"] = 0
         self.status_text["State"] = ""
         self.link_trail: list[Cell] = []
         self.skip_frames = 3
-        self.theme = theme["hunt_and_kill"]
+        self.theme = theme
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         """Generates a maze by linking Cells in a Grid according to the Hunt and Kill maze generation
@@ -56,36 +58,21 @@ class HuntandKill(Algorithm):
         unvisited = list(self.maze.each_cell())
         cell = random.choice(unvisited)
         unvisited.remove(cell)
-        ve_workingcell = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["workingcell"]  # type: ignore [arg-type]
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_lastlinked = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["lastlinked"]  # type: ignore [arg-type]
-        )
+
+        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_invalidneighbors = ve.ColorMultipleCells(
-            layer=0, category=ve.LOGIC, cells=list(), color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
-        )
+
+        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_linktrans = ve.ColorTransition(
-            layer=0,
-            category=ve.STYLE,
-            cells=list(),
-            colors=self.theme["linktrans"],  # type: ignore [arg-type]
-            frames_per_state=2,
-            transitioning=dict(),
-        )
-        self.visual_effects["linktrans"] = ve_linktrans
-        ve_hunttrans = ve.ColorTransition(
-            layer=0,
-            category=ve.STYLE,
-            cells=list(),
-            colors=self.theme["hunttrans"],  # type: ignore [arg-type]
-            frames_per_state=2,
-            transitioning=dict(),
-        )
-        self.visual_effects["hunttrans"] = ve_hunttrans
+
+        ve_link_transition = ve.ValueTransition(ve.STYLE, self.theme.link_transition)
+        self.visual_effects["linktrans"] = ve_link_transition
+
+        ve_hunt_transition = ve.ValueTransition(ve.STYLE, self.theme.hunt_transition)
+        self.visual_effects["hunttrans"] = ve_hunt_transition
 
         while unvisited:
             self.status_text["Unvisited Cells"] = len(unvisited)
@@ -97,7 +84,7 @@ class HuntandKill(Algorithm):
                 self.status_text["State"] = "Linking"
                 neighbor = random.choice(unvisited_neighbors)
                 self.maze.link_cells(cell, neighbor)
-                ve_linktrans.cells.append(neighbor)
+                ve_link_transition.cells.append(neighbor)
                 ve_lastlinked.cell = neighbor
                 unvisited.remove(neighbor)
                 cell = neighbor
@@ -110,14 +97,14 @@ class HuntandKill(Algorithm):
                     neighbors = [neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor]
                     visited_neighbors = [neighbor for neighbor in neighbors if neighbor.links]
                     ve_invalidneighbors.cells = [neighbor for neighbor in neighbors if not neighbor.links]
-                    ve_hunttrans.cells.append(cell)
+                    ve_hunt_transition.cells.append(cell)
                     if self.frame_wanted():
                         yield self.maze
                     if visited_neighbors:
                         ve_invalidneighbors.cells = []
                         neighbor = random.choice(visited_neighbors)
                         self.maze.link_cells(cell, neighbor)
-                        ve_linktrans.cells.append(neighbor)
+                        ve_link_transition.cells.append(neighbor)
                         ve_lastlinked.cell = neighbor
                         unvisited.remove(cell)
                         yield self.maze
@@ -126,7 +113,7 @@ class HuntandKill(Algorithm):
         self.status_text["Unvisited Cells"] = 0
         del self.visual_effects["working_cell"]
         del self.visual_effects["invalid_neighbors"]
-        while ve_hunttrans.transitioning:
+        while ve_hunt_transition.transitioning:
             yield self.maze
         self.status_text["State"] = "Complete"
         yield self.maze

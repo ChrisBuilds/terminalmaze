@@ -2,16 +2,17 @@ from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import EllersTheme
 import random
 from collections import defaultdict
 from typing import Generator
 
 
 class Ellers(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: EllersTheme) -> None:
         super().__init__(maze)
         self.ignore_mask = True
-        self.theme = theme["ellers"]
+        self.theme = theme
         self.status_text["Algorithm"] = "Eller's"
         self.status_text["Seed"] = self.maze.seed
         self.status_text["Unlinked Cells"] = 0
@@ -21,7 +22,8 @@ class Ellers(Algorithm):
         unlinked_cells = set(self.maze.each_cell())
         cell_to_group: dict[tuple[int, int], int] = {}  # cell_address : group
         group_to_cell: defaultdict[int, list[Cell]] = defaultdict(list)  # group : Cell
-        ve_groups = ve.RandomColorGroup(layer=0, category=ve.LOGIC, groups=group_to_cell)
+        ve_groups = ve.RandomColorGroup(ve.LOGIC, self.theme.group_to_random_color_layer)
+        ve_groups.groups = group_to_cell
         self.visual_effects["groups"] = ve_groups
         group_id = 0
         for i, row in enumerate(self.maze.each_row(ignore_mask=self.ignore_mask)):

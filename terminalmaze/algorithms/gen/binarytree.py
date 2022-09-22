@@ -1,12 +1,13 @@
 import random
-from terminalmaze.resources.grid import Grid, Cell
+from terminalmaze.resources.grid import Grid
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import BinaryTreeTheme
 from collections.abc import Generator
 
 
 class BinaryTree(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme):
+    def __init__(self, maze: Grid, theme: BinaryTreeTheme):
         super().__init__(maze)
         """
         Create a maze by randomly connecting each cell to its neighbor to the north or east.
@@ -15,17 +16,13 @@ class BinaryTree(Algorithm):
         self.status_text["Algorithm"] = "Binary Tree"
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
-        self.theme = theme["binary_tree"]
+        self.theme = theme
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unlinked_cells = set(self.maze.each_cell(ignore_mask=True))
-        ve_workingcell = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["workingcell"]  # type: ignore [arg-type]
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_neighbor = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["neighbor"]  # type: ignore [arg-type]
-        )
+        ve_neighbor = ve.ColorSingleCell(ve.LOGIC, self.theme.neighbor)
         self.visual_effects["neighbor"] = ve_neighbor
         for cell in self.maze.each_cell(ignore_mask=True):
             ve_workingcell.cell = cell

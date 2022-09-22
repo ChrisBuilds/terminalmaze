@@ -1,40 +1,28 @@
 from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import PrimsWeightedTheme
 import random
 from typing import Generator
 
 
 class PrimsWeighted(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: PrimsWeightedTheme) -> None:
         super().__init__(maze)
-        self.theme = theme["prims_weighted"]
+        self.theme = theme
         self.status_text["Algorithm"] = "Prims Weighted"
         self.status_text["Edges"] = 0
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        lastlinked: list[Cell] = []
-        ve_lastlinked = ve.ColorTrail(
-            layer=1,
-            category=ve.STYLE,
-            cells=lastlinked,
-            colors=self.theme["lastlinked"],  # type: ignore [arg-type]
-            traveldir=0,
-        )
+        ve_lastlinked = ve.ValueTransition(ve.STYLE, self.theme.last_linked_transition)
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_links = ve.ColorMultipleCells(
-            layer=0, category=ve.STYLE, cells=[], color=self.theme["links"]  # type: ignore [arg-type]
-        )
+        ve_links = ve.ColorMultipleCells(ve.STYLE, self.theme.links)
         self.visual_effects["links"] = ve_links
-        ve_workingcell = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=Cell(0, 0), color=self.theme["workingcell"]  # type: ignore [arg-type]
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_unlinkedneighbors = ve.ColorMultipleCells(
-            layer=0, category=ve.LOGIC, cells=[], color=self.theme["unlinkedneighbors"]  # type: ignore [arg-type]
-        )
+        ve_unlinkedneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.unlinked_neighbors)
         self.visual_effects["unlinkedneighbors"] = ve_unlinkedneighbors
 
         total_cells_unlinked = 0
@@ -60,9 +48,7 @@ class PrimsWeighted(Algorithm):
                 continue
             self.maze.link_cells(working_cell, next_cell)
             total_cells_unlinked -= 1
-            lastlinked.insert(0, next_cell)
-            if len(lastlinked) == 10:
-                lastlinked.pop()
+            ve_lastlinked.cells.append(next_cell)
             unlinked_neighbors = list(n for n in self.maze.get_neighbors(next_cell).values() if n and not n.links)
             ve_unlinkedneighbors.cells = unlinked_neighbors
             if unlinked_neighbors:
@@ -70,6 +56,9 @@ class PrimsWeighted(Algorithm):
                     links.append((next_cell, neighbor, cell_weights[neighbor]))
             self.status_text["Edges"] = len(links)
             self.status_text["Unlinked Cells"] = total_cells_unlinked
+            yield self.maze
+
+        while ve_lastlinked.transitioning:
             yield self.maze
 
         self.visual_effects.clear()

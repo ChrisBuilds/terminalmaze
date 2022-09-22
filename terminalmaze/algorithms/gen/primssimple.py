@@ -1,14 +1,15 @@
 from terminalmaze.resources.grid import Grid
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import PrimsSimpleTheme
 import random
 from typing import Generator
 
 
 class PrimsSimple(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: PrimsSimpleTheme) -> None:
         super().__init__(maze)
-        self.theme = theme["prims_simple"]
+        self.theme = theme
         self.status_text["Algorithm"] = "Prims Simplified"
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State"] = ""
@@ -20,25 +21,18 @@ class PrimsSimple(Algorithm):
         cell = self.maze.random_cell()
         edge_cells = list()
         edge_cells.append(cell)
-        ve_edges = ve.ColorMultipleCells(
-            layer=0, category=ve.STYLE, cells=edge_cells, color=self.theme["edges"]  # type: ignore [arg-type]
-        )
+        ve_edges = ve.ColorMultipleCells(ve.STYLE, self.theme.edges)
+        ve_edges.cells = edge_cells
         self.visual_effects["edges"] = ve_edges
-        ve_workingcell = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["workingcell"]  # type: ignore [arg-type]
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = ve.ColorMultipleCells(
-            layer=0, category=ve.LOGIC, cells=[], color=self.theme["invalidneighbors"]  # type: ignore [arg-type]
-        )
+        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = ve.ColorSingleCell(
-            layer=0, category=ve.LOGIC, cell=cell, color=self.theme["lastlinked"]  # type: ignore [arg-type]
-        )
+        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked.cell = cell
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_oldedges = ve.ColorMultipleCells(
-            layer=0, category=ve.STYLE, cells=[], color=self.theme["oldedges"]  # type: ignore [arg-type]
-        )
+        ve_oldedges = ve.ColorMultipleCells(ve.STYLE, self.theme.old_edges)
         self.visual_effects["old_edges"] = ve_oldedges
 
         while edge_cells:

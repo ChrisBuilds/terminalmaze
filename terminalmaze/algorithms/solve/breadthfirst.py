@@ -2,12 +2,13 @@ from terminalmaze.resources.grid import Grid, Cell
 from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
+from terminalmaze.config import BreadthFirstTheme
 
 
 class BreadthFirst(Algorithm):
-    def __init__(self, maze: Grid, theme: ve.Theme) -> None:
+    def __init__(self, maze: Grid, theme: BreadthFirstTheme) -> None:
         super().__init__(maze)
-        self.theme = theme["breadthfirst"]
+        self.theme = theme
         self.status_text["Algorithm"] = "Breadth First"
         self.status_text["Frontier"] = 0
         self.status_text["Visited"] = 0
@@ -20,77 +21,36 @@ class BreadthFirst(Algorithm):
         start = list(self.maze.each_cell())[0]
         frontier = [start]
         explored: dict[Cell, Cell] = {start: start}
-        visited: list[Cell] = []
         transitions: set[Cell] = set()
 
-        ve_frontier = ve.ColorMultipleCells(
-            layer=self.theme["frontier"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["frontier"]["color"],  # type: ignore [arg-type]
-            cells=frontier,
-        )
+        ve_frontier = ve.ColorMultipleCells(ve.LOGIC, self.theme.frontier)
+        ve_frontier.cells = frontier
         self.visual_effects["frontier"] = ve_frontier
 
-        ve_visited = ve.ColorMultipleCells(
-            layer=self.theme["visited"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGICSTYLE,
-            color=self.theme["visited"]["color"],  # type: ignore [arg-type]
-            cells=visited,
-        )
+        ve_visited = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.visited)
         self.visual_effects["visited"] = ve_visited
 
-        ve_visited_transition = ve.ValueTransition(
-            layer=self.theme["visited_transition"]["layer"],  # type: ignore [arg-type]
-            category=ve.STYLE,
-            colors=self.theme["visited_transition"]["colors"],  # type: ignore [arg-type]
-            characters=self.theme["visited_transition"]["characters"],  # type: ignore [arg-type]
-            cells=[],
-            frames_per_value=self.theme["visited_transition"]["frames_per_value"],  # type: ignore [arg-type]
-            transitioning=dict(),
-        )
+        ve_visited_transition = ve.ValueTransition(ve.STYLE, self.theme.visited_transition)
         self.visual_effects["visited_transition"] = ve_visited_transition
 
-        ve_target = ve.ColorSingleCell(
-            layer=self.theme["target"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["target"]["color"],  # type: ignore [arg-type]
-            cell=target,
-        )
+        ve_target = ve.ColorSingleCell(ve.LOGIC, self.theme.target)
         self.visual_effects["target"] = ve_target
 
-        ve_workingcell = ve.ColorSingleCell(
-            layer=self.theme["workingcell"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGIC,
-            color=self.theme["workingcell"]["color"],  # type: ignore [arg-type]
-            cell=start,
-        )
+        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
         self.visual_effects["position"] = ve_workingcell
 
-        ve_solutionpath = ve.ColorMultipleCells(
-            layer=self.theme["solutionpath"]["layer"],  # type: ignore [arg-type]
-            category=ve.LOGICSTYLE,
-            color=self.theme["solutionpath"]["color"],  # type: ignore [arg-type]
-            cells=[],
-        )
+        ve_solutionpath = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.solution_path)
         self.visual_effects["path"] = ve_solutionpath
 
-        ve_solutiontransition = ve.ValueTransition(
-            layer=self.theme["solution_transition"]["layer"],  # type: ignore [arg-type]
-            category=ve.STYLE,
-            colors=self.theme["solution_transition"]["colors"],  # type: ignore [arg-type]
-            characters=self.theme["solution_transition"]["characters"],  # type: ignore [arg-type]
-            cells=[],
-            transitioning=dict(),
-            frames_per_value=self.theme["solution_transition"]["frames_per_value"],  # type: ignore [arg-type]
-        )
+        ve_solutiontransition = ve.ValueTransition(ve.STYLE, self.theme.solution_transition)
         self.visual_effects["solutiontransition"] = ve_solutiontransition
 
         while frontier:
             self.status_text["State"] = "Exploring"
             self.status_text["Frontier"] = len(frontier)
-            self.status_text["Visited"] = len(visited)
+            self.status_text["Visited"] = len(ve_visited.cells)
             position = frontier.pop(0)
-            visited.append(position)
+            ve_visited.cells.append(position)
             if position not in transitions:
                 ve_visited_transition.cells.append(position)
             ve_workingcell.cell = position
@@ -99,7 +59,7 @@ class BreadthFirst(Algorithm):
                 explored[cell] = position
             frontier.extend(edges)
             self.status_text["Frontier"] = len(frontier)
-            self.status_text["Visited"] = len(visited)
+            self.status_text["Visited"] = len(ve_visited.cells)
             if self.frame_wanted_relative(frontier, divisor=4):
                 yield self.maze
 
