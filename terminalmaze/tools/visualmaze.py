@@ -22,8 +22,8 @@ class Visual:
         self.fg_color_map: dict[int, str] = {i: colored.fg(i) for i in range(256)}
         self.bg_color_map: dict[int, str] = {i: colored.bg(i) for i in range(256)}
         self.reset_color = colored.attr("reset")
-        self.wall = f"{self.fg_color_map.get(theme.wall)}{chr(9608)}"
-        self.path = f"{self.fg_color_map.get(theme.path)}{chr(9608)}"
+        self.wall = f"{self.fg_color_map.get(theme.wall.color)}{theme.wall.character}"
+        self.path = f"{self.fg_color_map.get(theme.path.color)}{theme.path.character}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
@@ -134,18 +134,11 @@ class Visual:
         Returns:
             list[list[str]]: visual grid with colored cells
         """
-        verbosity_category_map = {
-            0: tuple(),
-            1: tuple(),
-            2: (ve.LOGIC, ve.LOGICSTYLE),
-            3: (ve.STYLE, ve.LOGICSTYLE),
-            4: (ve.LOGIC, ve.STYLE, ve.LOGICSTYLE),
-        }
         colored_visual_grid = [line.copy() for line in self.visual_grid]
         pending_effects = sorted(visual_effects.values())
         while pending_effects:
             current_effect = pending_effects.pop(0)
-            if current_effect.category not in verbosity_category_map[verbosity]:
+            if verbosity not in current_effect.verbosity:
                 continue
 
             if isinstance(current_effect, ve.ColorSingleCell):
@@ -334,7 +327,7 @@ class Visual:
             current_character = character
         if color:
             current_color = color
-        colored_visual_grid[y][x] = f"{self.bg_color_map[self.theme.wall]}{current_color}{current_character}"
+        colored_visual_grid[y][x] = f"{self.bg_color_map[self.theme.wall.color]}{current_color}{current_character}"
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
