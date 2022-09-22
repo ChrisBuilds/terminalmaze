@@ -22,9 +22,20 @@ for theme in themes_path.iterdir():
             tm_themes[theme.stem] = tomli.load(theme_file)
 
 
+class ColorCharacter(BaseModel):
+    character: str
+    color: int
+
+
+class LayerVerbosity(BaseModel):
+    layer: int
+    verbosity: list[int]
+
+
 class LayerColor(BaseModel):
     layer: int
     color: int
+    verbosity: list[int]
 
 
 class Transition(BaseModel):
@@ -32,11 +43,12 @@ class Transition(BaseModel):
     frames_per_value: int
     characters: list[str]
     colors: list[int]
+    verbosity: list[int]
 
 
 class AldousBroderTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     last_linked: Transition
     invalid_neighbors: LayerColor
@@ -44,27 +56,27 @@ class AldousBroderTheme(BaseModel):
 
 
 class BinaryTreeTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     neighbor: LayerColor
 
 
 class EllersTheme(BaseModel):
-    wall: int
-    path: int
-    group_to_random_color_layer: int
+    wall: ColorCharacter
+    path: ColorCharacter
+    group_to_random_color: LayerVerbosity
 
 
 class KruskalsRandomizedTheme(BaseModel):
-    wall: int
-    path: int
-    group_random_color_layer: int
+    wall: ColorCharacter
+    path: ColorCharacter
+    group_random_color: LayerVerbosity
 
 
 class HuntAndKillTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     last_linked: LayerColor
     invalid_neighbors: LayerColor
@@ -73,8 +85,8 @@ class HuntAndKillTheme(BaseModel):
 
 
 class PrimsSimpleTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     edges: LayerColor
     invalid_neighbors: LayerColor
@@ -83,8 +95,8 @@ class PrimsSimpleTheme(BaseModel):
 
 
 class PrimsWeightedTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     links: LayerColor
     unlinked_neighbors: LayerColor
@@ -92,8 +104,8 @@ class PrimsWeightedTheme(BaseModel):
 
 
 class RecursiveBacktrackerTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     working_cell: LayerColor
     stack: LayerColor
     invalid_neighbors: LayerColor
@@ -103,16 +115,16 @@ class RecursiveBacktrackerTheme(BaseModel):
 
 
 class SideWinderTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     run: LayerColor
     working_cell: LayerColor
     last_linked: LayerColor
 
 
 class WilsonsTheme(BaseModel):
-    wall: int
-    path: int
+    wall: ColorCharacter
+    path: ColorCharacter
     target: LayerColor
     walk: LayerColor
     working_cell: LayerColor
