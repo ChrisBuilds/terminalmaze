@@ -6,7 +6,7 @@ from terminalmaze.config import BreadthFirstTheme
 
 
 class BreadthFirst(Algorithm):
-    def __init__(self, maze: Grid, theme: BreadthFirstTheme) -> None:
+    def __init__(self, maze: Grid, theme: BreadthFirstTheme, *conditions) -> None:
         super().__init__(maze)
         self.theme = theme
         self.status_text["Algorithm"] = "Breadth First"
@@ -15,6 +15,10 @@ class BreadthFirst(Algorithm):
         self.status_text["Position"] = ""
         self.status_text["State"] = ""
         self.skipped_frames = 0
+        self.early_exit = False
+        if "early_exit" in conditions:
+            self.status_text["Algorithm"] = "Breadth First (early exit)"
+            self.early_exit = True
 
     def solve(self) -> Generator[Grid, None, None]:
         target = list(self.maze.each_cell())[-1]
@@ -54,6 +58,10 @@ class BreadthFirst(Algorithm):
             if position not in transitions:
                 ve_visited_transition.cells.append(position)
             ve_workingcell.cell = position
+            if self.early_exit:
+                if position == target:
+                    yield self.maze
+                    break
             edges = [neighbor for neighbor in position.links if neighbor not in explored and neighbor not in frontier]
             for cell in edges:
                 explored[cell] = position
