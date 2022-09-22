@@ -12,17 +12,24 @@ wall = 240
 path = 6
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - STYLE: color of the last grid cell that was linked into the maze
-lastlinked = 218
+last_linked.layer = 1
+last_linked.frames_per_value = 1
+last_linked.colors = [218]
+last_linked.characters = []
 
 # Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
-invalidneighbors = 159
+invalid_neighbors.layer = 0
+invalid_neighbors.color = 159
 
 # Verbosity - STYLE: color for cells that are already linked into the maze and are being revisted
-invalidvisited = 159
-
+invalid_visited.layer = 0
+invalid_visited.frames_per_value = 1
+invalid_visited.colors = [159]
+invalid_visited.characters = []
 ###########################
 ###########################
 [binary_tree]
@@ -33,10 +40,12 @@ wall = 240
 path = 6
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - LOGIC: color for neighbors adjacent to the cell
-neighbor = 159
+neighbor.layer = 0
+neighbor.color = 159
 
 ###########################
 ###########################
@@ -50,31 +59,43 @@ wall = 240
 # Verbosity - All: color of the paths (linked cells)
 path = 6
 
+group_to_random_color_layer = 0
+
 ###########################
 ###########################
 [hunt_and_kill]
 # Verbosity - All: color of the walls and unlinked cells
-wall = 240
+wall = 16
 
 # Verbosity - All: color of the paths (linked cells)
-path = 6
+path = 34
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - LOGIC: color of the last grid cell that was linked into the maze
-lastlinked = 49
+last_linked.layer = 0
+last_linked.color = 49
 
 # Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
-invalidneighbors = 88
+invalid_neighbors.layer = 0
+invalid_neighbors.color = 88
 
-# Verbosity - STYLE: gradient trail beind the working cell as it travels forward
+# Verbosity - STYLE: applies to cells as they are linked into the grid
 # (color at index 0 is the front color)
 #   number of colored cells will be up to the length of this list
-linktrail = [46, 47, 47, 48, 48, 48, 48, 49, 49, 49, 49, 50, 50]
+link_transition.layer = 0
+link_transition.frames_per_value = 2
+link_transition.characters = []
+link_transition.colors = [46, 47, 48, 49, 50]
 
-# Verbosity - STYLE: color trail that follows the hunt position during the hunt phase
-huntcells = 49
+# Verbosity - STYLE: applies to unlinked cells passed over while in the hunting state
+hunt_transition.layer = 0
+hunt_transition.frames_per_value = 1
+hunt_transition.colors = [47, 48, 49, 50]
+hunt_transition.characters = []
+
 
 ###########################
 ###########################
@@ -84,8 +105,11 @@ huntcells = 49
 #      maze generation has completed.
 # Verbosity - All: color of the walls and unlinked cells
 wall = 240
+
 # Verbosity - All: color of the paths (linked cells)
 path = 6
+
+group_random_color_layer = 0
 
 ###########################
 ###########################
@@ -97,75 +121,97 @@ wall = 240
 path = 6
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - STYLE: color of cells on the edge of the linked area
-edges = 159
+edges.layer = 0
+edges.color = 159
 
 # Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
-invalidneighbors = 52
+invalid_neighbors.layer = 0
+invalid_neighbors.color = 52
 
 # Verbosity - LOGIC: color of the last grid cell that was linked into the maze
-lastlinked = 159
+last_linked.layer = 0
+last_linked.color = 159
 
 # Verbosity - STYLE: color of cells second to the edge of the maze
-oldedges = 218
+old_edges.layer = 0
+old_edges.color = 218
 
 ###########################
 ###########################
 [prims_weighted]
 # Verbosity - All: color of the walls and unlinked cells
 wall = 240
+
 # Verbosity - All: color of the paths (linked cells)
 path = 6
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - STYLE: color of cells awaiting linking
-links = 79
+links.layer = 0
+links.color = 79
 
 # Verbosity - LOGIC: color of cells adjacent to the workingcell that are not linked
-unlinkedneighbors = 218
+unlinked_neighbors.layer = 0
+unlinked_neighbors.color = 218
 
 # Verbosity - STYLE: gradient trail showing recently linked cells
 # (color at index 0 is the front color)
-lastlinked = [47, 47, 48, 48, 48, 49, 49, 49, 49, 50, 50]
+last_linked_transition.layer = 1
+last_linked_transition.frames_per_value = 1
+last_linked_transition.colors = [47, 48, 49, 50]
+last_linked_transition.characters = []
 
 ###########################
 ###########################
 [recursive_backtracker]
 # Verbosity - All: color of the walls and unlinked cells
-wall = 240
+wall = 16
 
 # Verbosity - All: color of the paths (linked cells)
-path = 6
+path = 34
 
 # Verbosity - STYLE: color of the path on the first pass, before backtracking
-stack = 218
+stack.layer = 0
+stack.color = 22
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
-invalidneighbors = 52
+invalid_neighbors.layer=0
+invalid_neighbors.color = 52
 
 # Verbosity - LOGIC: color of the last grid cell that was linked into the maze
-lastlinked = 218
+last_linked.layer = 0
+last_linked.color = 218
 
-# Verbosity - STYLE: gradient trail on the front of the stack as it travels forward
+# Verbosity - STYLE: applies to cells as they are added to the stack
 # (color at index 0 is the front color)
 #   number of colored cells will be up to the length of this list
-stacktrail = [200, 200, 201, 201, 204, 204, 205, 205, 205, 206, 206, 207, 207]
+stack_transition.layer = 0
+stack_transition.frames_per_value = 3
+stack_transition.colors = [82,46,40,34,28]
+stack_transition.characters = []
 
-# Verbosity - STYLE: gradient trail off the end of the stack as it travels backward
+# Verbosity - STYLE: applies to cells as they are removed from the stack
 # (color at index 0 is the front color)
 #   number of colored cells will be up to the length of this list
-backtracktrail = [224, 224, 188, 188, 158, 158, 159, 159, 86, 86, 44, 44, 6]
+backtrack_transition.layer = 1
+backtrack_transition.frames_per_value = 3
+backtrack_transition.colors = [82,46,40,34]
+backtrack_transition.characters = []
 
 ###########################
 ###########################
-[sidewinder]
+[side_winder]
 # Verbosity - All: color of the walls and unlinked cells
 wall = 240
 
@@ -173,13 +219,16 @@ wall = 240
 path = 6
 
 # Verbosity - LOGIC: color of cells in each run prior to making an upward link
-run = 218
+run.layer = 0
+run.color = 218
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
 
 # Verbosity - LOGIC: color of the last grid cell that was linked into the maze
-lastlinked = 159
+last_linked.layer = 0
+last_linked.color = 159
 
 ###########################
 ###########################
@@ -191,39 +240,60 @@ wall = 240
 path = 6
 
 # Verbosity - LOGIC: color of the cell being targeted for the initial linked path
-target = 218
+target.layer = 0
+target.color = 218
 
 # Verbosity - LOGIC: color of the path while drawing new linked paths
-walk = 49
+walk.layer = 0
+walk.color = 49
 
 # Verbosity - LOGIC: color of the current cell being assessed for linking
-workingcell = 14
+working_cell.layer = 0
+working_cell.color = 14
 
-# Verbosity - STYLE: color of trail at front of new walk being linked
-linktrail = [105,105,111,111,39,39,39,38,38,44,44,49]
+# Verbosity - STYLE: transition colors undergone by new links
+link_transition.layer = 1
+link_transition.frames_per_value = 10
+link_transition.colors = [50, 87, 86, 50,44,37]
+link_transition.characters = []
 
 ########################################################################
 ########################    Solve Algorithms    ########################
 ########################################################################
 # NOTE: Path and Wall color cannot be set by Solve algorithms, must be set by the
 #       maze algorithm responsible for the maze.
-[breadthfirst]
-# Verbosity - LOGIC: color of cells on the outer edge of the search area
-frontier = 231
-
-# Verbosity - STYLE: color of cells that have been visited
-visited = 218
-
-# Verbosity - LOGIC: color of cell being targeted for the solution path
-target = 202
+[breadth_first]
 
 # Verbosity - LOGIC: current cell being assessed for neighbors in the path
-workingcell = 218
+working_cell.layer = 0
+working_cell.color = 218
+
+# Verbosity - LOGIC: color of cells on the outer edge of the search area
+frontier.layer = 0
+frontier.color = 82
+
+# Verbosity - STYLE: color of cells that have been visited
+visited.layer = 0
+visited.color = 172
+
+# Verbosity - STYLE: cells visited on the search path
+# (color at index 0 is the start of the transition)
+visited_transition.layer = 1
+visited_transition.frames_per_value = 10
+visited_transition.colors = [46,40,34,28,22,16,22,28,22,16,94,172]
+visited_transition.characters = ["█","█","█","█","█","█","01","01","01","01"]
+
+# Verbosity - LOGIC: color of cell being targeted for the solution path
+target.layer = 0
+target.color = 202
 
 # Verbosity - LOGIC: color of the solution path discovered
-solutionpath = 159
+solution_path.layer = 1
+solution_path.color = 46
 
-# Verbosity - STYLE: gradient color at the front of the solution path
-# (color at index 0 is the front color)
-#   number of colored cells will be up to the length of this list
-pathtrail = [212,213,213,207,207,165,165,170,170,170,169,169,169,167,167,167,167,166,166,166,172,172,178,184,184,190,190,226,226,226,154,154,154,118,118,120,120,121,121,122,122,123,159]
+# Verbosity - STYLE: cells visited on the solution path
+# (value at index 0 is the start of the transition)
+solution_transition.layer = 2
+solution_transition.frames_per_value = 2
+solution_transition.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
+solution_transition.characters = []
