@@ -16,13 +16,13 @@ class PrimsWeighted(Algorithm):
         self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        ve_lastlinked = ve.ValueTransition(ve.STYLE, self.theme.last_linked_transition)
+        ve_lastlinked = ve.ValueTransition(self.theme.last_linked_transition)
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_links = ve.ColorMultipleCells(ve.STYLE, self.theme.links)
+        ve_links = ve.ColorMultipleCells(self.theme.links)
         self.visual_effects["links"] = ve_links
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_unlinkedneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.unlinked_neighbors)
+        ve_unlinkedneighbors = ve.ColorMultipleCells(self.theme.unlinked_neighbors)
         self.visual_effects["unlinkedneighbors"] = ve_unlinkedneighbors
 
         total_cells_unlinked = 0

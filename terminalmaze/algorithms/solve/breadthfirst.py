@@ -23,26 +23,26 @@ class BreadthFirst(Algorithm):
         explored: dict[Cell, Cell] = {start: start}
         transitions: set[Cell] = set()
 
-        ve_frontier = ve.ColorMultipleCells(ve.LOGIC, self.theme.frontier)
+        ve_frontier = ve.ColorMultipleCells(self.theme.frontier)
         ve_frontier.cells = frontier
         self.visual_effects["frontier"] = ve_frontier
 
-        ve_visited = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.visited)
+        ve_visited = ve.ColorMultipleCells(self.theme.visited)
         self.visual_effects["visited"] = ve_visited
 
-        ve_visited_transition = ve.ValueTransition(ve.STYLE, self.theme.visited_transition)
+        ve_visited_transition = ve.ValueTransition(self.theme.visited_transition)
         self.visual_effects["visited_transition"] = ve_visited_transition
 
-        ve_target = ve.ColorSingleCell(ve.LOGIC, self.theme.target)
+        ve_target = ve.ColorSingleCell(self.theme.target)
         self.visual_effects["target"] = ve_target
 
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         self.visual_effects["position"] = ve_workingcell
 
-        ve_solutionpath = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.solution_path)
+        ve_solutionpath = ve.ColorMultipleCells(self.theme.solution_path)
         self.visual_effects["path"] = ve_solutionpath
 
-        ve_solutiontransition = ve.ValueTransition(ve.STYLE, self.theme.solution_transition)
+        ve_solutiontransition = ve.ValueTransition(self.theme.solution_transition)
         self.visual_effects["solutiontransition"] = ve_solutiontransition
 
         while frontier:

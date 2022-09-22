@@ -18,14 +18,14 @@ class Wilsons(Algorithm):
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         target = self.maze.random_cell()
-        ve_target = ve.ColorSingleCell(ve.LOGIC, self.theme.target)
+        ve_target = ve.ColorSingleCell(self.theme.target)
         ve_target.cell = target
         self.visual_effects["target"] = ve_target
-        ve_walk = ve.ColorMultipleCells(ve.LOGICSTYLE, self.theme.walk)
+        ve_walk = ve.ColorMultipleCells(self.theme.walk)
         self.visual_effects["walk"] = ve_walk
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_linktransition = ve.ValueTransition(ve.STYLE, self.theme.link_transition)
+        ve_linktransition = ve.ValueTransition(self.theme.link_transition)
         self.visual_effects["linktransition"] = ve_linktransition
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)

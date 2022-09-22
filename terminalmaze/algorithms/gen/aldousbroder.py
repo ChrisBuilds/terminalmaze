@@ -18,14 +18,14 @@ class AldousBroder(Algorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         unvisited = set(self.maze.each_cell())
         working_cell = unvisited.pop()
-        ve_working_cell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_working_cell = ve.ColorSingleCell(self.theme.working_cell)
         ve_working_cell.cell = working_cell
         self.visual_effects["working_cell"] = ve_working_cell
-        ve_last_linked = ve.ValueTransition(ve.STYLE, self.theme.last_linked)
+        ve_last_linked = ve.ValueTransition(self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_last_linked
-        ve_invalid_neighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
+        ve_invalid_neighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalid_neighbors
-        ve_invalid_visited = ve.ValueTransition(ve.STYLE, self.theme.invalid_visited)
+        ve_invalid_visited = ve.ValueTransition(self.theme.invalid_visited)
         self.visual_effects["invalid_visited"] = ve_invalid_visited
         revisited = 0
         while unvisited:

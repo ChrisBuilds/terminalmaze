@@ -20,9 +20,9 @@ class BinaryTree(Algorithm):
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unlinked_cells = set(self.maze.each_cell(ignore_mask=True))
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_neighbor = ve.ColorSingleCell(ve.LOGIC, self.theme.neighbor)
+        ve_neighbor = ve.ColorSingleCell(self.theme.neighbor)
         self.visual_effects["neighbor"] = ve_neighbor
         for cell in self.maze.each_cell(ignore_mask=True):
             ve_workingcell.cell = cell

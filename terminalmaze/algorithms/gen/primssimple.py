@@ -21,18 +21,18 @@ class PrimsSimple(Algorithm):
         cell = self.maze.random_cell()
         edge_cells = list()
         edge_cells.append(cell)
-        ve_edges = ve.ColorMultipleCells(ve.STYLE, self.theme.edges)
+        ve_edges = ve.ColorMultipleCells(self.theme.edges)
         ve_edges.cells = edge_cells
         self.visual_effects["edges"] = ve_edges
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
+        ve_invalidneighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
-        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked = ve.ColorSingleCell(self.theme.last_linked)
         ve_lastlinked.cell = cell
         self.visual_effects["last_linked"] = ve_lastlinked
-        ve_oldedges = ve.ColorMultipleCells(ve.STYLE, self.theme.old_edges)
+        ve_oldedges = ve.ColorMultipleCells(self.theme.old_edges)
         self.visual_effects["old_edges"] = ve_oldedges
 
         while edge_cells:

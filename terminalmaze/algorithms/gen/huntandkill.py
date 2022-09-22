@@ -58,20 +58,20 @@ class HuntandKill(Algorithm):
         unvisited = list(self.maze.each_cell())
         cell = random.choice(unvisited)
         unvisited.remove(cell)
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
 
-        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked = ve.ColorSingleCell(self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_lastlinked
 
-        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
+        ve_invalidneighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
 
-        ve_link_transition = ve.ValueTransition(ve.STYLE, self.theme.link_transition)
+        ve_link_transition = ve.ValueTransition(self.theme.link_transition)
         self.visual_effects["linktrans"] = ve_link_transition
 
-        ve_hunt_transition = ve.ValueTransition(ve.STYLE, self.theme.hunt_transition)
+        ve_hunt_transition = ve.ValueTransition(self.theme.hunt_transition)
         self.visual_effects["hunttrans"] = ve_hunt_transition
 
         while unvisited:

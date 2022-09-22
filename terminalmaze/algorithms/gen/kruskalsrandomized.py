@@ -35,7 +35,7 @@ class KruskalsRandomized(Algorithm):
                 if (neighbor, cell) not in links and neighbor:  # check if reversed link is already in list
                     links.add((cell, neighbor))
 
-        ve_groups = ve.RandomColorGroup(ve.LOGIC, self.theme.group_random_color_layer)
+        ve_groups = ve.RandomColorGroup(self.theme.group_random_color_layer)
         ve_groups.groups = self.group_to_cell_map_logic
         self.visual_effects["groups"] = ve_groups
 

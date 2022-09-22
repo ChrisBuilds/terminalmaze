@@ -22,7 +22,7 @@ class Ellers(Algorithm):
         unlinked_cells = set(self.maze.each_cell())
         cell_to_group: dict[tuple[int, int], int] = {}  # cell_address : group
         group_to_cell: defaultdict[int, list[Cell]] = defaultdict(list)  # group : Cell
-        ve_groups = ve.RandomColorGroup(ve.LOGIC, self.theme.group_to_random_color_layer)
+        ve_groups = ve.RandomColorGroup(self.theme.group_to_random_color)
         ve_groups.groups = group_to_cell
         self.visual_effects["groups"] = ve_groups
         group_id = 0

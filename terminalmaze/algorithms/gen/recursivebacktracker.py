@@ -18,25 +18,25 @@ class RecursiveBacktracker(Algorithm):
         cell = self.maze.random_cell()
         stack = [cell]
 
-        ve_stack = ve.ColorMultipleCells(ve.STYLE, self.theme.stack)
+        ve_stack = ve.ColorMultipleCells(self.theme.stack)
         ve_stack.cells = stack
         self.visual_effects["stack"] = ve_stack
 
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         ve_workingcell.cell = cell
         self.visual_effects["working_cell"] = ve_workingcell
 
-        ve_invalidneighbors = ve.ColorMultipleCells(ve.LOGIC, self.theme.invalid_neighbors)
+        ve_invalidneighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
 
-        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked = ve.ColorSingleCell(self.theme.last_linked)
         ve_lastlinked.cell = cell
         self.visual_effects["last_linked"] = ve_lastlinked
 
-        ve_stack_transition = ve.ValueTransition(ve.STYLE, self.theme.stack_transition)
+        ve_stack_transition = ve.ValueTransition(self.theme.stack_transition)
         self.visual_effects["stacktrans"] = ve_stack_transition
 
-        ve_backtrack_transition = ve.ValueTransition(ve.STYLE, self.theme.backtrack_transition)
+        ve_backtrack_transition = ve.ValueTransition(self.theme.backtrack_transition)
         self.visual_effects["backtrans"] = ve_backtrack_transition
 
         while stack:

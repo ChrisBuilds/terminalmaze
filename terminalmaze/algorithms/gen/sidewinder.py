@@ -21,14 +21,14 @@ class Sidewinder(Algorithm):
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         run: list[Cell] = []
-        ve_run = ve.ColorMultipleCells(ve.LOGIC, self.theme.run)
+        ve_run = ve.ColorMultipleCells(self.theme.run)
         ve_run.cells = run
         self.visual_effects["run"] = ve_run
 
-        ve_workingcell = ve.ColorSingleCell(ve.LOGIC, self.theme.working_cell)
+        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
 
-        ve_lastlinked = ve.ColorSingleCell(ve.LOGIC, self.theme.last_linked)
+        ve_lastlinked = ve.ColorSingleCell(self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_lastlinked
 
         total_cells_unvisited = len(list(self.maze.each_cell(ignore_mask=True)))
