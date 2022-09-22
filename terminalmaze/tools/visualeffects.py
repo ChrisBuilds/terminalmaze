@@ -4,7 +4,6 @@ from terminalmaze.config import LayerColor, Transition, LayerVerbosity
 
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
-Theme = dict[str, dict[str, int | list[int]]]
 
 
 class Effect:
