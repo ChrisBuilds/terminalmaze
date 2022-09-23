@@ -354,7 +354,7 @@ working_cell.characters = []
 
 # walks linked into the maze
 new_linked_walks.verbosity = [3,4]
-new_linked_walks.layer = 1
+new_linked_walks.layer = 0
 new_linked_walks.frames_per_value = 10
 new_linked_walks.colors = [50, 87, 86, 50,44,37]
 new_linked_walks.characters = []
