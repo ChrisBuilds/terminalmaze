@@ -62,7 +62,7 @@ class Animation(Effect):
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], list[int]] = dict()
-        self.colors: list[int | None] = theme_data.colors
+        self.colors: list[list[int] | int | None] = theme_data.colors
         self.characters: list[str | None] = theme_data.characters
         self.frames_per_value: int = theme_data.frames_per_value
         self.verbosity: list[int] = theme_data.verbosity
