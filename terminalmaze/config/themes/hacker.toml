@@ -5,6 +5,10 @@
 ########################    MAZE ALGORITHMS    ########################
 #######################################################################
 [aldous_broder]
+# time between frames while searching for unliked cells, longer delay allows
+#  faster searching but causes a less fluid animation
+maximum_searching_frame_delay = 0.027
+
 # color of the walls and unlinked cells
 wall.color = 16
 wall.character = "█"
@@ -24,7 +28,7 @@ working_cell.characters = []
 last_linked.verbosity = [3,4]
 last_linked.layer = 1
 last_linked.frames_per_value = 30
-last_linked.colors = [82,46,40,34,28]
+last_linked.colors = [28,[22,46],46]
 last_linked.characters = ["0","10","1"]
 
 # neighbors invalid for linking (adjacent to the working cell)
@@ -98,6 +102,9 @@ group_to_random_color.character = ""
 ###########################
 ###########################
 [hunt_and_kill]
+# number of frames to skip per frame shown during the hunting state, decrease
+#  to slow down, and show more frames, during the hunting state
+hunting_frames_skip = 3
 # color of the walls and unlinked cells
 wall.color = 16
 wall.character = "█"
@@ -158,6 +165,10 @@ group_random_color.character = ""
 ###########################
 ###########################
 [prims_simple]
+# frames skipped is based on the number of active edges, adjust the ratio up to slow
+#  down and show more frames : int >= 1
+edge_frame_ratio = 4
+
 # color of the walls and unlinked cells
 wall.color = 240
 wall.character = "█"
@@ -325,6 +336,12 @@ last_linked.characters = []
 ###########################
 ###########################
 [wilsons]
+# number of frames to skip between visible frames during the initial searching state while
+#  total number of links < 3, after 3 links are formed, this number is reduced to 5
+#  due to the reduced likelihood of long search durations
+#  lower this number to see more frames during the initial searching state (slower maze gen)
+searching_frames_skipped = 60
+
 # color of the walls and unlinked cells
 wall.color = 240
 wall.character = "█"
