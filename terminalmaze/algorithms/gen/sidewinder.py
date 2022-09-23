@@ -1,5 +1,6 @@
 import random
 from collections.abc import Generator
+from collections import deque
 
 from terminalmaze.resources.grid import Grid
 from terminalmaze.resources.cell import Cell
@@ -34,10 +35,11 @@ class Sidewinder(Algorithm):
 
         run: list[Cell] = []
         ve_run.cells = run
+        unvisited_cells = deque()
         for row in self.maze.each_row(ignore_mask=True, bottom_up=True):
-            unvisited_cells = row.copy()
+            unvisited_cells.extend(row.copy())
             while unvisited_cells:
-                working_cell = unvisited_cells.pop(0)
+                working_cell = unvisited_cells.popleft()
                 total_cells_unvisited -= 1
                 self.status_text["Unvisited Cells"] = total_cells_unvisited
                 ve_working_cell.cells.append(working_cell)
@@ -58,7 +60,7 @@ class Sidewinder(Algorithm):
                         working_cell = neighbors["east"]
                         ve_working_cell.cells.append(working_cell)
                         run.append(working_cell)
-                        unvisited_cells.pop(0)
+                        unvisited_cells.popleft()
                     elif direction == "north":
                         self.status_text["State"] = "Climb"
                         working_cell = random.choice(run)
