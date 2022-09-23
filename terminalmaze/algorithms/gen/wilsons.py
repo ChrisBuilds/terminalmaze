@@ -18,15 +18,22 @@ class Wilsons(Algorithm):
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         target = self.maze.random_cell()
-        ve_target = ve.ColorSingleCell(self.theme.target)
+        ve_target = ve.ModifySingleCell(self.theme.target)
+
         ve_target.cell = target
         self.visual_effects["target"] = ve_target
-        ve_walk = ve.ColorMultipleCells(self.theme.walk)
+
+        ve_walk = ve.ModifyMultipleCells(self.theme.walk)
         self.visual_effects["walk"] = ve_walk
-        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
-        self.visual_effects["working_cell"] = ve_workingcell
-        ve_linktransition = ve.ValueTransition(self.theme.link_transition)
-        self.visual_effects["linktransition"] = ve_linktransition
+
+        ve_working_cell = ve.Animation(self.theme.working_cell)
+        self.visual_effects["working_cell"] = ve_working_cell
+
+        ve_last_linked = ve.Animation(self.theme.last_linked)
+        self.visual_effects["last_linked"] = ve_last_linked
+
+        ve_new_linked_walks = ve.Animation(self.theme.new_linked_walks)
+        self.visual_effects["linktransition"] = ve_new_linked_walks
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
@@ -35,7 +42,7 @@ class Wilsons(Algorithm):
             ve_walk.cells = walk
             walking = True
             working_cell = random.choice(unvisited_cells)
-            ve_workingcell.cell = working_cell
+            ve_working_cell.cells.append(working_cell)
             walk.append(working_cell)
             frame_delay = 10
             while walking:
@@ -45,7 +52,7 @@ class Wilsons(Algorithm):
                     walk = walk[: walk.index(next_cell) + 1]
                     ve_walk.cells = walk
                     working_cell = walk[-1]
-                    ve_workingcell.cell = working_cell
+                    ve_working_cell.cells.append(working_cell)
                 elif next_cell not in unvisited_cells:
                     self.status_text["State"] = "Linking"
                     walking = False
@@ -54,21 +61,23 @@ class Wilsons(Algorithm):
                     for i, cell in enumerate(walk):
                         if cell == walk[-1]:
                             self.maze.link_cells(cell, next_cell)
+                            ve_last_linked.cells.append(next_cell)
                         else:
                             self.maze.link_cells(cell, walk[i + 1])
+                            ve_last_linked.cells.append(walk[i + 1])
                         unvisited_cells.remove(cell)
                         self.status_text["Unvisited"] = len(unvisited_cells)
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                         yield self.maze
-                    ve_linktransition.cells = walk[:]
+                    ve_new_linked_walks.cells = walk[:]
                     self.visual_effects.pop("logic1", None)
                     links += 1
                 else:
 
                     walk.append(next_cell)
                     working_cell = next_cell
-                    ve_workingcell.cell = working_cell
+                    ve_working_cell.cells.append(working_cell)
                     self.status_text["Unvisited"] = len(unvisited_cells)
                     self.status_text["Walked"] = len(walk)
                     self.status_text["Links"] = links
@@ -83,7 +92,7 @@ class Wilsons(Algorithm):
                         if frame_delay == 0:
                             frame_delay = 3
                             yield self.maze
-        while ve_linktransition.transitioning:
+        while ve_new_linked_walks.animating:
             yield self.maze
         self.visual_effects.clear()
         yield self.maze

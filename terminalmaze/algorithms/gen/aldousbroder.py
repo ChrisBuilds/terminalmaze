@@ -18,19 +18,19 @@ class AldousBroder(Algorithm):
     def generate_maze(self) -> Generator[Grid, None, None]:
         unvisited = set(self.maze.each_cell())
         working_cell = unvisited.pop()
-        ve_working_cell = ve.ColorSingleCell(self.theme.working_cell)
-        ve_working_cell.cell = working_cell
+        ve_working_cell = ve.Animation(self.theme.working_cell)
+        ve_working_cell.cells.append(working_cell)
         self.visual_effects["working_cell"] = ve_working_cell
-        ve_last_linked = ve.ValueTransition(self.theme.last_linked)
+        ve_last_linked = ve.Animation(self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_last_linked
-        ve_invalid_neighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
+        ve_invalid_neighbors = ve.Animation(self.theme.invalid_neighbors)
         self.visual_effects["invalid_neighbors"] = ve_invalid_neighbors
-        ve_invalid_visited = ve.ValueTransition(self.theme.invalid_visited)
+        ve_invalid_visited = ve.Animation(self.theme.invalid_visited)
         self.visual_effects["invalid_visited"] = ve_invalid_visited
         revisited = 0
         while unvisited:
             neighbors = [neighbor for neighbor in self.maze.get_neighbors(working_cell).values() if neighbor]
-            ve_invalid_neighbors.cells = [neighbor for neighbor in neighbors if neighbor not in unvisited]
+            ve_invalid_neighbors.cells.extend([neighbor for neighbor in neighbors if neighbor not in unvisited])
             neighbor = random.choice(neighbors)
             if neighbor in unvisited:
                 self.maze.link_cells(working_cell, neighbor)
@@ -58,10 +58,10 @@ class AldousBroder(Algorithm):
                     yield self.maze
 
             working_cell = neighbor
-            ve_working_cell.cell = working_cell
+            ve_working_cell.cells.append(working_cell)
         del self.visual_effects["working_cell"]
         del self.visual_effects["invalid_neighbors"]
-        while ve_invalid_visited.transitioning or ve_last_linked.transitioning:
+        while ve_invalid_visited.animating or ve_last_linked.animating:
             yield self.maze
         self.status_text["State"] = "Complete"
         yield self.maze

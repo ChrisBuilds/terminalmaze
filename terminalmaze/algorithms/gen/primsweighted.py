@@ -16,14 +16,20 @@ class PrimsWeighted(Algorithm):
         self.status_text["State"] = ""
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-        ve_lastlinked = ve.ValueTransition(self.theme.last_linked_transition)
-        self.visual_effects["last_linked"] = ve_lastlinked
-        ve_links = ve.ColorMultipleCells(self.theme.links)
-        self.visual_effects["links"] = ve_links
-        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
-        self.visual_effects["working_cell"] = ve_workingcell
-        ve_unlinkedneighbors = ve.ColorMultipleCells(self.theme.unlinked_neighbors)
-        self.visual_effects["unlinkedneighbors"] = ve_unlinkedneighbors
+        ve_working_cell = ve.Animation(self.theme.working_cell)
+        self.visual_effects["working_cell"] = ve_working_cell
+
+        ve_unlinked_neighbors = ve.Animation(self.theme.unlinked_neighbors)
+        self.visual_effects["unlinkedneighbors"] = ve_unlinked_neighbors
+
+        ve_last_linked = ve.Animation(self.theme.last_linked)
+        self.visual_effects["last_linked"] = ve_last_linked
+
+        ve_pending_weighted_links = ve.ModifyMultipleCells(self.theme.pending_weighted_links)
+        self.visual_effects["pending_weighted_links"] = ve_pending_weighted_links
+
+        ve_new_weighted_links = ve.Animation(self.theme.new_weighted_links)
+        self.visual_effects["new_weighted_links"] = ve_new_weighted_links
 
         total_cells_unlinked = 0
         cell_weights = {}
@@ -31,34 +37,35 @@ class PrimsWeighted(Algorithm):
             cell_weights[cell] = random.randint(0, 99)
             total_cells_unlinked += 1
         cell = self.maze.random_cell()
-        links = list()
+        pending_weighted_links = list()
         unlinked_neighbors = list(n for n in self.maze.get_neighbors(cell).values() if n and not n.links)
         for neighbor in unlinked_neighbors:
-            links.append((cell, neighbor, cell_weights[neighbor]))
-        while links:
+            pending_weighted_links.append((cell, neighbor, cell_weights[neighbor]))
+        while pending_weighted_links:
             self.status_text["State"] = "Linking"
-            ve_links.cells = [link[0] for link in links]
+            ve_pending_weighted_links.cells = [link[0] for link in pending_weighted_links]
             next_cell: Cell
             working_cell: Cell
 
-            working_cell, next_cell, cost = min(links, key=lambda link: link[2])
-            ve_workingcell.cell = working_cell
-            links.remove((working_cell, next_cell, cost))
+            working_cell, next_cell, cost = min(pending_weighted_links, key=lambda link: link[2])
+            ve_working_cell.cells.append(working_cell)
+            pending_weighted_links.remove((working_cell, next_cell, cost))
             if next_cell.links:
                 continue
             self.maze.link_cells(working_cell, next_cell)
             total_cells_unlinked -= 1
-            ve_lastlinked.cells.append(next_cell)
+            ve_last_linked.cells.append(next_cell)
             unlinked_neighbors = list(n for n in self.maze.get_neighbors(next_cell).values() if n and not n.links)
-            ve_unlinkedneighbors.cells = unlinked_neighbors
+            ve_unlinked_neighbors.cells.extend(unlinked_neighbors)
             if unlinked_neighbors:
                 for neighbor in unlinked_neighbors:
-                    links.append((next_cell, neighbor, cell_weights[neighbor]))
-            self.status_text["Edges"] = len(links)
+                    pending_weighted_links.append((next_cell, neighbor, cell_weights[neighbor]))
+                    ve_new_weighted_links.cells.append(next_cell)
+            self.status_text["Edges"] = len(pending_weighted_links)
             self.status_text["Unlinked Cells"] = total_cells_unlinked
             yield self.maze
 
-        while ve_lastlinked.transitioning:
+        while ve_last_linked.animating:
             yield self.maze
 
         self.visual_effects.clear()

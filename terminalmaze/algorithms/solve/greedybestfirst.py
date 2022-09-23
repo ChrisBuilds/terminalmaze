@@ -28,27 +28,27 @@ class GreedyBestFirst(Algorithm):
         transitions: set[Cell] = set()
         self.status_text["Target"] = f"({target.column}, {target.row})"
 
-        ve_frontier = ve.ColorMultipleCells(self.theme.frontier)
+        ve_frontier = ve.ModifyMultipleCells(self.theme.frontier)
         ve_frontier.cells.append(start)
         self.visual_effects["frontier"] = ve_frontier
 
-        ve_visited = ve.ColorMultipleCells(self.theme.visited)
+        ve_visited = ve.ModifyMultipleCells(self.theme.visited)
         self.visual_effects["visited"] = ve_visited
 
-        ve_visited_transition = ve.ValueTransition(self.theme.visited_transition)
-        self.visual_effects["visited_transition"] = ve_visited_transition
+        ve_visited_animation = ve.Animation(self.theme.visited_animation)
+        self.visual_effects["visited_transition"] = ve_visited_animation
 
-        ve_target = ve.ColorSingleCell(self.theme.target)
+        ve_target = ve.ModifySingleCell(self.theme.target)
         self.visual_effects["target"] = ve_target
 
-        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
-        self.visual_effects["position"] = ve_workingcell
+        ve_working_cell = ve.ModifySingleCell(self.theme.working_cell)
+        self.visual_effects["position"] = ve_working_cell
 
-        ve_solutionpath = ve.ColorMultipleCells(self.theme.solution_path)
-        self.visual_effects["path"] = ve_solutionpath
+        ve_solution_path = ve.ModifyMultipleCells(self.theme.solution_path)
+        self.visual_effects["path"] = ve_solution_path
 
-        ve_solutiontransition = ve.ValueTransition(self.theme.solution_transition)
-        self.visual_effects["solutiontransition"] = ve_solutiontransition
+        ve_solution_animation = ve.Animation(self.theme.solution_animation)
+        self.visual_effects["solutiontransition"] = ve_solution_animation
 
         while not frontier.empty():
             self.status_text["State"] = "Exploring"
@@ -57,8 +57,8 @@ class GreedyBestFirst(Algorithm):
             ve_frontier.cells.remove(position)
             ve_visited.cells.append(position)
             if position not in transitions:
-                ve_visited_transition.cells.append(position)
-            ve_workingcell.cell = position
+                ve_visited_animation.cells.append(position)
+            ve_working_cell.cell = position
             edges = [neighbor for neighbor in position.links if neighbor not in explored]
             for cell in edges:
                 explored[cell] = position
@@ -86,13 +86,13 @@ class GreedyBestFirst(Algorithm):
             position = explored[position]
         route.reverse()
         path: list[Cell] = list()
-        ve_solutionpath.cells = path
+        ve_solution_path.cells = path
         for step in route:
             self.status_text["State"] = "Solved"
             path.append(step)
-            ve_solutiontransition.cells.append(step)
+            ve_solution_animation.cells.append(step)
             self.status_text["Solution Length"] = len(route)
             yield self.maze
-        while ve_solutiontransition.transitioning:
+        while ve_solution_animation.animating:
             yield self.maze
         yield self.maze

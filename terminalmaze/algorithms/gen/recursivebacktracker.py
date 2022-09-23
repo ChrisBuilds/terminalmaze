@@ -18,38 +18,38 @@ class RecursiveBacktracker(Algorithm):
         cell = self.maze.random_cell()
         stack = [cell]
 
-        ve_stack = ve.ColorMultipleCells(self.theme.stack)
+        ve_working_cell = ve.Animation(self.theme.working_cell)
+        ve_working_cell.cells.append(cell)
+        self.visual_effects["working_cell"] = ve_working_cell
+
+        ve_stack = ve.ModifyMultipleCells(self.theme.stack)
         ve_stack.cells = stack
         self.visual_effects["stack"] = ve_stack
 
-        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
-        ve_workingcell.cell = cell
-        self.visual_effects["working_cell"] = ve_workingcell
+        ve_invalid_neighbors = ve.Animation(self.theme.invalid_neighbors)
+        self.visual_effects["invalid_neighbors"] = ve_invalid_neighbors
 
-        ve_invalidneighbors = ve.ColorMultipleCells(self.theme.invalid_neighbors)
-        self.visual_effects["invalid_neighbors"] = ve_invalidneighbors
+        ve_last_linked = ve.Animation(self.theme.last_linked)
+        ve_last_linked.cells.append(cell)
+        self.visual_effects["last_linked"] = ve_last_linked
 
-        ve_lastlinked = ve.ColorSingleCell(self.theme.last_linked)
-        ve_lastlinked.cell = cell
-        self.visual_effects["last_linked"] = ve_lastlinked
+        ve_stack_added_cells = ve.Animation(self.theme.stack_added_cells)
+        self.visual_effects["stacktrans"] = ve_stack_added_cells
 
-        ve_stack_transition = ve.ValueTransition(self.theme.stack_transition)
-        self.visual_effects["stacktrans"] = ve_stack_transition
-
-        ve_backtrack_transition = ve.ValueTransition(self.theme.backtrack_transition)
-        self.visual_effects["backtrans"] = ve_backtrack_transition
+        ve_stack_removed_cells = ve.Animation(self.theme.stack_removed_cells)
+        self.visual_effects["backtrans"] = ve_stack_removed_cells
 
         while stack:
-            ve_workingcell.cell = cell
+            ve_working_cell.cells.append(cell)
             neighbors = [neighbor for neighbor in self.maze.get_neighbors(cell).values() if neighbor]
             unvisited_neighbors = [neighbor for neighbor in neighbors if not neighbor.links]
-            ve_invalidneighbors.cells = [neighbor for neighbor in neighbors if neighbor.links]
+            ve_invalid_neighbors.cells.extend([neighbor for neighbor in neighbors if neighbor.links])
             if unvisited_neighbors:
                 next_cell = random.choice(unvisited_neighbors)
                 self.status_text["State"] = "Walking"
                 self.maze.link_cells(cell, next_cell)
-                ve_stack_transition.cells.append(next_cell)
-                ve_lastlinked.cell = next_cell
+                ve_stack_added_cells.cells.append(next_cell)
+                ve_last_linked.cells.append(next_cell)
                 stack.append(next_cell)
                 cell = next_cell
                 self.status_text["Pending Paths"] = len(unvisited_neighbors)
@@ -61,12 +61,12 @@ class RecursiveBacktracker(Algorithm):
                 if stack:
                     self.status_text["State"] = "Backtracking"
                     cell = stack[-1]
-                    ve_backtrack_transition.cells.append(cell)
-                    ve_workingcell.cell = cell
+                    ve_stack_removed_cells.cells.append(cell)
+                    ve_working_cell.cells.append(cell)
                     self.status_text["Stack Length"] = len(stack)
                     if self.frame_wanted():
                         yield self.maze
-        while ve_backtrack_transition.transitioning or ve_stack_transition.transitioning:
+        while ve_stack_removed_cells.animating or ve_stack_added_cells.animating:
             yield self.maze
         self.status_text["Stack Length"] = 0
         self.status_text["Pending Paths"] = 0

@@ -20,13 +20,20 @@ class BinaryTree(Algorithm):
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         unlinked_cells = set(self.maze.each_cell(ignore_mask=True))
-        ve_workingcell = ve.ColorSingleCell(self.theme.working_cell)
+
+        ve_workingcell = ve.Animation(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_workingcell
-        ve_neighbor = ve.ColorSingleCell(self.theme.neighbor)
-        self.visual_effects["neighbor"] = ve_neighbor
+
+        ve_last_linked = ve.Animation(self.theme.last_linked)
+        self.visual_effects["last_linked"] = ve_last_linked
+
+        ve_neighbors = ve.Animation(self.theme.neighbors)
+        self.visual_effects["neighbors"] = ve_neighbors
+
         for cell in self.maze.each_cell(ignore_mask=True):
-            ve_workingcell.cell = cell
+            ve_workingcell.cells.append(cell)
             neighbors = self.maze.get_neighbors(cell, ignore_mask=True)
+            ve_neighbors.cells.extend([cell for cell in neighbors.values()])
             neighbors.pop("south", None)
             neighbors.pop("west", None)
             if neighbors:
@@ -36,7 +43,7 @@ class BinaryTree(Algorithm):
                     self.maze.link_cells(cell, neighbor)
                     unlinked_cells.discard(neighbor)
                     unlinked_cells.discard(cell)
-                    ve_neighbor.cell = neighbor
+                    ve_last_linked.cells.append(neighbor)
             self.status_text["Unlinked Cells"] = len(unlinked_cells)
             yield self.maze
 
