@@ -22,145 +22,146 @@ for theme in themes_path.iterdir():
             tm_themes[theme.stem] = tomli.load(theme_file)
 
 
-class ColorCharacter(BaseModel):
+class WallPathModel(BaseModel):
     character: str
     color: int
 
 
-class LayerVerbosity(BaseModel):
+class RandomGroupModel(BaseModel):
     layer: int
     verbosity: list[int]
     character: str
 
 
-class LayerColor(BaseModel):
+class ModifyCellModel(BaseModel):
     layer: int
-    color: int
     verbosity: list[int]
+    color: int
     character: str
 
 
-class Transition(BaseModel):
+class AnimationModel(BaseModel):
     layer: int
     frames_per_value: int
-    characters: list[str]
-    colors: list[int]
+    characters: list[str | None]
+    colors: list[int | None]
     verbosity: list[int]
 
 
 class AldousBroderTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    last_linked: Transition
-    invalid_neighbors: LayerColor
-    invalid_visited: Transition
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    last_linked: AnimationModel
+    invalid_neighbors: AnimationModel
+    invalid_visited: AnimationModel
 
 
 class BinaryTreeTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    neighbor: LayerColor
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    last_linked: AnimationModel
+    neighbors: AnimationModel
 
 
 class EllersTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    group_to_random_color: LayerVerbosity
-
-
-class KruskalsRandomizedTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    group_random_color: LayerVerbosity
+    wall: WallPathModel
+    path: WallPathModel
+    group_to_random_color: RandomGroupModel
 
 
 class HuntAndKillTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    last_linked: LayerColor
-    invalid_neighbors: LayerColor
-    link_transition: Transition
-    hunt_transition: Transition
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    invalid_neighbors: AnimationModel
+    last_linked: AnimationModel
+    hunt_cells: AnimationModel
+
+
+class KruskalsRandomizedTheme(BaseModel):
+    wall: WallPathModel
+    path: WallPathModel
+    group_random_color: RandomGroupModel
 
 
 class PrimsSimpleTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    edges: LayerColor
-    invalid_neighbors: LayerColor
-    last_linked: LayerColor
-    old_edges: LayerColor
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    edges: AnimationModel
+    invalid_neighbors: AnimationModel
+    last_linked: AnimationModel
 
 
 class PrimsWeightedTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    links: LayerColor
-    unlinked_neighbors: LayerColor
-    last_linked_transition: Transition
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    pending_weighted_links: ModifyCellModel
+    new_weighted_links: AnimationModel
+    unlinked_neighbors: AnimationModel
+    last_linked: AnimationModel
 
 
 class RecursiveBacktrackerTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    working_cell: LayerColor
-    stack: LayerColor
-    invalid_neighbors: LayerColor
-    last_linked: LayerColor
-    stack_transition: Transition
-    backtrack_transition: Transition
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    stack: ModifyCellModel
+    invalid_neighbors: AnimationModel
+    last_linked: AnimationModel
+    stack_added_cells: AnimationModel
+    stack_removed_cells: AnimationModel
 
 
 class SideWinderTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    run: LayerColor
-    working_cell: LayerColor
-    last_linked: LayerColor
+    wall: WallPathModel
+    path: WallPathModel
+    run: ModifyCellModel
+    working_cell: AnimationModel
+    last_linked: AnimationModel
 
 
 class WilsonsTheme(BaseModel):
-    wall: ColorCharacter
-    path: ColorCharacter
-    target: LayerColor
-    walk: LayerColor
-    working_cell: LayerColor
-    link_transition: Transition
+    wall: WallPathModel
+    path: WallPathModel
+    target: ModifyCellModel
+    walk: ModifyCellModel
+    working_cell: AnimationModel
+    new_linked_walks: AnimationModel
+    last_linked: AnimationModel
 
 
 class BreadthFirstTheme(BaseModel):
-    working_cell: LayerColor
-    frontier: LayerColor
-    visited: LayerColor
-    visited_transition: Transition
-    target: LayerColor
-    solution_path: LayerColor
-    solution_transition: Transition
+    working_cell: ModifyCellModel
+    frontier: ModifyCellModel
+    visited: ModifyCellModel
+    visited_animation: AnimationModel
+    target: ModifyCellModel
+    solution_path: ModifyCellModel
+    solution_animation: AnimationModel
 
 
 class BreadthFirstEarlyExitTheme(BaseModel):
-    working_cell: LayerColor
-    frontier: LayerColor
-    visited: LayerColor
-    visited_transition: Transition
-    target: LayerColor
-    solution_path: LayerColor
-    solution_transition: Transition
+    working_cell: ModifyCellModel
+    frontier: ModifyCellModel
+    visited: ModifyCellModel
+    visited_animation: AnimationModel
+    target: ModifyCellModel
+    solution_path: ModifyCellModel
+    solution_animation: AnimationModel
 
 
 class GreedyBestFirst(BaseModel):
-    working_cell: LayerColor
-    frontier: LayerColor
-    visited: LayerColor
-    visited_transition: Transition
-    target: LayerColor
-    solution_path: LayerColor
-    solution_transition: Transition
+    working_cell: ModifyCellModel
+    frontier: ModifyCellModel
+    visited: ModifyCellModel
+    visited_animation: AnimationModel
+    target: ModifyCellModel
+    solution_path: ModifyCellModel
+    solution_animation: AnimationModel
 
 
 MAZE_THEME = (
