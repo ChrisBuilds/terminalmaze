@@ -14,7 +14,6 @@ class BreadthFirst(Algorithm):
         self.status_text["Visited"] = 0
         self.status_text["Position"] = ""
         self.status_text["State"] = ""
-        self.skipped_frames = 0
         self.early_exit = False
         if "early_exit" in conditions:
             self.status_text["Algorithm"] = "Breadth First (early exit)"
