@@ -175,11 +175,11 @@ class Visual:
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
 
             elif isinstance(current_effect, ve.Animation):
-                colored_visual_grid = self.value_transition(colored_visual_grid, current_effect)
+                colored_visual_grid = self.animate_cells(colored_visual_grid, current_effect)
 
         return colored_visual_grid
 
-    def value_transition(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
+    def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
         def get_value_at_modification_index(i, collection):
             if i < len(collection):
                 return collection[i]
@@ -218,6 +218,8 @@ class Visual:
 
             if character and len(character) > 1:
                 character = random.choice(character)
+            if color and isinstance(color, list):
+                color = random.choice(color)
             if character or color:
                 if color:
                     color = self.fg_color_map.get(color)
@@ -328,19 +330,7 @@ class Visual:
         color: str | None = None,
         character: str | None = None,
     ) -> list[list[str]]:
-        """
 
-        Parameters
-        ----------
-        colored_visual_grid :
-        visual_coordinates :
-        color
-        character
-
-        Returns
-        -------
-
-        """
         y, x = visual_coordinates
         current_character = colored_visual_grid[y][x].replace(self.reset_color, "")[-1]
         current_color = colored_visual_grid[y][x].replace(self.reset_color, "")[:-1]
