@@ -163,10 +163,10 @@ class Visual:
             if verbosity not in current_effect.verbosity:
                 continue
 
-            if isinstance(current_effect, ve.ColorSingleCell):
+            if isinstance(current_effect, ve.ModifySingleCell):
                 colored_visual_grid = self.color_single_cell(colored_visual_grid, current_effect)
 
-            elif isinstance(current_effect, ve.ColorMultipleCells):
+            elif isinstance(current_effect, ve.ModifyMultipleCells):
                 colored_visual_grid = self.color_multiple_cells(colored_visual_grid, current_effect)
 
             elif isinstance(current_effect, ve.RandomColorGroup):
@@ -174,14 +174,12 @@ class Visual:
                     self.last_groups = current_effect.groups
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
 
-            elif isinstance(current_effect, ve.ValueTransition):
+            elif isinstance(current_effect, ve.Animation):
                 colored_visual_grid = self.value_transition(colored_visual_grid, current_effect)
 
         return colored_visual_grid
 
-    def value_transition(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.ValueTransition
-    ) -> list[list[str]]:
+    def value_transition(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
         def get_value_at_modification_index(i, collection):
             if i < len(collection):
                 return collection[i]
@@ -190,31 +188,32 @@ class Visual:
         color = character = None
         translated_cells = set()
         for cell in visual_effect.cells:
-            translated_cells.add(self.translate_cell_coords(cell))
+            if cell:
+                translated_cells.add(self.translate_cell_coords(cell))
 
         visual_effect.cells.clear()
-        cells_and_passages = self.find_passages(translated_cells | visual_effect.transitioning.keys())
-        for key in visual_effect.transitioning.keys():
+        cells_and_passages = self.find_passages(translated_cells | visual_effect.animating.keys())
+        for key in visual_effect.animating.keys():
             cells_and_passages.discard(key)
 
-        visual_effect.transitioning |= {
+        visual_effect.animating |= {
             visual_coordinates: [0, visual_effect.frames_per_value] for visual_coordinates in cells_and_passages
         }
         transition_complete = []
-        for visual_coordinate, transition_details in visual_effect.transitioning.items():
+        for visual_coordinate, transition_details in visual_effect.animating.items():
             modification_index, frames_until_transition = transition_details
             if frames_until_transition:
-                visual_effect.transitioning[visual_coordinate][1] -= 1
+                visual_effect.animating[visual_coordinate][1] -= 1
                 color = get_value_at_modification_index(modification_index, visual_effect.colors)
                 character = get_value_at_modification_index(modification_index, visual_effect.characters)
 
-            if not visual_effect.transitioning[visual_coordinate][1]:
-                visual_effect.transitioning[visual_coordinate][0] += 1
-                visual_effect.transitioning[visual_coordinate][1] = visual_effect.frames_per_value
+            if not visual_effect.animating[visual_coordinate][1]:
+                visual_effect.animating[visual_coordinate][0] += 1
+                visual_effect.animating[visual_coordinate][1] = visual_effect.frames_per_value
 
-            if visual_effect.transitioning[visual_coordinate][0] >= len(
-                visual_effect.colors
-            ) and visual_effect.transitioning[visual_coordinate][0] >= len(visual_effect.characters):
+            if visual_effect.animating[visual_coordinate][0] >= len(visual_effect.colors) and visual_effect.animating[
+                visual_coordinate
+            ][0] >= len(visual_effect.characters):
                 transition_complete.append(visual_coordinate)
 
             if character and len(character) > 1:
@@ -226,11 +225,11 @@ class Visual:
                     colored_visual_grid, visual_coordinate, character=character, color=color
                 )
         for visual_coordinate in transition_complete:
-            del visual_effect.transitioning[visual_coordinate]
+            del visual_effect.animating[visual_coordinate]
         return colored_visual_grid
 
     def color_multiple_cells(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorMultipleCells
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ModifyMultipleCells
     ) -> list[list[str]]:
         """Color multiple cells the same color.
 
@@ -251,7 +250,7 @@ class Visual:
         return colored_visual_grid
 
     def color_single_cell(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.ColorSingleCell
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.ModifySingleCell
     ) -> list[list[str]]:
         """Color a single cell the given color.
 
