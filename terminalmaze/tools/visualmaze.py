@@ -381,11 +381,13 @@ class Visual:
         status_text: dict[str, str | int | None],
         verbosity: int,
         complete: bool = False,
+        nostatus: bool = False,
     ) -> None:
         """
 
         Parameters
         ----------
+        nostatus :
         visual_effects : Effects to be applied to the maze
         status_text : Status texts to display below the maze
         verbosity : Determines which visual effects are shown
@@ -410,5 +412,6 @@ class Visual:
         status_text["Time Elapsed"] = self.time_elapsed()
         system("clear")
         print("\n".join(lines))
-        print(f"{colored.attr('reset')}{self.format_status(status_text)}")
+        if not nostatus:
+            print(f"{colored.attr('reset')}{self.format_status(status_text)}")
         self.last_show_time = time.time()
