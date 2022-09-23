@@ -44,7 +44,7 @@ class AnimationModel(BaseModel):
     layer: int
     frames_per_value: int
     characters: list[str | None]
-    colors: list[int | None]
+    colors: list[list[int] | int | None]
     verbosity: list[int]
 
 
@@ -55,6 +55,7 @@ class AldousBroderTheme(BaseModel):
     last_linked: AnimationModel
     invalid_neighbors: AnimationModel
     invalid_visited: AnimationModel
+    maximum_searching_frame_delay: float
 
 
 class BinaryTreeTheme(BaseModel):
@@ -78,6 +79,7 @@ class HuntAndKillTheme(BaseModel):
     invalid_neighbors: AnimationModel
     last_linked: AnimationModel
     hunt_cells: AnimationModel
+    hunting_frames_skip: int
 
 
 class KruskalsRandomizedTheme(BaseModel):
@@ -93,6 +95,7 @@ class PrimsSimpleTheme(BaseModel):
     edges: AnimationModel
     invalid_neighbors: AnimationModel
     last_linked: AnimationModel
+    edge_frame_ratio: int
 
 
 class PrimsWeightedTheme(BaseModel):
@@ -132,6 +135,7 @@ class WilsonsTheme(BaseModel):
     working_cell: AnimationModel
     new_linked_walks: AnimationModel
     last_linked: AnimationModel
+    searching_frames_skipped: int
 
 
 class BreadthFirstTheme(BaseModel):
