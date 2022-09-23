@@ -108,7 +108,12 @@ class HuntandKill(Algorithm):
         self.status_text["Unvisited Cells"] = 0
         del self.visual_effects["working_cell"]
         del self.visual_effects["invalid_neighbors"]
-        while ve_hunt_cells.animating:
+        while (
+            ve_hunt_cells.animating
+            or ve_invalidneighbors.animating
+            or ve_last_linked.animating
+            or ve_workingcell.animating
+        ):
             yield self.maze
         self.status_text["State"] = "Complete"
         yield self.maze
