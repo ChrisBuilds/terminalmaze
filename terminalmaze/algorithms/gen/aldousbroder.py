@@ -36,8 +36,6 @@ class AldousBroder(Algorithm):
                 self.maze.link_cells(working_cell, neighbor)
                 ve_last_linked.cells.append(neighbor)
                 unvisited.discard(neighbor)
-                if ve_invalid_visited.cells:
-                    ve_invalid_visited.cells.pop(0)
                 self.status_text["Unvisited"] = len(unvisited)
                 self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                 self.status_text["State"] = "Linking"
