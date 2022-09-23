@@ -33,7 +33,7 @@ class Wilsons(Algorithm):
         self.visual_effects["last_linked"] = ve_last_linked
 
         ve_new_linked_walks = ve.Animation(self.theme.new_linked_walks)
-        self.visual_effects["linktransition"] = ve_new_linked_walks
+        self.visual_effects["new_linked_walks"] = ve_new_linked_walks
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
@@ -70,7 +70,7 @@ class Wilsons(Algorithm):
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                         yield self.maze
-                    ve_new_linked_walks.cells = walk[:]
+                    ve_new_linked_walks.cells.extend(walk)
                     self.visual_effects.pop("logic1", None)
                     links += 1
                 else:
