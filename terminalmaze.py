@@ -144,6 +144,12 @@ Supported Solve Algorithms
         required=False,
         choices=[0, 1, 2, 3, 4],
         default=4,
+    ),
+    parser.add_argument(
+        "--nostatus",
+        action="store_true",
+        dest="nostatus",
+        help="Use to prevent showing status text",
     )
     args = parser.parse_args()
     return args
@@ -211,10 +217,16 @@ def main():
     try:
         maze_generator = maze_algorithm(maze, theme[args.maze_algorithm])
         for maze in maze_generator.generate_maze():
-            maze.visual.show(maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb)
+            maze.visual.show(
+                maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb, nostatus=args.nostatus
+            )
         else:
             maze.visual.show(
-                maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb, complete=True
+                maze_generator.visual_effects,
+                maze_generator.status_text,
+                verbosity=mazeverb,
+                complete=True,
+                nostatus=args.nostatus,
             )
             print()
         if solve_algorithm:
