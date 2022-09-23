@@ -45,7 +45,7 @@ class HuntandKill(Algorithm):
         self.status_text["Unvisited Cells"] = 0
         self.status_text["State"] = ""
         self.link_trail: list[Cell] = []
-        self.skip_frames = 3
+        self.skip_frames = theme.hunting_frames_skip
         self.theme = theme
 
     def generate_maze(self) -> Generator[Grid, None, None]:

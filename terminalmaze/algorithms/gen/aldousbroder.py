@@ -50,7 +50,7 @@ class AldousBroder(Algorithm):
                     ve_invalid_visited.cells.append(neighbor)
                 ve_invalid_visited.cells = ve_invalid_visited.cells[-50:]
                 time_since_last_frame = time.time() - self.frame_time
-                if time_since_last_frame > 0.0270:
+                if time_since_last_frame > self.theme.maximum_searching_frame_delay:
                     self.frame_time = time.time()
                     self.status_text["Unvisited"] = len(unvisited)
                     self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"

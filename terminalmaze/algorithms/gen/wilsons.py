@@ -15,6 +15,7 @@ class Wilsons(Algorithm):
         self.status_text["Walked"] = 0
         self.status_text["Cell"] = ""
         self.status_text["State"] = ""
+        self.skip_frames = theme.searching_frames_skipped
 
     def generate_maze(self) -> Generator[Grid, None, None]:
         target = self.maze.random_cell()
@@ -44,7 +45,6 @@ class Wilsons(Algorithm):
             working_cell = random.choice(unvisited_cells)
             ve_working_cell.cells.append(working_cell)
             walk.append(working_cell)
-            frame_delay = 10
             while walking:
                 self.status_text["State"] = "Searching"
                 next_cell = random.choice(list(n for n in self.maze.get_neighbors(working_cell).values() if n))
@@ -82,16 +82,10 @@ class Wilsons(Algorithm):
                     self.status_text["Walked"] = len(walk)
                     self.status_text["Links"] = links
                     self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
-                    if links < 3:
-                        frame_delay -= 1
-                        if frame_delay == 0:
-                            frame_delay = 40
-                            yield self.maze
-                    else:
-                        frame_delay -= 1
-                        if frame_delay == 0:
-                            frame_delay = 3
-                            yield self.maze
+                    if links > 3:
+                        self.skip_frames = 5
+                    if self.frame_wanted():
+                        yield self.maze
         while ve_new_linked_walks.animating:
             yield self.maze
         self.visual_effects.clear()
