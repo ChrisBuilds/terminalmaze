@@ -1,6 +1,6 @@
 from terminalmaze.resources.cell import Cell
 from typing import DefaultDict
-from terminalmaze.config import LayerColor, Transition, LayerVerbosity
+from terminalmaze.config import ModifyCellModel, AnimationModel, RandomGroupModel
 
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
@@ -9,10 +9,10 @@ GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set
 class Effect:
     """Apply a visual effect to the cell(s)."""
 
-    def __init__(self, theme_data: LayerColor | Transition | LayerVerbosity):
+    def __init__(self, theme_data: ModifyCellModel | AnimationModel | RandomGroupModel):
         """
         Args:
-            theme_data (LayerColor | Transition): Colors and effects are drawn in layer order. Higher layers are
+            theme_data (LayerColor | AnimationModel): Colors and effects are drawn in layer order. Higher layers are
         drawn over lower layers.
             category (ve.Category): Category of the Effect to be applied at specific verbosity
         levels.
@@ -23,10 +23,10 @@ class Effect:
         return self.layer < other.layer
 
 
-class ColorSingleCell(Effect):
+class ModifySingleCell(Effect):
     """Color a single cell the given color."""
 
-    def __init__(self, theme_data: LayerColor):
+    def __init__(self, theme_data: ModifyCellModel):
         super().__init__(theme_data)
         self.cell: Cell = Cell(0, 0)
         self.color: int = theme_data.color
@@ -34,10 +34,10 @@ class ColorSingleCell(Effect):
         self.verbosity: list[int] = theme_data.verbosity
 
 
-class ColorMultipleCells(Effect):
+class ModifyMultipleCells(Effect):
     """Color multiple cells the same color."""
 
-    def __init__(self, theme_data: LayerColor):
+    def __init__(self, theme_data: ModifyCellModel):
         super().__init__(theme_data)
         self.cells: list[Cell] = list()
         self.color: int = theme_data.color
@@ -49,21 +49,21 @@ class RandomColorGroup(Effect):
     """Color groups of cells with randomly chosen colors. Colors will be
     assigned to groups and persist between show() calls."""
 
-    def __init__(self, theme_data: LayerVerbosity):
+    def __init__(self, theme_data: RandomGroupModel):
         super().__init__(theme_data)
         self.groups: GroupType
         self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
 
-class ValueTransition(Effect):
-    def __init__(self, theme_data: Transition):
-        """Color cells with a transitioning colors and characters with a transition speed based on frames per color."""
+class Animation(Effect):
+    def __init__(self, theme_data: AnimationModel):
+        """Color cells with animating colors and characters with an animation speed based on frames per color."""
         super().__init__(theme_data)
-        self.cells: list[Cell] = list()
-        self.transitioning: dict[tuple[int, int], list[int]] = dict()
-        self.colors: list[int] = theme_data.colors
-        self.characters: list[str] = theme_data.characters
+        self.cells: list[Cell | None] = list()
+        self.animating: dict[tuple[int, int], list[int]] = dict()
+        self.colors: list[int | None] = theme_data.colors
+        self.characters: list[str | None] = theme_data.characters
         self.frames_per_value: int = theme_data.frames_per_value
         self.verbosity: list[int] = theme_data.verbosity
 
@@ -71,4 +71,4 @@ class ValueTransition(Effect):
         return self.layer < other.layer
 
 
-VisualEffect = ColorSingleCell | ColorMultipleCells | RandomColorGroup | ValueTransition
+VisualEffect = ModifySingleCell | ModifyMultipleCells | RandomColorGroup | Animation
