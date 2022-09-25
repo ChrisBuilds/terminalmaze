@@ -13,8 +13,7 @@ from terminalmaze.algorithms.gen.huntandkill import HuntandKill
 from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.primssimple import PrimsSimple
 from terminalmaze.algorithms.gen.primsweighted import PrimsWeighted
-from terminalmaze.algorithms.gen.recursivebacktracker import \
-    RecursiveBacktracker
+from terminalmaze.algorithms.gen.recursivebacktracker import RecursiveBacktracker
 from terminalmaze.algorithms.gen.recursivedivision import RecursiveDivision
 from terminalmaze.algorithms.gen.sidewinder import Sidewinder
 from terminalmaze.algorithms.gen.wilsons import Wilsons
@@ -185,12 +184,12 @@ def main():
     if args.theme in config.themes:
         theme = config.themes[args.theme]
     else:
-        print("Unable to locate theme. Verify file exists in themes dir and was spelled correctly.")
+        print(f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly.")
         return
 
     mask = get_mask(args)
     if args.mask and not mask:
-        print("Unable to locate mask. Verify file exists in masks dir and was spelled correctly.")
+        print(f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly.")
         return
 
     if args.solve_algorithm:
