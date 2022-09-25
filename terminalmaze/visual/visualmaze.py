@@ -2,8 +2,7 @@ import random
 import time
 from os import get_terminal_size, system
 
-import colored  # type: ignore
-
+import terminalmaze.visual.colorterm as colorterm
 import terminalmaze.visual.visualeffects as ve
 from terminalmaze.config import MAZE_THEME, tm_config
 from terminalmaze.resources.cell import Cell
@@ -26,11 +25,8 @@ class Visual:
         """
         self.grid = grid
         self.theme = theme
-        self.fg_color_map: dict[int, str] = {i: colored.fg(i) for i in range(256)}
-        self.bg_color_map: dict[int, str] = {i: colored.bg(i) for i in range(256)}
-        self.reset_color = colored.attr("reset")
-        self.wall = f"{self.fg_color_map.get(theme.wall.color)}{theme.wall.character}{self.reset_color}"
-        self.path = f"{self.fg_color_map.get(theme.path.color)}{theme.path.character}{self.reset_color}"
+        self.wall = f"{colorterm.fg(theme.wall.color)}{theme.wall.character}{colorterm.RESET}"
+        self.path = f"{colorterm.fg(theme.path.color)}{theme.path.character}{colorterm.RESET}"
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
@@ -110,11 +106,11 @@ class Visual:
             group_id (int): id for cell group
 
         Returns:
-            str: colored.fg() color string
+            str: colorterm.fg() color string
         """
         color = self.group_color_map.get(group_id)
         if color:
-            return self.fg_color_map[color]
+            return colorterm.fg(color)
 
         color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
         self.group_color_map[group_id] = color
@@ -122,14 +118,16 @@ class Visual:
         if not self.group_color_pool:
             self.group_color_pool = list(range(0, 256))
 
-        return self.fg_color_map[self.group_color_map[group_id]]
+        return colorterm.fg(self.group_color_map[group_id])
 
     def modify_link_state(self, cell_a: Cell, cell_b: Cell, unlink=False) -> None:
         """Replace characters for linked cells and the wall between them.
 
-        Args:
-            cell_a (Cell): Cell being (un)linked from
-            cell_b (Cell): Cell being (un)linked to
+        Parameters
+        ----------
+        cell_a : Cell being (un)linked from
+        cell_b : Cell being (un)linked to
+        unlink : bool
         """
         character = self.path
         if unlink:
@@ -161,11 +159,11 @@ class Visual:
         """Apply color to cells and passages to show logic.
 
         Args:
-            visual_effects (dict[str, ve.VisualEffect]): Effects for cells to be colored
+            visual_effects (dict[str, ve.VisualEffect]): Effects for cells to be colorterm
             verbosity : Determines which effects are applied
 
         Returns:
-            list[list[str]]: visual grid with colored cells
+            list[list[str]]: visual grid with colorterm cells
         """
         colored_visual_grid = [line.copy() for line in self.visual_grid]
         pending_effects = sorted(visual_effects.values())
@@ -233,7 +231,7 @@ class Visual:
                 color = random.choice(color)
             if character or color:
                 if color:
-                    color = self.fg_color_map.get(color)
+                    color = colorterm.fg(color)
                 colored_visual_grid = self.apply_cell_modification(
                     colored_visual_grid, visual_coordinate, character=character, color=color
                 )
@@ -247,17 +245,17 @@ class Visual:
         """Color multiple cells the same color.
 
         Args:
-            colored_visual_grid (list[list[str]]): List of cells to be colored.
+            colored_visual_grid (list[list[str]]): List of cells to be colorterm.
             visual_effect (ve.Multiple): Dataclass
 
         Returns:
-            list[list[str]]: Colored visual grid.
+            list[list[str]]: colorterm visual grid.
         """
         if not visual_effect.cells:
             return colored_visual_grid
         translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
         cells_and_passages = self.find_passages(translated_cells)
-        color_str = self.fg_color_map[visual_effect.color]
+        color_str = colorterm.fg(visual_effect.color)
         for visual_coordinates in cells_and_passages:
             colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
         return colored_visual_grid
@@ -275,14 +273,14 @@ class Visual:
             ValueError: color int must be 0 <= color <= 256
 
         Returns:
-            list[list[str]]: Colored visual grid
+            list[list[str]]: colorterm visual grid
         """
         if not visual_effect.cell:
             return colored_visual_grid
 
         visual_coordinates = self.translate_cell_coords(visual_effect.cell)
         if 0 <= visual_effect.color <= 256:
-            color_str = self.fg_color_map[visual_effect.color]
+            color_str = colorterm.fg(visual_effect.color)
             colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
         else:
             raise ValueError(f"visual_effect.color value: {visual_effect.color} not in valid range (0 - 256)")
@@ -297,7 +295,7 @@ class Visual:
         ve.RandomColorGroup], optional): Dict mapping group ID's to lists of cells. Defaults to None.
 
         Returns:
-            list[list[str]]: Colored visual grid
+            list[list[str]]: colorterm visual grid
         """
         groups = None
         if visual_effect and visual_effect.groups:
@@ -343,15 +341,15 @@ class Visual:
     ) -> list[list[str]]:
 
         y, x = visual_coordinates
-        current_character = colored_visual_grid[y][x].replace(self.reset_color, "")[-1]
-        current_color = colored_visual_grid[y][x].replace(self.reset_color, "")[:-1]
+        current_character = colored_visual_grid[y][x].replace(colorterm.RESET, "")[-1]
+        current_color = colored_visual_grid[y][x].replace(colorterm.RESET, "")[:-1]
         if character:
             current_character = character
         if color:
             current_color = color
         colored_visual_grid[y][
             x
-        ] = f"{self.bg_color_map[self.theme.wall.color]}{current_color}{current_character}{self.reset_color}"
+        ] = f"{colorterm.bg(self.theme.wall.color)}{current_color}{current_character}{colorterm.RESET}"
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
@@ -424,5 +422,5 @@ class Visual:
         system("clear")
         print("\n".join(lines))
         if not nostatus:
-            print(f"{colored.attr('reset')}{self.format_status(status_text)}")
+            print(f"{colorterm.RESET}{self.format_status(status_text)}")
         self.last_show_time = time.time()

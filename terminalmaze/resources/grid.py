@@ -2,8 +2,6 @@ import random
 from collections.abc import Generator
 from typing import Optional
 
-import colored  # type: ignore
-
 from terminalmaze.config import MAZE_THEME
 from terminalmaze.resources.cell import Cell
 from terminalmaze.visual.visualmaze import Visual
@@ -33,8 +31,6 @@ class Grid:
         self.mask_lines: Optional[list[str]] = self.format_mask(mask_string)
         self.mask_cells()
         self.configure_cells()
-        self.wall = f"{colored.fg(240)}{chr(9608)}"
-        self.path = f"{colored.fg(6)}{chr(9608)}"  # 29
         self.visual = Visual(self, theme)
         self.seed: Optional[int] = None
 
