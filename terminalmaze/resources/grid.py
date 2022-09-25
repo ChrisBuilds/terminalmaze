@@ -6,7 +6,7 @@ import colored  # type: ignore
 
 from terminalmaze.config import MAZE_THEME
 from terminalmaze.resources.cell import Cell
-from terminalmaze.tools.visualmaze import Visual
+from terminalmaze.visual.visualmaze import Visual
 
 
 class Grid:

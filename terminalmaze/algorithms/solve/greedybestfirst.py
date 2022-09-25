@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from queue import PriorityQueue
 
-import terminalmaze.tools.visualeffects as ve
+import terminalmaze.visual.visualeffects as ve
 from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import BreadthFirstTheme
 from terminalmaze.resources.grid import Cell, Grid

@@ -16,7 +16,7 @@ Classes
 import random
 from collections.abc import Generator
 
-import terminalmaze.tools.visualeffects as ve
+import terminalmaze.visual.visualeffects as ve
 from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import HuntAndKillTheme
 from terminalmaze.resources.grid import Cell, Grid

@@ -2,7 +2,7 @@ import random
 import time
 from collections.abc import Generator
 
-import terminalmaze.tools.visualeffects as ve
+import terminalmaze.visual.visualeffects as ve
 from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import AldousBroderTheme
 from terminalmaze.resources.grid import Grid

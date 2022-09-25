@@ -3,7 +3,7 @@ import time
 from typing import Generator
 
 from terminalmaze.resources.grid import Cell, Grid
-from terminalmaze.tools.visualeffects import VisualEffect
+from terminalmaze.visual.visualeffects import VisualEffect
 
 
 class Algorithm:

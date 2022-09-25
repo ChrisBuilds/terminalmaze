@@ -4,7 +4,7 @@ from os import get_terminal_size, system
 
 import colored  # type: ignore
 
-import terminalmaze.tools.visualeffects as ve
+import terminalmaze.visual.visualeffects as ve
 from terminalmaze.config import MAZE_THEME, tm_config
 from terminalmaze.resources.cell import Cell
 
