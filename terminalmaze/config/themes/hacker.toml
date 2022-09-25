@@ -42,10 +42,10 @@ invalid_neighbors.characters = []
 invalid_visited.verbosity = [3,4]
 invalid_visited.layer = 0
 invalid_visited.frames_per_value = 3
-invalid_visited.colors = [34,28,22,22,22,28,34]
-invalid_visited.characters = ["▇","▆","▅","▄","▅","▆","▇"]
-#invalid_visited.colors = [34,28,22,28,34]
-#invalid_visited.characters = ["▓","▒","░","▒","▓"]
+#invalid_visited.colors = [34,28,22,22,22,28,34]
+#invalid_visited.characters = ["▇","▆","▅","▄","▅","▆","▇"]
+invalid_visited.colors = [34,28,22,28,34]
+invalid_visited.characters = ["▓","▒","░","▒","▓"]
 
 ###########################
 ###########################
@@ -304,6 +304,69 @@ stack_removed_cells.characters = []
 
 ###########################
 ###########################
+[recursive_division]
+
+# color of the walls and unlinked cells
+wall.color = 16
+wall.character = "█"
+
+# color of the paths (linked cells)
+path.color = 34
+path.character = "█"
+
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
+working_cell.layer = 0
+working_cell.frames_per_value = 1
+working_cell.colors = [46]
+working_cell.characters = []
+
+# single passage cell ignored during division
+passage_cell.verbosity = [2,4]
+passage_cell.layer = 1
+passage_cell.frames_per_value = 12
+passage_cell.colors = [94]
+passage_cell.characters = []
+
+# fully linke.charactersd cells generated at the start of the maze generation
+generating_links_cells.verbosity = [3,4]
+generating_links_cells.layer = 0
+generating_links_cells.frames_per_value = 12
+generating_links_cells.colors = [22,28,34,40]
+generating_links_cells.characters = ["Ω⅀ढ़℥७आ⍕⍫⏧⏅","Ω⅀℥ढ़⍕⍫७आ⏧⏅","Ω⅀℥७आढ़⏧⍕⍫⏅","Ω⅀℥⍕७ढ़आ⏧⍫⏅"]
+
+
+# east cells during a vertical division
+division_cell_east.verbosity = [3,4]
+division_cell_east.layer = 0
+division_cell_east.frames_per_value = 2
+division_cell_east.colors = [34,28,34]
+division_cell_east.characters = ["▐","▕","▐"]
+
+# west cells during a vertical division
+division_cell_west.verbosity = [3,4]
+division_cell_west.layer = 0
+division_cell_west.frames_per_value = 6
+division_cell_west.colors = [34,34,34,28,28,28,[22,34],[22,34],[22,34],22,28,28,28,34,34,34]
+division_cell_west.characters = ["▉","▊","▋","▌","▍","▎","01","01","01","▍","▌","▋","▊","▉"]
+
+# north cells during a vertical division
+division_cell_north.verbosity = [3,4]
+division_cell_north.layer = 0
+division_cell_north.frames_per_value = 2
+division_cell_north.colors = [34,28,34]
+division_cell_north.characters = ["▀","▔","▀"]
+
+# south cells during a vertical division
+division_cell_south.verbosity = [3,4]
+division_cell_south.layer = 0
+division_cell_south.frames_per_value = 6
+division_cell_south.colors = [34,34,34,28,28,28,22,[22,34],[22,34],[22,34],28,28,28,34,34,34]
+division_cell_south.characters = ["▇","▆","▅","▄","▃","▂","▁","01","01","01","▂","▃","▄","▅","▆","▇"]
+
+
+###########################
+###########################
 [side_winder]
 # color of the walls and unlinked cells
 wall.color = 240
@@ -413,7 +476,7 @@ visited.character = ""
 visited_animation.verbosity = [3,4]
 visited_animation.layer = 1
 visited_animation.frames_per_value = 10
-visited_animation.colors = [46,40,34,28,22,16,22,28,22,16,94,172]
+visited_animation.colors = [46,40,34,28,22,16,22,28,22,16,94,178,184,178,172]
 visited_animation.characters = ["█","█","█","█","█","█","01","01","01","01"]
 
 # color of cell being targeted for the solution path
@@ -432,9 +495,10 @@ solution_path.character = ""
 # (value at index 0 is the start of the transition)
 solution_animation.verbosity = [3,4]
 solution_animation.layer = 2
-solution_animation.frames_per_value = 2
-solution_animation.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
-solution_animation.characters = []
+solution_animation.frames_per_value = 3
+#solution_animation.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
+solution_animation.colors = [178,178,178,94,94,16,[22,28],[22,28],34,40,]
+solution_animation.characters = ['█','█','█','█','█','█','01', '01', '1']
 ######################################################
 ######################################################
 [breadth_first_early_exit]
