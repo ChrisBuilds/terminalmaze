@@ -1,9 +1,10 @@
-from terminalmaze.resources.grid import Grid
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import RecursiveBacktrackerTheme
 import random
 from typing import Generator
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
+from terminalmaze.config import RecursiveBacktrackerTheme
+from terminalmaze.resources.grid import Grid
 
 
 class RecursiveBacktracker(Algorithm):
