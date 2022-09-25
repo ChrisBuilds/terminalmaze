@@ -1,9 +1,10 @@
 import random
-from terminalmaze.resources.grid import Grid
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import BinaryTreeTheme
 from collections.abc import Generator
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
+from terminalmaze.config import BinaryTreeTheme
+from terminalmaze.resources.grid import Grid
 
 
 class BinaryTree(Algorithm):

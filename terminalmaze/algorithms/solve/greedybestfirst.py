@@ -1,9 +1,10 @@
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
-from terminalmaze.config import BreadthFirstTheme
 from queue import PriorityQueue
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
+from terminalmaze.config import BreadthFirstTheme
+from terminalmaze.resources.grid import Cell, Grid
 
 
 class GreedyBestFirst(Algorithm):
@@ -65,6 +66,8 @@ class GreedyBestFirst(Algorithm):
                 if cell == target:
                     frontier = PriorityQueue()
                     self.status_text["Position"] = f"({cell.column}, {cell.row})"
+                    ve_visited.cells.append(cell)
+                    ve_visited_animation.cells.append(cell)
                     yield self.maze
                     break
                 frontier.put((GreedyBestFirst.distance(cell, target), cell))
@@ -72,6 +75,9 @@ class GreedyBestFirst(Algorithm):
 
             self.status_text["Frontier"] = frontier.qsize()
             self.status_text["Visited"] = len(ve_visited.cells)
+            yield self.maze
+
+        while ve_visited_animation.animating:
             yield self.maze
 
         self.status_text["Frontier"] = 0

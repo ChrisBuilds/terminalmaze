@@ -1,9 +1,10 @@
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import PrimsWeightedTheme
 import random
 from typing import Generator
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
+from terminalmaze.config import PrimsWeightedTheme
+from terminalmaze.resources.grid import Cell, Grid
 
 
 class PrimsWeighted(Algorithm):

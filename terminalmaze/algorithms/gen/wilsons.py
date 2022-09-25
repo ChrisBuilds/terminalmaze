@@ -1,9 +1,10 @@
 import random
 from typing import Generator
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.algorithm import Algorithm
+
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import WilsonsTheme
+from terminalmaze.resources.grid import Cell, Grid
 
 
 class Wilsons(Algorithm):

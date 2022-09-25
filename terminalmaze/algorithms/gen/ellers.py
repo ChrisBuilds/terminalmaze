@@ -1,11 +1,12 @@
-from terminalmaze.resources.grid import Grid
-from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import EllersTheme
 import random
 from collections import defaultdict
 from typing import Generator
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
+from terminalmaze.config import EllersTheme
+from terminalmaze.resources.cell import Cell
+from terminalmaze.resources.grid import Grid
 
 
 class Ellers(Algorithm):

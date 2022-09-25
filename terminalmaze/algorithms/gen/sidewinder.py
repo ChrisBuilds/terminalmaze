@@ -1,12 +1,12 @@
 import random
-from collections.abc import Generator
 from collections import deque
+from collections.abc import Generator
 
-from terminalmaze.resources.grid import Grid
-from terminalmaze.resources.cell import Cell
-from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import SideWinderTheme
+from terminalmaze.resources.cell import Cell
+from terminalmaze.resources.grid import Grid
 
 
 class Sidewinder(Algorithm):
@@ -35,7 +35,7 @@ class Sidewinder(Algorithm):
 
         run: list[Cell] = []
         ve_run.cells = run
-        unvisited_cells = deque()
+        unvisited_cells: deque = deque()
         for row in self.maze.each_row(ignore_mask=True, bottom_up=True):
             unvisited_cells.extend(row.copy())
             while unvisited_cells:

@@ -1,8 +1,9 @@
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.algorithm import Algorithm
-import terminalmaze.tools.visualeffects as ve
 from collections.abc import Generator
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import BreadthFirstTheme
+from terminalmaze.resources.grid import Cell, Grid
 
 
 class BreadthFirst(Algorithm):
@@ -45,14 +46,15 @@ class BreadthFirst(Algorithm):
         ve_solution_path = ve.ModifyMultipleCells(self.theme.solution_path)
         self.visual_effects["path"] = ve_solution_path
 
-        ve_solution_animation = ve.Animation(self.theme.visited_animation)
+        ve_solution_animation = ve.Animation(self.theme.solution_animation)
         self.visual_effects["solutiontransition"] = ve_solution_animation
 
         while frontier:
             self.status_text["State"] = "Exploring"
-            self.status_text["Frontier"] = len(frontier)
-            self.status_text["Visited"] = len(ve_visited.cells)
+            self.status_text["Frontier"] = f"{len(frontier): >3}"
+            self.status_text["Visited"] = f"{len(ve_visited.cells): >4}"
             position = frontier.pop(0)
+            self.status_text["Position"] = f"{position.row: >3},{position.column: >3}"
             ve_visited.cells.append(position)
             if position not in transitions:
                 ve_visited_animation.cells.append(position)
@@ -65,8 +67,8 @@ class BreadthFirst(Algorithm):
             for cell in edges:
                 explored[cell] = position
             frontier.extend(edges)
-            self.status_text["Frontier"] = len(frontier)
-            self.status_text["Visited"] = len(ve_visited.cells)
+            self.status_text["Frontier"] = f"{len(frontier): >3}"
+            self.status_text["Visited"] = f"{len(ve_visited.cells): >4}"
             if self.frame_wanted_relative(frontier, divisor=4):
                 yield self.maze
 
@@ -89,6 +91,6 @@ class BreadthFirst(Algorithm):
             ve_solution_animation.cells.append(step)
             self.status_text["Solution Length"] = len(route)
             yield self.maze
-        while ve_solution_animation.animating:
+        while ve_solution_animation.animating or ve_visited_animation.animating:
             yield self.maze
         yield self.maze

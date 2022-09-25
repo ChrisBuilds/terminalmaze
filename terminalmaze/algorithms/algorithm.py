@@ -1,8 +1,9 @@
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.tools.visualeffects import VisualEffect
 import random
 import time
 from typing import Generator
+
+from terminalmaze.resources.grid import Cell, Grid
+from terminalmaze.tools.visualeffects import VisualEffect
 
 
 class Algorithm:

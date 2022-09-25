@@ -1,5 +1,6 @@
-from typing import Any, Type, Union
 import pathlib
+from typing import Any, Type, Union
+
 import tomli
 from pydantic import BaseModel
 
@@ -119,6 +120,18 @@ class RecursiveBacktrackerTheme(BaseModel):
     stack_removed_cells: AnimationModel
 
 
+class RecursiveDivisionTheme(BaseModel):
+    wall: WallPathModel
+    path: WallPathModel
+    working_cell: AnimationModel
+    division_cell_east: AnimationModel
+    division_cell_west: AnimationModel
+    division_cell_north: AnimationModel
+    division_cell_south: AnimationModel
+    generating_links_cells: AnimationModel
+    passage_cell: AnimationModel
+
+
 class SideWinderTheme(BaseModel):
     wall: WallPathModel
     path: WallPathModel
@@ -177,6 +190,7 @@ MAZE_THEME = (
     | PrimsSimpleTheme
     | PrimsWeightedTheme
     | RecursiveBacktrackerTheme
+    | RecursiveDivisionTheme
     | SideWinderTheme
     | WilsonsTheme
 )
@@ -192,6 +206,7 @@ model_map: dict[str, Type[THEME]] = {
     "prims_simple": PrimsSimpleTheme,
     "prims_weighted": PrimsWeightedTheme,
     "recursive_backtracker": RecursiveBacktrackerTheme,
+    "recursive_division": RecursiveDivisionTheme,
     "side_winder": SideWinderTheme,
     "wilsons": WilsonsTheme,
     "breadth_first": BreadthFirstTheme,

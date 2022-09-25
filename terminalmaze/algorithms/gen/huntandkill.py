@@ -16,10 +16,10 @@ Classes
 import random
 from collections.abc import Generator
 
-from terminalmaze.resources.grid import Grid, Cell
-from terminalmaze.algorithms.algorithm import Algorithm
 import terminalmaze.tools.visualeffects as ve
+from terminalmaze.algorithms.algorithm import Algorithm
 from terminalmaze.config import HuntAndKillTheme
+from terminalmaze.resources.grid import Cell, Grid
 
 
 class HuntandKill(Algorithm):

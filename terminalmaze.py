@@ -1,24 +1,26 @@
 #!/usr/bin/python3
+import argparse
 import os
+import random
+import sys
 from argparse import Namespace
-from terminalmaze.algorithms.gen.huntandkill import HuntandKill
-from terminalmaze.algorithms.gen.wilsons import Wilsons
-from terminalmaze.algorithms.gen.binarytree import BinaryTree
-from terminalmaze.algorithms.gen.sidewinder import Sidewinder
+
+import terminalmaze.config as config
 from terminalmaze.algorithms.gen.aldousbroder import AldousBroder
-from terminalmaze.algorithms.gen.recursivebacktracker import RecursiveBacktracker
+from terminalmaze.algorithms.gen.binarytree import BinaryTree
+from terminalmaze.algorithms.gen.ellers import Ellers
+from terminalmaze.algorithms.gen.huntandkill import HuntandKill
+from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
 from terminalmaze.algorithms.gen.primssimple import PrimsSimple
 from terminalmaze.algorithms.gen.primsweighted import PrimsWeighted
-from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
-from terminalmaze.algorithms.gen.ellers import Ellers
+from terminalmaze.algorithms.gen.recursivebacktracker import \
+    RecursiveBacktracker
+from terminalmaze.algorithms.gen.recursivedivision import RecursiveDivision
+from terminalmaze.algorithms.gen.sidewinder import Sidewinder
+from terminalmaze.algorithms.gen.wilsons import Wilsons
 from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
 from terminalmaze.algorithms.solve.greedybestfirst import GreedyBestFirst
 from terminalmaze.resources.grid import Grid
-import terminalmaze.config as config
-import sys
-import random
-import argparse
-
 
 MAZE_ALGORITHMS = {
     "binary_tree": BinaryTree,
@@ -27,6 +29,7 @@ MAZE_ALGORITHMS = {
     "wilsons": Wilsons,
     "hunt_and_kill": HuntandKill,
     "recursive_backtracker": RecursiveBacktracker,
+    "recursive_division": RecursiveDivision,
     "prims_simple": PrimsSimple,
     "prims_weighted": PrimsWeighted,
     "kruskals_randomized": KruskalsRandomized,
