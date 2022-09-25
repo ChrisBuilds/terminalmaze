@@ -1,10 +1,12 @@
-from terminalmaze.tools.visualmaze import Visual
-from terminalmaze.resources.cell import Cell
-from terminalmaze.config import MAZE_THEME
 import random
-import colored  # type: ignore
 from collections.abc import Generator
 from typing import Optional
+
+import colored  # type: ignore
+
+from terminalmaze.config import MAZE_THEME
+from terminalmaze.resources.cell import Cell
+from terminalmaze.tools.visualmaze import Visual
 
 
 class Grid:
@@ -149,7 +151,11 @@ class Grid:
         :param bidi: If True, the link is bidirectional, defaults to True (optional)
         """
         cell_a.link(cell_b, bidi=bidi)
-        self.visual.link_cells(cell_a, cell_b)
+        self.visual.modify_link_state(cell_a, cell_b)
+
+    def unlink_cells(self, cell_a: Cell, cell_b: Cell, bidi: bool = True) -> None:
+        cell_a.unlink(cell_b, bidi=bidi)
+        self.visual.modify_link_state(cell_a, cell_b, unlink=True)
 
     def random_cell(self, ignore_mask: bool = False) -> Cell:
         """Return a random cell from the grid.
@@ -180,26 +186,29 @@ class Grid:
         :param ignore_mask: If True, include masked cells in the list of cells, defaults to False (optional)
         :param bottom_up: If True, the cells are traversed in bottom-up order, defaults to False (optional)
         """
-        if not bottom_up:
-            for row in range(self.height):
-                if ignore_mask:
-                    yield [self.cells[(row, col)] for col in range(self.width)]
-                else:
-                    yield [
-                        unmasked_cell
-                        for col in range(self.width)
-                        if (unmasked_cell := self.unmasked_cells.get((row, col), None))
-                    ]
+        if bottom_up:
+            range_gen = range(self.height - 1, -1, -1)
         else:
-            for row in range(self.height - 1, -1, -1):
-                if ignore_mask:
-                    yield [self.cells[(row, col)] for col in range(self.width)]
-                else:
-                    yield [
-                        unmasked_cell
-                        for col in range(self.width)
-                        if (unmasked_cell := self.unmasked_cells.get((row, col), None))
-                    ]
+            range_gen = range(self.height)
+        for row in range_gen:
+            if ignore_mask:
+                yield [self.cells[(row, col)] for col in range(self.width)]
+            else:
+                yield [
+                    unmasked_cell
+                    for col in range(self.width)
+                    if (unmasked_cell := self.unmasked_cells.get((row, col), None))
+                ]
+
+    def each_column(self, ignore_mask: bool = False) -> Generator[list[Cell], None, None]:
+        """
+        Yield one column of the grid at a time as a list.
+
+        :param ignore_mask: If True, include masked cells in the list of cells, defaults to False (optional)
+        """
+        for column in range(self.width):
+            if ignore_mask:
+                yield [self.cells[(row, column)] for row in range(self.height)]
 
     def each_cell(self, ignore_mask: bool = False) -> Generator[Cell, None, None]:
         """
