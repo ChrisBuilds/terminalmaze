@@ -1,11 +1,12 @@
-import time
-
-from terminalmaze.resources.cell import Cell
-import terminalmaze.tools.visualeffects as ve
-from terminalmaze.config import tm_config, MAZE_THEME
-import colored  # type: ignore
 import random
-from os import system, get_terminal_size
+import time
+from os import get_terminal_size, system
+
+import colored  # type: ignore
+
+import terminalmaze.tools.visualeffects as ve
+from terminalmaze.config import MAZE_THEME, tm_config
+from terminalmaze.resources.cell import Cell
 
 
 class Visual:
@@ -123,27 +124,37 @@ class Visual:
 
         return self.fg_color_map[self.group_color_map[group_id]]
 
-    def link_cells(self, cell_a: Cell, cell_b: Cell) -> None:
+    def modify_link_state(self, cell_a: Cell, cell_b: Cell, unlink=False) -> None:
         """Replace characters for linked cells and the wall between them.
 
         Args:
-            cell_a (Cell): Cell being linked from
-            cell_b (Cell): Cell being linked to
+            cell_a (Cell): Cell being (un)linked from
+            cell_b (Cell): Cell being (un)linked to
         """
-        # replace wall on cells with path for linked cells
+        character = self.path
+        if unlink:
+            character = self.wall
+
+        # replace character on cells with wall/path for (un)linked cells
         for cell in (cell_a, cell_b):
             row, column = self.translate_cell_coords(cell)
-            self.visual_grid[row][column] = self.path
+            if not cell.links:
+                self.visual_grid[row][column] = self.wall
+            else:
+                self.visual_grid[row][column] = self.path
 
-        # replace wall between cells with path
+        # replace character between cells
         offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
         for direction, offset in offsets.items():
             row_offset, column_offset = offset
             row, column = self.translate_cell_coords(cell_a)
 
             if cell_b is cell_a.neighbors[direction]:
-                self.visual_grid[row + row_offset][column + column_offset] = self.path
-                self.passages.add((row + row_offset, column + column_offset))
+                self.visual_grid[row + row_offset][column + column_offset] = character
+                if unlink:
+                    self.passages.discard((row + row_offset, column + column_offset))
+                else:
+                    self.passages.add((row + row_offset, column + column_offset))
                 return
 
     def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect], verbosity: int) -> list[list[str]]:
