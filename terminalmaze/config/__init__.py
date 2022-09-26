@@ -25,7 +25,7 @@ for theme in themes_path.iterdir():
 
 class WallPathModel(BaseModel):
     character: str
-    color: int
+    color: int | str
 
 
 class RandomGroupModel(BaseModel):
@@ -37,7 +37,7 @@ class RandomGroupModel(BaseModel):
 class ModifyCellModel(BaseModel):
     layer: int
     verbosity: list[int]
-    color: int
+    color: int | str
     character: str
 
 
@@ -45,7 +45,7 @@ class AnimationModel(BaseModel):
     layer: int
     frames_per_value: int
     characters: list[str | None]
-    colors: list[list[int] | int | None]
+    colors: list[list[int | str] | int | str | None]
     verbosity: list[int]
 
 
