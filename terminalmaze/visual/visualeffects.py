@@ -1,7 +1,6 @@
 from typing import DefaultDict
 
-from terminalmaze.config import (AnimationModel, ModifyCellModel,
-                                 RandomGroupModel)
+from terminalmaze.config import AnimationModel, ModifyCellModel, RandomGroupModel
 from terminalmaze.resources.cell import Cell
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
@@ -30,7 +29,7 @@ class ModifySingleCell(Effect):
     def __init__(self, theme_data: ModifyCellModel):
         super().__init__(theme_data)
         self.cell: Cell = Cell(0, 0)
-        self.color: int = theme_data.color
+        self.color: int | str = theme_data.color
         self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
@@ -41,7 +40,7 @@ class ModifyMultipleCells(Effect):
     def __init__(self, theme_data: ModifyCellModel):
         super().__init__(theme_data)
         self.cells: list[Cell] = list()
-        self.color: int = theme_data.color
+        self.color: int | str = theme_data.color
         self.character: str = theme_data.character
         self.verbosity: list[int] = theme_data.verbosity
 
@@ -63,7 +62,7 @@ class Animation(Effect):
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], list[int]] = dict()
-        self.colors: list[list[int] | int | None] = theme_data.colors
+        self.colors: list[list[int | str] | int | str | None] = theme_data.colors
         self.characters: list[str | None] = theme_data.characters
         self.frames_per_value: int = theme_data.frames_per_value
         self.verbosity: list[int] = theme_data.verbosity
