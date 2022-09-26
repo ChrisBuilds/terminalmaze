@@ -3,51 +3,39 @@ import argparse
 import os
 import random
 import sys
-from argparse import Namespace
 
 import terminalmaze.config as config
-from terminalmaze.algorithms.gen.aldousbroder import AldousBroder
-from terminalmaze.algorithms.gen.binarytree import BinaryTree
-from terminalmaze.algorithms.gen.ellers import Ellers
-from terminalmaze.algorithms.gen.huntandkill import HuntandKill
-from terminalmaze.algorithms.gen.kruskalsrandomized import KruskalsRandomized
-from terminalmaze.algorithms.gen.primssimple import PrimsSimple
-from terminalmaze.algorithms.gen.primsweighted import PrimsWeighted
-from terminalmaze.algorithms.gen.recursivebacktracker import RecursiveBacktracker
-from terminalmaze.algorithms.gen.recursivedivision import RecursiveDivision
-from terminalmaze.algorithms.gen.sidewinder import Sidewinder
-from terminalmaze.algorithms.gen.wilsons import Wilsons
-from terminalmaze.algorithms.solve.breadthfirst import BreadthFirst
-from terminalmaze.algorithms.solve.greedybestfirst import GreedyBestFirst
+import terminalmaze.algorithms.gen as maze_algos
+import terminalmaze.algorithms.solve as solve_algos
 from terminalmaze.resources.grid import Grid
 
 MAZE_ALGORITHMS = {
-    "binary_tree": BinaryTree,
-    "side_winder": Sidewinder,
-    "aldous_broder": AldousBroder,
-    "wilsons": Wilsons,
-    "hunt_and_kill": HuntandKill,
-    "recursive_backtracker": RecursiveBacktracker,
-    "recursive_division": RecursiveDivision,
-    "prims_simple": PrimsSimple,
-    "prims_weighted": PrimsWeighted,
-    "kruskals_randomized": KruskalsRandomized,
-    "ellers": Ellers,
+    "binary_tree": maze_algos.binarytree.BinaryTree,
+    "side_winder": maze_algos.sidewinder.Sidewinder,
+    "aldous_broder": maze_algos.aldousbroder.AldousBroder,
+    "wilsons": maze_algos.wilsons.Wilsons,
+    "hunt_and_kill": maze_algos.huntandkill.HuntandKill,
+    "recursive_backtracker": maze_algos.recursivebacktracker.RecursiveBacktracker,
+    "recursive_division": maze_algos.recursivedivision.RecursiveDivision,
+    "prims_simple": maze_algos.primssimple.PrimsSimple,
+    "prims_weighted": maze_algos.primsweighted.PrimsWeighted,
+    "kruskals_randomized": maze_algos.kruskalsrandomized.KruskalsRandomized,
+    "ellers": maze_algos.ellers.Ellers,
 }
 
 SOLVE_ALGORITHMS = {
-    "breadth_first": BreadthFirst,
-    "breadth_first_early_exit": BreadthFirst,
-    "greedy_best_first": GreedyBestFirst,
+    "breadth_first": solve_algos.breadthfirst.BreadthFirst,
+    "breadth_first_early_exit": solve_algos.breadthfirst.BreadthFirst,
+    "greedy_best_first": solve_algos.greedybestfirst.GreedyBestFirst,
 }
 
 
-def parse_args() -> Namespace:
+def parse_args() -> argparse.Namespace:
     """
     Parse the arguments passed to at the command line.
     Returns
     -------
-    args (argparse.ArgumentParser) : arguments parsed
+    args (argparse.Namespace) : arguments parsed
     """
 
     maze_algo_help = "\n".join(MAZE_ALGORITHMS.keys())

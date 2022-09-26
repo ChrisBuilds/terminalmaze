@@ -1,0 +1,2 @@
+import terminalmaze.algorithms.solve.breadthfirst
+import terminalmaze.algorithms.solve.greedybestfirst
