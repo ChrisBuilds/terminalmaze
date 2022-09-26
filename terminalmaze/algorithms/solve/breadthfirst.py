@@ -38,6 +38,7 @@ class BreadthFirst(Algorithm):
         self.visual_effects["visited_transition"] = ve_visited_animation
 
         ve_target = ve.ModifySingleCell(self.theme.target)
+        ve_target.cell = target
         self.visual_effects["target"] = ve_target
 
         ve_working_cell = ve.ModifySingleCell(self.theme.working_cell)
