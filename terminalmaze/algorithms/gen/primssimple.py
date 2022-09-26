@@ -62,5 +62,8 @@ class PrimsSimple(Algorithm):
                 yield self.maze
         self.status_text["Unlinked Cells"] = 0
         self.status_text["State:"] = "Complete"
-        self.visual_effects.clear()
+        while (
+            ve_edges.animating or ve_workingcell.animating or ve_lastlinked.animating or ve_invalidneighbors.animating
+        ):
+            yield self.maze
         yield self.maze

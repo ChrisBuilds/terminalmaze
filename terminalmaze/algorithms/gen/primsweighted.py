@@ -66,7 +66,12 @@ class PrimsWeighted(Algorithm):
             self.status_text["Unlinked Cells"] = total_cells_unlinked
             yield self.maze
 
-        while ve_last_linked.animating:
+        while (
+            ve_last_linked.animating
+            or ve_unlinked_neighbors.animating
+            or ve_working_cell.animating
+            or ve_new_weighted_links.animating
+        ):
             yield self.maze
 
         self.visual_effects.clear()
