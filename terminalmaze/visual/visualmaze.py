@@ -279,11 +279,9 @@ class Visual:
             return colored_visual_grid
 
         visual_coordinates = self.translate_cell_coords(visual_effect.cell)
-        if 0 <= visual_effect.color <= 256:
-            color_str = colorterm.fg(visual_effect.color)
-            colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
-        else:
-            raise ValueError(f"visual_effect.color value: {visual_effect.color} not in valid range (0 - 256)")
+        color_str = colorterm.fg(visual_effect.color)
+        colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
+
         return colored_visual_grid
 
     def color_cell_groups(
