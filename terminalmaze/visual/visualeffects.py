@@ -1,6 +1,7 @@
 from typing import DefaultDict
 
-from terminalmaze.config import AnimationModel, ModifyCellModel, RandomGroupModel
+from terminalmaze.config import (AnimationModel, ModifyCellModel,
+                                 RandomGroupModel)
 from terminalmaze.resources.cell import Cell
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
