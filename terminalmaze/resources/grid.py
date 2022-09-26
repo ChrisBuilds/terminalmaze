@@ -43,6 +43,8 @@ class Grid:
             if line.strip().startswith("m:"):
                 line = line.strip("m:").strip("\n")
                 mask_lines.append(line)
+        if not mask_lines:
+            return None
         mask_width = len(max(mask_lines, key=len))
         mask_height = len(mask_lines)
         if mask_width > self.width or mask_height > self.height:
