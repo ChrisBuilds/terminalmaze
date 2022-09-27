@@ -20,32 +20,23 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = [[218,"",1]]
 
 # last grid cell that was linked into the maze
 last_linked.verbosity = [3,4]
 last_linked.layer = 1
-last_linked.frames_per_value = 30
-last_linked.colors = [28,[22,46],46]
-last_linked.characters = ["0","10","1"]
+last_linked.animation_details = [[28, "0", 30],[[22,46], ["1","0"],30],[46,"1",30]]
 
 # neighbors invalid for linking (adjacent to the working cell)
 invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.frames_per_value = 1
-invalid_neighbors.colors = [159]
-invalid_neighbors.characters = []
+invalid_neighbors.animation_details = [[159,"",1]]
 
 # cells that are already linked into the maze and are being revisted
 invalid_visited.verbosity = [3,4]
 invalid_visited.layer = 0
-invalid_visited.frames_per_value = 3
-#invalid_visited.colors = [34,28,22,22,22,28,34]
-#invalid_visited.characters = ["▇","▆","▅","▄","▅","▆","▇"]
-invalid_visited.colors = [34,28,22,28,34]
-invalid_visited.characters = ["▓","▒","░","▒","▓"]
+invalid_visited.animation_details = []
+
 
 ###########################
 ###########################
@@ -61,23 +52,17 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # cell last linked into the maze
 last_linked.verbosity = [2,4]
 last_linked.layer = 0
-last_linked.frames_per_value = 1
-last_linked.colors = [159]
-last_linked.characters = []
+last_linked.animation_details = []
 
 # eighbors adjacent to the cell
 neighbors.verbosity = [2,4]
 neighbors.layer = 0
-neighbors.frames_per_value = 1
-neighbors.colors = [159]
-neighbors.characters = []
+neighbors.animation_details = []
 
 ###########################
 ###########################
@@ -116,30 +101,22 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # neighbors invalid for linking (adjacent to the working cell)
 invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.frames_per_value = 1
-invalid_neighbors.colors = [88]
-invalid_neighbors.characters = []
+invalid_neighbors.animation_details = []
 
 # last cell linked into the grid
 last_linked.verbosity = [3,4]
 last_linked.layer = 0
-last_linked.frames_per_value = 2
-last_linked.characters = []
-last_linked.colors = [46, 47, 48, 49, 50]
+last_linked.animation_details = []
 
 # unlinked cells passed over while in the hunting state
 hunt_cells.verbosity = [3,4]
 hunt_cells.layer = 0
-hunt_cells.frames_per_value = 1
-hunt_cells.colors = [47, 48, 49, 50]
-hunt_cells.characters = []
+hunt_cells.animation_details = []
 
 
 ###########################
@@ -180,30 +157,22 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 20
-working_cell.colors = ["#c3feff"]
-working_cell.characters = []
+working_cell.animation_details = [["#c3feff","",20]]
 
 # cells on the edge of the linked area
 edges.verbosity = [3,4]
 edges.layer = 1
-edges.frames_per_value = 20
-edges.colors = ["#82eeef","#8ae5ff","#add8ff","#d3cafd","#ecbfe3"]
-edges.characters = ["▫","▪","▬","■"]
+edges.animation_details = [["#82eeef", "▫", 20],["#8ae5ff","▪",20],["#add8ff","▬",20],["#d3cafd","■",20],["#ecbfe3","",20]]
 
 # neighbors invalid for linking (adjacent to the working cell)
 invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.frames_per_value = 1
-invalid_neighbors.colors = [52]
-invalid_neighbors.characters = []
+invalid_neighbors.animation_details = [["",52,1]]
 
 # last cell that was linked into the maze
 last_linked.verbosity = [2,3,4]
 last_linked.layer = 0
-last_linked.frames_per_value = 20
-last_linked.colors = ["#82eeef","#8ae5ff","#add8ff","#d3cafd","#ecbfe3"]
-last_linked.characters = ["▫","▪","▬","■"]
+last_linked.animation_details = [["#82eeef", "▫", 20],["#8ae5ff","▪",20],["#add8ff","▬",20],["#d3cafd","■",20],["#ecbfe3","",20]]
 
 ###########################
 ###########################
@@ -219,9 +188,7 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # links encountered but not linked due to high cost
 pending_weighted_links.verbosity = [3,4]
@@ -232,23 +199,16 @@ pending_weighted_links.character = ""
 # newly discovered links not linked due to high cost
 new_weighted_links.verbosity = [3,4]
 new_weighted_links.layer = 1
-new_weighted_links.frames_per_value = 15
-new_weighted_links.colors = [82,76,77,78]
-new_weighted_links.characters = []
-
+new_weighted_links.animation_details = []
 # cells adjacent to the workingcell that are not linked
 unlinked_neighbors.verbosity = [2,4]
 unlinked_neighbors.layer = 0
-unlinked_neighbors.frames_per_value = 1
-unlinked_neighbors.colors = [218]
-unlinked_neighbors.characters = []
+unlinked_neighbors.animation_details = []
 
 # cell last linked into the maze
 last_linked.verbosity = [3,4]
 last_linked.layer = 2
-last_linked.frames_per_value = 1
-last_linked.colors = [47, 48, 49, 50]
-last_linked.characters = []
+last_linked.animation_details = []
 
 ###########################
 ###########################
@@ -264,9 +224,7 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = [[218,"",1]]
 
 # path on the first pass, before backtracking
 stack.verbosity = [3,4]
@@ -277,30 +235,29 @@ stack.character = ""
 # neighbors invalid for linking (adjacent to the working cell)
 invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer=0
-invalid_neighbors.frames_per_value = 1
-invalid_neighbors.colors = [52]
-invalid_neighbors.characters = []
+invalid_neighbors.animation_details = [[52,"",1]]
 
 # last cell that was linked into the maze
 last_linked.verbosity = [2,4]
 last_linked.layer = 0
-last_linked.frames_per_value = 1
-last_linked.colors = [218]
-last_linked.characters = []
+last_linked.animation_details = [[218,"",1]]
 
 # cells as they are added to the stack
 stack_added_cells.verbosity = [3,4]
 stack_added_cells.layer = 0
-stack_added_cells.frames_per_value = 5
-stack_added_cells.colors = ["#f2ffff","#defcfc","#caf9f9","#b4f5f6","#9cf2f2"]
-stack_added_cells.characters = []
+stack_added_cells.animation_details = [["#f2ffff",'',5],["#defcfc",'',5],["#caf9f9",'',5],["#b4f5f6",'',5],["#9cf2f2",'',5]]
 
 # cells as they are removed from the stack
 stack_removed_cells.verbosity = [3,4]
 stack_removed_cells.layer = 1
-stack_removed_cells.frames_per_value = 10
-stack_removed_cells.colors = ["#f9d0d8", "f9d0d8", "#f9d0d8","#fce8eb","#fce8eb","#ffffff","#ffffff","#fce8eb"]
-stack_removed_cells.characters = ["🞗🞞","🞞⯍","⯌⯎⯏⯍","⯍⯁","⯁⯂","⯂⯀","⯀■"]
+stack_removed_cells.animation_details = [["#f9d0d8",["🞗","🞞"],10],
+                                        ["f9d0d8",["🞞","⯍"],10],
+                                        ["#f9d0d8",["⯌","⯎","⯏","⯍"],10],
+                                        ["#fce8eb",["⯍","⯁"],10],
+                                        ["#fce8eb",["⯁","⯂"],10],
+                                        ["#ffffff",["⯂","⯀"],10],
+                                        ["#ffffff",["⯀","■"],10],
+                                        ["#fce8eb","",10]]
 ###########################
 ###########################
 [recursive_division]
@@ -316,53 +273,37 @@ path.character = "█"
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [46]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # single passage cell ignored during division
 passage_cell.verbosity = [2,4]
 passage_cell.layer = 1
-passage_cell.frames_per_value = 12
-passage_cell.colors = [94]
-passage_cell.characters = []
+passage_cell.animation_details = []
 
 # fully linke.charactersd cells generated at the start of the maze generation
 generating_links_cells.verbosity = [3,4]
 generating_links_cells.layer = 0
-generating_links_cells.frames_per_value = 12
-generating_links_cells.colors = [["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"]]
-generating_links_cells.characters = ["Ω⅀ढ़℥७आ⍕⍫⏧⏅","Ω⅀℥ढ़⍕⍫७आ⏧⏅","Ω⅀℥७आढ़⏧⍕⍫⏅","Ω⅀℥⍕७ढ़आ⏧⍫⏅█"]
-
+generating_links_cells.animation_details = []
 
 # east cells during a vertical division
 division_cell_east.verbosity = [3,4]
 division_cell_east.layer = 0
-division_cell_east.frames_per_value = 2
-division_cell_east.colors = ["#43a047","#008071","#006e74"]
-division_cell_east.characters = ["▐","▕","▐"]
+division_cell_east.animation_details = []
 
 # west cells during a vertical division
 division_cell_west.verbosity = [3,4]
 division_cell_west.layer = 0
-division_cell_west.frames_per_value = 6
-division_cell_west.colors = ["#43a047","#009161","#008071","#006e74","#005b6b","#2a4858",["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],"#2a4858","#005b6b","#006e74","#008071","#009161","#43a047","#43a047"]
-division_cell_west.characters = ["▉","▊","▋","▌","▍","▎","01","01","01","▍","▌","▋","▊","▉"]
+division_cell_west.animation_details = []
 
 # north cells during a vertical division
 division_cell_north.verbosity = [3,4]
 division_cell_north.layer = 0
-division_cell_north.frames_per_value = 2
-division_cell_north.colors = ["#43a047","#008071","#006e74"]
-division_cell_north.characters = ["▀","▔","▀"]
+division_cell_north.animation_details = []
 
 # south cells during a vertical division
 division_cell_south.verbosity = [3,4]
 division_cell_south.layer = 0
-division_cell_south.frames_per_value = 6
-division_cell_south.colors = ["#43a047","#009161","#008071","#006e74","#005b6b","#2a4858",["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],"#2a4858","#005b6b","#006e74","#008071","#009161","#43a047","#43a047"]
-division_cell_south.characters = ["▇","▆","▅","▄","▃","▂","▁","01","01","01","▂","▃","▄","▅","▆","▇"]
-
+division_cell_south.animation_details = []
 
 ###########################
 ###########################
@@ -384,16 +325,12 @@ run.character = ""
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [218]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # last cell that was linked into the maze
 last_linked.verbosity = [2,4]
 last_linked.layer = 0
-last_linked.frames_per_value = 10
-last_linked.colors = [159]
-last_linked.characters = []
+last_linked.animation_details = []
 
 ###########################
 ###########################
@@ -427,23 +364,17 @@ walk.character = ""
 # current cell being assessed for linking
 working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.frames_per_value = 1
-working_cell.colors = [14]
-working_cell.characters = []
+working_cell.animation_details = []
 
 # walks linked into the maze
 new_linked_walks.verbosity = [3,4]
 new_linked_walks.layer = 0
-new_linked_walks.frames_per_value = 10
-new_linked_walks.colors = [50, 87, 86, 50,44,37]
-new_linked_walks.characters = []
+new_linked_walks.animation_details = []
 
 # last cell linked into the walk
 last_linked.verbosity = [3,4]
 last_linked.layer = 1
-last_linked.frames_per_value = 5
-last_linked.colors = [56,62,68,74]
-last_linked.characters = []
+last_linked.animation_details = []
 
 ########################################################################
 ########################    Solve Algorithms    ########################
@@ -474,12 +405,27 @@ visited.character = ""
 # (color at index 0 is the start of the transition)
 visited_animation.verbosity = [3,4]
 visited_animation.layer = 1
-visited_animation.frames_per_value = 10
-#                              pink      pink     pink       grad      grad     img     img         img       wall      wall       wall      wall     img        img        img     grad      grad        blue    blue    blue
-#visited_animation.colors = ["#f8c9d2","##fff8f9","#fbd9e0","#eec6d7","#ddb5d0","#c7a5cc","#c7a5cc","#8498c6","#9faed4","#b9c5e2","#d4dcf0","#398ba7","#398ba7","#398ba7","#398ba7","#82EEEF","#82EEEF","#82EEEF","#82EEEF","#4cabc1","#65ccd9","#b7feff","#d4fafa","#82EEEF"]
-visited_animation.colors = ["#f8c9d2","##fff8f9","#fbd9e0","#eec6d7","#ddb5d0","#c7a5cc","#c7a5cc","#8498c6","#9faed4","#b9c5e2","#d4dcf0","#398ba7","#398ba7","#398ba7","#398ba7","#4cabc1","#65ccd9","#b7feff","#d4fafa","#82EEEF"]
-visited_animation.characters = ["","","","","","","","","🞉","🞇","🞅","","","",""]
-#visited_animation.characters = ["","","","","","","","","🞉","🞇","🞅","","","","","◻","◫","◧","◼"]
+visited_animation.animation_details = [["#f8c9d2", "", 10],
+                                        ["#fff8f9", "", 10],
+                                        ["#fbd9e0", "", 10],
+                                        ["#eec6d7", "", 10],
+                                        ["#ddb5d0", "", 10],
+                                        ["#c7a5cc", "", 10],
+                                        ["#c7a5cc", "", 10],
+                                        ["#8498c6", "", 10],
+                                        ["#9faed4", "🞉", 10],
+                                        ["#b9c5e2", "🞇", 10],
+                                        ["#d4dcf0", "🞅", 10],
+                                        ["#398ba7", "", 10],
+                                        ["#398ba7", "", 10],
+                                        ["#398ba7", "", 10],
+                                        ["#398ba7", "", 10],
+                                        ["#4cabc1", "", 10],
+                                        ["#65ccd9", "", 10],
+                                        ["#b7feff", "", 10],
+                                        ["#d4fafa", "", 10],
+                                        ["#82EEEF", "", 10]]
+
 
 # color of cell being targeted for the solution path
 target.verbosity = [2,4]
@@ -497,10 +443,7 @@ solution_path.character = ""
 # (value at index 0 is the start of the transition)
 solution_animation.verbosity = [2,4]
 solution_animation.layer = 2
-solution_animation.frames_per_value = 3
-#solution_animation.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
-solution_animation.colors = [178,178,178,94,94,16,[22,28],[22,28],34,40,]
-solution_animation.characters = ['█','█','█','█','█','█','01', '01', '1']
+solution_animation.animation_details = []
 ######################################################
 ######################################################
 [breadth_first_early_exit]
@@ -527,9 +470,7 @@ visited.character = ""
 # (color at index 0 is the start of the transition)
 visited_animation.verbosity = [3,4]
 visited_animation.layer = 1
-visited_animation.frames_per_value = 10
-visited_animation.colors = [46,40,34,28,22,16,22,28,22,16,94,172]
-visited_animation.characters = ["█","█","█","█","█","█","01","01","01","01"]
+visited_animation.animation_details = []
 
 # color of cell being targeted for the solution path
 target.verbosity = [2,4]
@@ -547,9 +488,8 @@ solution_path.character = ""
 # (value at index 0 is the start of the transition)
 solution_animation.verbosity = [3,4]
 solution_animation.layer = 2
-solution_animation.frames_per_value = 2
-solution_animation.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
-solution_animation.characters = []
+solution_animation.animation_details = []
+
 ######################################################
 ######################################################
 [greedy_best_first]
@@ -576,9 +516,7 @@ visited.character = ""
 # (color at index 0 is the start of the transition)
 visited_animation.verbosity = [3,4]
 visited_animation.layer = 1
-visited_animation.frames_per_value = 10
-visited_animation.colors = [46,40,34,28,22,16,22,28,22,16,94,172]
-visited_animation.characters = ["█","█","█","█","█","█","01","01","01","01"]
+visited_animation.animation_details = []
 
 # color of cell being targeted for the solution path
 target.verbosity = [2,4]
@@ -596,8 +534,6 @@ solution_path.character = ""
 # (value at index 0 is the start of the transition)
 solution_animation.verbosity = [3,4]
 solution_animation.layer = 2
-solution_animation.frames_per_value = 2
-solution_animation.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
-solution_animation.characters = []
+solution_animation.animation_details = []
 ######################################################
 ######################################################

@@ -43,9 +43,7 @@ class ModifyCellModel(BaseModel):
 
 class AnimationModel(BaseModel):
     layer: int
-    frames_per_value: int
-    characters: list[str | None]
-    colors: list[list[int | str] | int | str | None]
+    animation_details: list[list[list[str | int] | str | int]]
     verbosity: list[int]
 
 

@@ -1,7 +1,6 @@
 from typing import DefaultDict
 
-from terminalmaze.config import (AnimationModel, ModifyCellModel,
-                                 RandomGroupModel)
+from terminalmaze.config import AnimationModel, ModifyCellModel, RandomGroupModel
 from terminalmaze.resources.cell import Cell
 
 GroupType = dict[int, list[Cell]] | DefaultDict[int, list[Cell]] | dict[int, set[Cell]] | DefaultDict[int, set[Cell]]
@@ -63,9 +62,7 @@ class Animation(Effect):
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], list[int]] = dict()
-        self.colors: list[list[int | str] | int | str | None] = theme_data.colors
-        self.characters: list[str | None] = theme_data.characters
-        self.frames_per_value: int = theme_data.frames_per_value
+        self.animation_details: list[list[list[str | int] | str | int] | None] = theme_data.animation_details
         self.verbosity: list[int] = theme_data.verbosity
 
     def __lt__(self, other: "Effect"):

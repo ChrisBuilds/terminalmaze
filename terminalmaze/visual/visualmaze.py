@@ -189,10 +189,17 @@ class Visual:
         return colored_visual_grid
 
     def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
-        def get_value_at_modification_index(i, collection):
-            if i < len(collection):
-                return collection[i]
-            return None
+        def get_value_at_animation_state_index(state_index, collection):
+            if state_index >= len(collection):
+                return None
+            color_value, character_symbol, frame_duration_at_state_index = collection[state_index]
+            if isinstance(color_value, list):
+                color_value = random.choice(color_value)
+            if isinstance(character_symbol, list):
+                character_symbol = random.choice(character_symbol)
+            if isinstance(frame_duration_at_state_index, list):
+                frame_duration_at_state_index = random.choice(frame_duration_at_state_index)
+            return color_value, character_symbol, int(frame_duration_at_state_index)
 
         color = character = None
         translated_cells = set()
@@ -205,37 +212,46 @@ class Visual:
         for key in visual_effect.animating.keys():
             cells_and_passages.discard(key)
 
-        visual_effect.animating |= {
-            visual_coordinates: [0, visual_effect.frames_per_value] for visual_coordinates in cells_and_passages
-        }
-        transition_complete = []
+        new_cells_initialization = {}
+        for visual_coordinates in cells_and_passages:
+            initial_color, initial_character, initial_frame_duration = get_value_at_animation_state_index(
+                0, visual_effect.animation_details
+            )
+            new_cells_initialization[visual_coordinates] = [0, int(initial_frame_duration)]
+        visual_effect.animating |= new_cells_initialization
+
+        animation_complete = []
         for visual_coordinate, transition_details in visual_effect.animating.items():
-            modification_index, frames_until_transition = transition_details
+            animation_state_index, frames_until_transition = transition_details
             if frames_until_transition:
                 visual_effect.animating[visual_coordinate][1] -= 1
-                color = get_value_at_modification_index(modification_index, visual_effect.colors)
-                character = get_value_at_modification_index(modification_index, visual_effect.characters)
-
+                color, character, frame_duration = get_value_at_animation_state_index(
+                    animation_state_index, visual_effect.animation_details
+                )
+            # if the frame duration of the current animation state has reached 0
+            # increase the animation state index by 1 and set the frame duration to the
+            # next state's frame duration
             if not visual_effect.animating[visual_coordinate][1]:
+                current_animation_state_index = visual_effect.animating[visual_coordinate][0]
+                next_animation_state_index = current_animation_state_index + 1
+                if next_animation_state_index < len(visual_effect.animation_details):
+                    next_frame_duration = get_value_at_animation_state_index(
+                        current_animation_state_index + 1, visual_effect.animation_details
+                    )[2]
+                    visual_effect.animating[visual_coordinate][1] = next_frame_duration
                 visual_effect.animating[visual_coordinate][0] += 1
-                visual_effect.animating[visual_coordinate][1] = visual_effect.frames_per_value
 
-            if visual_effect.animating[visual_coordinate][0] >= len(visual_effect.colors) and visual_effect.animating[
-                visual_coordinate
-            ][0] >= len(visual_effect.characters):
-                transition_complete.append(visual_coordinate)
+            # if the animation_state_index > the number of animation states, animation is complete
+            if visual_effect.animating[visual_coordinate][0] >= len(visual_effect.animation_details):
+                animation_complete.append(visual_coordinate)
 
-            if character and len(character) > 1:
-                character = random.choice(character)
-            if color and isinstance(color, list):
-                color = random.choice(color)
             if character or color:
                 if color:
                     color = colorterm.fg(color)
                 colored_visual_grid = self.apply_cell_modification(
                     colored_visual_grid, visual_coordinate, character=character, color=color
                 )
-        for visual_coordinate in transition_complete:
+        for visual_coordinate in animation_complete:
             del visual_effect.animating[visual_coordinate]
         return colored_visual_grid
 
