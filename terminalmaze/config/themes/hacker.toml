@@ -307,11 +307,11 @@ stack_removed_cells.characters = []
 [recursive_division]
 
 # color of the walls and unlinked cells
-wall.color = 16
+wall.color = "#000000"
 wall.character = "█"
 
 # color of the paths (linked cells)
-path.color = 34
+path.color = "#43a047"
 path.character = "█"
 
 # current cell being assessed for linking
@@ -332,36 +332,36 @@ passage_cell.characters = []
 generating_links_cells.verbosity = [3,4]
 generating_links_cells.layer = 0
 generating_links_cells.frames_per_value = 12
-generating_links_cells.colors = [22,28,34,40]
-generating_links_cells.characters = ["Ω⅀ढ़℥७आ⍕⍫⏧⏅","Ω⅀℥ढ़⍕⍫७आ⏧⏅","Ω⅀℥७आढ़⏧⍕⍫⏅","Ω⅀℥⍕७ढ़आ⏧⍫⏅"]
+generating_links_cells.colors = [["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"],["#43a047","#589a5f","#6c9272","#808982"]]
+generating_links_cells.characters = ["Ω⅀ढ़℥७आ⍕⍫⏧⏅","Ω⅀℥ढ़⍕⍫७आ⏧⏅","Ω⅀℥७आढ़⏧⍕⍫⏅","Ω⅀℥⍕७ढ़आ⏧⍫⏅█"]
 
 
 # east cells during a vertical division
 division_cell_east.verbosity = [3,4]
 division_cell_east.layer = 0
 division_cell_east.frames_per_value = 2
-division_cell_east.colors = [34,28,34]
+division_cell_east.colors = ["#43a047","#008071","#006e74"]
 division_cell_east.characters = ["▐","▕","▐"]
 
 # west cells during a vertical division
 division_cell_west.verbosity = [3,4]
 division_cell_west.layer = 0
 division_cell_west.frames_per_value = 6
-division_cell_west.colors = [34,34,34,28,28,28,[22,34],[22,34],[22,34],22,28,28,28,34,34,34]
+division_cell_west.colors = ["#43a047","#009161","#008071","#006e74","#005b6b","#2a4858",["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],"#2a4858","#005b6b","#006e74","#008071","#009161","#43a047","#43a047"]
 division_cell_west.characters = ["▉","▊","▋","▌","▍","▎","01","01","01","▍","▌","▋","▊","▉"]
 
 # north cells during a vertical division
 division_cell_north.verbosity = [3,4]
 division_cell_north.layer = 0
 division_cell_north.frames_per_value = 2
-division_cell_north.colors = [34,28,34]
+division_cell_north.colors = ["#43a047","#008071","#006e74"]
 division_cell_north.characters = ["▀","▔","▀"]
 
 # south cells during a vertical division
 division_cell_south.verbosity = [3,4]
 division_cell_south.layer = 0
 division_cell_south.frames_per_value = 6
-division_cell_south.colors = [34,34,34,28,28,28,22,[22,34],[22,34],[22,34],28,28,28,34,34,34]
+division_cell_south.colors = ["#43a047","#009161","#008071","#006e74","#005b6b","#2a4858",["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],["#43a047","#008071","#006e74"],"#2a4858","#005b6b","#006e74","#008071","#009161","#43a047","#43a047"]
 division_cell_south.characters = ["▇","▆","▅","▄","▃","▂","▁","01","01","01","▂","▃","▄","▅","▆","▇"]
 
 
