@@ -191,7 +191,7 @@ class Visual:
     def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
         def get_value_at_animation_state_index(state_index, collection):
             if state_index >= len(collection):
-                return None
+                return None, None, 0
             color_value, character_symbol, frame_duration_at_state_index = collection[state_index]
             if isinstance(color_value, list):
                 color_value = random.choice(color_value)
