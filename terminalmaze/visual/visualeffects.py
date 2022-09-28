@@ -58,7 +58,7 @@ class RandomColorGroup(Effect):
 
 class Animation(Effect):
     def __init__(self, theme_data: AnimationModel):
-        """Color cells with animating colors and characters with an animation speed based on frames per color."""
+        """Color cells with animating colors and characters."""
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], list[int]] = dict()
