@@ -1,6 +1,7 @@
 import random
 import time
 from os import get_terminal_size, system
+from types import SimpleNamespace
 
 import terminalmaze.visual.colorterm as colorterm
 import terminalmaze.visual.visualeffects as ve
@@ -214,43 +215,41 @@ class Visual:
 
         new_cells_initialization = {}
         for visual_coordinates in cells_and_passages:
+            animation_state = SimpleNamespace()
             initial_color, initial_character, initial_frame_duration = get_value_at_animation_state_index(
                 0, visual_effect.animation_details
             )
-            new_cells_initialization[visual_coordinates] = [0, int(initial_frame_duration), ""]
+            animation_state.animation_state_index = 0
+            animation_state.frame_counter = initial_frame_duration
+            animation_state.persistent_character = ""
+            new_cells_initialization[visual_coordinates] = animation_state
         visual_effect.animating |= new_cells_initialization
 
         animation_complete = []
-        for visual_coordinate, transition_details in visual_effect.animating.items():
-            animation_state_index, frames_until_transition, persistent_character = transition_details
-            if frames_until_transition:
-                visual_effect.animating[visual_coordinate][1] -= 1
+        for visual_coordinate, animation_state in visual_effect.animating.items():
+            if animation_state.frame_counter:
+                animation_state.frame_counter -= 1
                 color, character, frame_duration = get_value_at_animation_state_index(
-                    animation_state_index, visual_effect.animation_details
+                    animation_state.animation_state_index, visual_effect.animation_details
                 )
                 if len(character) > 1:
-                    if not persistent_character:
+                    if not animation_state.persistent_character:
                         character = random.choice(character)
-                        visual_effect.animating[visual_coordinate][2] = character
+                        animation_state.persistent_character = character
                     else:
-                        character = persistent_character
+                        character = animation_state.persistent_character
 
-            # if the frame duration of the current animation state has reached 0
-            # increase the animation state index by 1 and set the frame duration to the
-            # next state's frame duration
-            if not visual_effect.animating[visual_coordinate][1]:
-                current_animation_state_index = visual_effect.animating[visual_coordinate][0]
-                next_animation_state_index = current_animation_state_index + 1
+            if not animation_state.frame_counter:
+                next_animation_state_index = animation_state.animation_state_index + 1
                 if next_animation_state_index < len(visual_effect.animation_details):
                     next_frame_duration = get_value_at_animation_state_index(
-                        current_animation_state_index + 1, visual_effect.animation_details
+                        next_animation_state_index, visual_effect.animation_details
                     )[2]
-                    visual_effect.animating[visual_coordinate][1] = next_frame_duration
-                visual_effect.animating[visual_coordinate][0] += 1
-                visual_effect.animating[visual_coordinate][2] = ""
+                    animation_state.frame_counter = next_frame_duration
+                animation_state.animation_state_index += 1
+                animation_state.persistent_character = ""
 
-            # if the animation_state_index > the number of animation states, animation is complete
-            if visual_effect.animating[visual_coordinate][0] >= len(visual_effect.animation_details):
+            if animation_state.animation_state_index >= len(visual_effect.animation_details):
                 animation_complete.append(visual_coordinate)
 
             if character or color:

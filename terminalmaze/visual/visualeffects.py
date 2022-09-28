@@ -1,4 +1,5 @@
 from typing import DefaultDict
+from types import SimpleNamespace
 
 from terminalmaze.config import AnimationModel, ModifyCellModel, RandomGroupModel
 from terminalmaze.resources.cell import Cell
@@ -61,7 +62,7 @@ class Animation(Effect):
         """Color cells with animating colors and characters."""
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
-        self.animating: dict[tuple[int, int], list[int]] = dict()
+        self.animating: dict[tuple[int, int], SimpleNamespace] = dict()
         self.animation_details: list[list[list[str | int] | str | int] | None] = theme_data.animation_details
         self.verbosity: list[int] = theme_data.verbosity
 
