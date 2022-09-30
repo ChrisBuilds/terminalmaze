@@ -64,6 +64,7 @@ class Animation(Effect):
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], SimpleNamespace] = dict()
         self.animation_details: list[list[list[str | int] | str | int] | None] = theme_data.animation_details
+        self.animation_completed_passages: set[tuple[int, int]] = set()
         self.verbosity: list[int] = theme_data.verbosity
 
     def __lt__(self, other: "Effect"):

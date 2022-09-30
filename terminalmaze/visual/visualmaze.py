@@ -212,6 +212,8 @@ class Visual:
         cells_and_passages = self.find_passages(translated_cells | visual_effect.animating.keys())
         for key in visual_effect.animating.keys():
             cells_and_passages.discard(key)
+        for passage in visual_effect.animation_completed_passages:
+            cells_and_passages.discard(passage)
 
         new_cells_initialization = {}
         for visual_coordinates in cells_and_passages:
@@ -258,7 +260,10 @@ class Visual:
                 colored_visual_grid = self.apply_cell_modification(
                     colored_visual_grid, visual_coordinate, character=character, color=color
                 )
+                color = character = None
         for visual_coordinate in animation_complete:
+            if visual_coordinate in self.passages:
+                visual_effect.animation_completed_passages.add(visual_coordinate)
             del visual_effect.animating[visual_coordinate]
         return colored_visual_grid
 
