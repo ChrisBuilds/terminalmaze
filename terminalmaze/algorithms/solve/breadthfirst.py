@@ -73,6 +73,9 @@ class BreadthFirst(Algorithm):
             if self.frame_wanted_relative(frontier, divisor=4):
                 yield self.maze
 
+        while ve_visited_animation.animating:
+            yield self.maze
+
         self.status_text["Frontier"] = 0
         del self.visual_effects["position"]
         position = target
@@ -92,6 +95,6 @@ class BreadthFirst(Algorithm):
             ve_solution_animation.cells.append(step)
             self.status_text["Solution Length"] = len(route)
             yield self.maze
-        while ve_solution_animation.animating or ve_visited_animation.animating:
+        while ve_solution_animation.animating:
             yield self.maze
         yield self.maze
