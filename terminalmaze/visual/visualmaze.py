@@ -222,8 +222,13 @@ class Visual:
                 0, visual_effect.animation_details
             )
             animation_state.animation_state_index = 0
+            if isinstance(visual_effect.cycles, list):
+                animation_state.cycles_remaining = random.choice(visual_effect.cycles)
+            else:
+                animation_state.cycles_remaining = visual_effect.cycles - 1
             animation_state.frame_counter = initial_frame_duration
             animation_state.persistent_character = ""
+            animation_state.final_state_index = len(visual_effect.animation_details) - 1
             new_cells_initialization[visual_coordinates] = animation_state
         visual_effect.animating |= new_cells_initialization
 
@@ -241,18 +246,22 @@ class Visual:
                     else:
                         character = animation_state.persistent_character
 
-            if not animation_state.frame_counter:
-                next_animation_state_index = animation_state.animation_state_index + 1
-                if next_animation_state_index < len(visual_effect.animation_details):
-                    next_frame_duration = get_value_at_animation_state_index(
-                        next_animation_state_index, visual_effect.animation_details
-                    )[2]
-                    animation_state.frame_counter = next_frame_duration
-                animation_state.animation_state_index += 1
-                animation_state.persistent_character = ""
+            if animation_state.frame_counter == 0:
+                if (
+                    animation_state.animation_state_index == animation_state.final_state_index
+                    and animation_state.cycles_remaining > 0
+                ):
+                    animation_state.animation_state_index = 0
+                    animation_state.cycles_remaining -= 1
 
-            if animation_state.animation_state_index >= len(visual_effect.animation_details):
-                animation_complete.append(visual_coordinate)
+                if animation_state.animation_state_index < animation_state.final_state_index:
+                    animation_state.animation_state_index += 1
+                    animation_state.frame_counter = get_value_at_animation_state_index(
+                        animation_state.animation_state_index, visual_effect.animation_details
+                    )[2]
+                else:
+                    animation_complete.append(visual_coordinate)
+                animation_state.persistent_character = ""
 
             if character or color:
                 if color:
