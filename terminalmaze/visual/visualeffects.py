@@ -63,6 +63,7 @@ class Animation(Effect):
         super().__init__(theme_data)
         self.cells: list[Cell | None] = list()
         self.animating: dict[tuple[int, int], SimpleNamespace] = dict()
+        self.cycles: list[int] | int = theme_data.cycles
         self.animation_details: list[list[list[str | int] | str | int] | None] = theme_data.animation_details
         self.animation_completed_passages: set[tuple[int, int]] = set()
         self.verbosity: list[int] = theme_data.verbosity
