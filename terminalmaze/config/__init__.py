@@ -43,6 +43,7 @@ class ModifyCellModel(BaseModel):
 
 class AnimationModel(BaseModel):
     layer: int
+    cycles: int
     animation_details: list[list[list[str | int] | str | int] | None]
     verbosity: list[int]
 
