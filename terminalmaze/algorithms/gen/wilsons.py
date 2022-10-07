@@ -25,23 +25,27 @@ class Wilsons(Algorithm):
         ve_target.cell = target
         self.visual_effects["target"] = ve_target
 
-        ve_walk = ve.ModifyMultipleCells(self.theme.walk)
-        self.visual_effects["walk"] = ve_walk
-
         ve_working_cell = ve.Animation(self.theme.working_cell)
         self.visual_effects["working_cell"] = ve_working_cell
+
+        ve_searching_walk = ve.ModifyMultipleCells(self.theme.searching_walk)
+        self.visual_effects["searching_walk"] = ve_searching_walk
+
+        ve_linking_walk = ve.ModifyMultipleCells(self.theme.linking_walk)
+        self.visual_effects["linking_walk"] = ve_linking_walk
 
         ve_last_linked = ve.Animation(self.theme.last_linked)
         self.visual_effects["last_linked"] = ve_last_linked
 
-        ve_new_linked_walks = ve.Animation(self.theme.new_linked_walks)
-        self.visual_effects["new_linked_walks"] = ve_new_linked_walks
+        ve_new_linked_walks = ve.Animation(self.theme.new_linked_walk)
+        self.visual_effects["new_linked_walk"] = ve_new_linked_walks
+
         unvisited_cells = list(self.maze.each_cell())
         unvisited_cells.remove(target)
         links = 0
         while unvisited_cells:
             walk: list[Cell] = []
-            ve_walk.cells = walk
+            ve_searching_walk.cells = walk
             walking = True
             working_cell = random.choice(unvisited_cells)
             ve_working_cell.cells.append(working_cell)
@@ -51,12 +55,15 @@ class Wilsons(Algorithm):
                 next_cell = random.choice(list(n for n in self.maze.get_neighbors(working_cell).values() if n))
                 if next_cell in walk:
                     walk = walk[: walk.index(next_cell) + 1]
-                    ve_walk.cells = walk
+                    ve_searching_walk.cells = walk
                     working_cell = walk[-1]
                     ve_working_cell.cells.append(working_cell)
                 elif next_cell not in unvisited_cells:
                     self.status_text["State"] = "Linking"
                     walking = False
+                    ve_searching_walk.cells = []
+                    ve_linking_walk.cells = [cell for cell in walk]
+                    ve_linking_walk.cells.append(next_cell)
                     if "target" in self.visual_effects:
                         del self.visual_effects["target"]
                     for i, cell in enumerate(walk):
@@ -71,8 +78,12 @@ class Wilsons(Algorithm):
                         self.status_text["Walked"] = len(walk)
                         self.status_text["Cell"] = f"({working_cell.row},{working_cell.column})"
                         yield self.maze
+                    else:
+                        ve_last_linked.cells.append(next_cell)
+                        yield self.maze
+                    ve_linking_walk.cells = []
                     ve_new_linked_walks.cells.extend(walk)
-                    self.visual_effects.pop("logic1", None)
+                    ve_new_linked_walks.cells.append(next_cell)
                     links += 1
                 else:
 

@@ -142,9 +142,10 @@ class WilsonsTheme(BaseModel):
     wall: WallPathModel
     path: WallPathModel
     target: ModifyCellModel
-    walk: ModifyCellModel
     working_cell: AnimationModel
-    new_linked_walks: AnimationModel
+    searching_walk: ModifyCellModel
+    linking_walk: ModifyCellModel
+    new_linked_walk: AnimationModel
     last_linked: AnimationModel
     searching_frames_skipped: int
 
