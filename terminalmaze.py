@@ -169,8 +169,20 @@ def get_mask(args) -> str | None:
 def main():
     args = parse_args()
     maze_algorithm = MAZE_ALGORITHMS[args.maze_algorithm]
+    if args.solve_algorithm:
+        solve_algorithm = SOLVE_ALGORITHMS[args.solve_algorithm]
+    else:
+        solve_algorithm = None
     if args.theme in config.themes:
         theme = config.themes[args.theme]
+        if ma := args.maze_algorithm:
+            if ma not in theme:
+                print(f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme}).")
+                return
+        if sa := args.solve_algorithm:
+            if sa not in theme:
+                print(f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme}).")
+                return
     else:
         print(f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly.")
         return
@@ -179,11 +191,6 @@ def main():
     if args.mask and not mask:
         print(f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly.")
         return
-
-    if args.solve_algorithm:
-        solve_algorithm = SOLVE_ALGORITHMS[args.solve_algorithm]
-    else:
-        solve_algorithm = None
 
     if args.height == 0 and args.width == 0:
         try:
