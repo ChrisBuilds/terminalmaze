@@ -190,7 +190,33 @@ class Visual:
         return colored_visual_grid
 
     def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
-        def get_value_at_animation_state_index(state_index, collection):
+        """
+        Modify cells in the grid to the character and color specified in the animation visual effect. Track
+        cells being animated, including passages, and frame position.
+
+        Parameters
+        ----------
+        colored_visual_grid : List[List[str]] :
+        visual_effect : terminalmaze.visual.visualeffects.Animation
+
+        Returns
+        -------
+        List[List[str]] : Maze grid with color and character changes applied.
+        """
+
+        def get_value_at_animation_state_index(state_index: int, collection):
+            """
+            Get the character, color, and frame duration for a given state_index.
+
+            Parameters
+            ----------
+            state_index : int
+            collection : List[List[str]]
+
+            Returns
+            -------
+            Tuple[str, str, int]
+            """
             if state_index >= len(collection):
                 return None, None, 0
             color_value, character_symbol, frame_duration_at_state_index = collection[state_index]
@@ -209,11 +235,10 @@ class Visual:
                 translated_cells.add(self.translate_cell_coords(cell))
 
         visual_effect.cells.clear()
+
         cells_and_passages = self.find_passages(translated_cells | visual_effect.animating.keys())
-        for key in visual_effect.animating.keys():
-            cells_and_passages.discard(key)
-        for passage in visual_effect.animation_completed_passages:
-            cells_and_passages.discard(passage)
+        cells_and_passages -= visual_effect.animating.keys()
+        cells_and_passages -= visual_effect.animation_completed_passages
 
         new_cells_initialization = {}
         for visual_coordinates in cells_and_passages:
@@ -282,7 +307,7 @@ class Visual:
         """Color multiple cells the same color.
 
         Args:
-            colored_visual_grid (list[list[str]]): List of cells to be colorterm.
+            colored_visual_grid (list[list[str]]): List of cells to be colored.
             visual_effect (ve.Multiple): Dataclass
 
         Returns:
