@@ -399,6 +399,20 @@ class Visual:
         color: str | None = None,
         character: str | None = None,
     ) -> list[list[str]]:
+        """
+        Change the character and/or color of the value at the given visual_coordinate in the colored_visual_grid.
+
+        Parameters
+        ----------
+        colored_visual_grid : List[List[str]]
+        visual_coordinates : Tuple[int, int]
+        color : str
+        character : str
+
+        Returns
+        -------
+        List[List[str]]
+        """
 
         y, x = visual_coordinates
         current_character = colored_visual_grid[y][x].replace(colorterm.RESET, "")[-1]
