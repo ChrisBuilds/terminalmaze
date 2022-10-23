@@ -60,3 +60,6 @@ class Cell:
 
     def __lt__(self, other):
         return False
+
+    def __repr__(self) -> str:
+        return f"Cell({self.row!r}, {self.column!r})"
