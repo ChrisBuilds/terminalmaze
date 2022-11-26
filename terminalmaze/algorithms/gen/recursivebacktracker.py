@@ -12,7 +12,7 @@ class RecursiveBacktracker(Algorithm):
         super().__init__(maze)
         self.status_text["Algorithm"] = "Recursive Backtracker"
         self.status_text.update({"Pending Paths": "", "Stack Length": "", "State": ""})
-        self.skip_frames = 1
+        self.skip_frames = theme.backtrack_skip_frames
         self.theme = theme
 
     def generate_maze(self) -> Generator[Grid, None, None]:
