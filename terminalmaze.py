@@ -47,14 +47,14 @@ def parse_args() -> argparse.Namespace:
         "width",
         metavar="WIDTH",
         type=int,
-        help="int > 0: Width of the maze grid in characters. Actual width is WIDTH*2. Use 0 for height and width"
+        help="int >= 0: Width of the maze grid in characters. Actual width is WIDTH*2. Use 0 for height and width"
         " for auto size.",
     )
     parser.add_argument(
         "height",
         metavar="HEIGHT",
         type=int,
-        help="int > 0: Height of the maze grid in lines. Actual height is HEIGHT*2. Use 0 for height and width "
+        help="int >= 0: Height of the maze grid in lines. Actual height is HEIGHT*2. Use 0 for height and width "
         "for auto size.",
     )
     parser.add_argument(
