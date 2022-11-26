@@ -117,6 +117,7 @@ class RecursiveBacktrackerTheme(BaseModel):
     last_linked: AnimationModel
     stack_added_cells: AnimationModel
     stack_removed_cells: AnimationModel
+    backtrack_skip_frames: int
 
 
 class RecursiveDivisionTheme(BaseModel):
