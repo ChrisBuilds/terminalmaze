@@ -150,19 +150,19 @@ class Visual:
         offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
         for direction, offset in offsets.items():
             row_offset, column_offset = offset
-            cell_row, cell_column = self.translate_cell_coords(cell_a)
+            cell_row, cell_column = cell_a_translated
 
             if cell_b is cell_a.neighbors[direction]:
                 passage_row = cell_row + row_offset
                 passage_column = cell_column + column_offset
-                self.passages.add((passage_row, passage_column))
                 self.visual_grid[passage_row][passage_column] = character
                 if unlink:
-                    # self.passage_map.discard((row + row_offset, column + column_offset))
-                    ...
+                    self.passage_map[cell_a_translated].discard((passage_row, passage_column))
+                    self.passage_map[cell_b_translated].discard((passage_row, passage_column))
+                    self.passages.discard((passage_row, passage_column))
                 else:
-                    # self.passage_map.add((row + row_offset, column + column_offset))
                     self.passage_map[(cell_row, cell_column)].add((passage_row, passage_column))
+                    self.passages.add((passage_row, passage_column))
                 return
 
     def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect], verbosity: int) -> list[list[str]]:
