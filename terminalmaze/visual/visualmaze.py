@@ -2,6 +2,7 @@ import random
 import time
 from os import get_terminal_size, system
 from types import SimpleNamespace
+from collections import defaultdict
 
 import terminalmaze.visual.colorterm as colorterm
 import terminalmaze.visual.visualeffects as ve
@@ -33,6 +34,7 @@ class Visual:
         self.last_groups: ve.GroupType
         self.visual_grid: list[list[str]] = list()
         self.passages: set[tuple[int, int]] = set()
+        self.passage_map: defaultdict[tuple[int, int], set[tuple[int, int]]] = defaultdict(set)
         self.last_show_time = time.time()
         self.start_time = time.time()
         self.terminal_width = self.get_terminal_width()
@@ -135,8 +137,10 @@ class Visual:
             character = self.wall
 
         # replace character on cells with wall/path for (un)linked cells
-        for cell in (cell_a, cell_b):
-            row, column = self.translate_cell_coords(cell)
+        cell_a_translated = self.translate_cell_coords(cell_a)
+        cell_b_translated = self.translate_cell_coords(cell_b)
+        for cell, visual_coordinates in {cell_a: cell_a_translated, cell_b: cell_b_translated}.items():
+            row, column = visual_coordinates
             if not cell.links:
                 self.visual_grid[row][column] = self.wall
             else:
@@ -146,18 +150,23 @@ class Visual:
         offsets = {"north": (-1, 0), "south": (1, 0), "west": (0, -1), "east": (0, 1)}
         for direction, offset in offsets.items():
             row_offset, column_offset = offset
-            row, column = self.translate_cell_coords(cell_a)
+            cell_row, cell_column = self.translate_cell_coords(cell_a)
 
             if cell_b is cell_a.neighbors[direction]:
-                self.visual_grid[row + row_offset][column + column_offset] = character
+                passage_row = cell_row + row_offset
+                passage_column = cell_column + column_offset
+                self.passages.add((passage_row, passage_column))
+                self.visual_grid[passage_row][passage_column] = character
                 if unlink:
-                    self.passages.discard((row + row_offset, column + column_offset))
+                    # self.passage_map.discard((row + row_offset, column + column_offset))
+                    ...
                 else:
-                    self.passages.add((row + row_offset, column + column_offset))
+                    # self.passage_map.add((row + row_offset, column + column_offset))
+                    self.passage_map[(cell_row, cell_column)].add((passage_row, passage_column))
                 return
 
     def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect], verbosity: int) -> list[list[str]]:
-        """Apply color to cells and passages to show logic.
+        """Apply color to cells and passage_map to show logic.
 
         Args:
             visual_effects (dict[str, ve.VisualEffect]): Effects for cells to be colorterm
@@ -192,7 +201,7 @@ class Visual:
     def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
         """
         Modify cells in the grid to the character and color specified in the animation visual effect. Track
-        cells being animated, including passages, and frame position.
+        cells being animated, including passage_map, and frame position.
 
         Parameters
         ----------
@@ -236,7 +245,10 @@ class Visual:
 
         visual_effect.cells.clear()
 
-        cells_and_passages = self.find_passages(translated_cells | visual_effect.animating.keys())
+        cells_and_passages = set()
+        for visual_coordinate in translated_cells | visual_effect.animating.keys():
+            cells_and_passages |= self.passage_map.get(visual_coordinate, set())
+        cells_and_passages |= translated_cells
         cells_and_passages -= visual_effect.animating.keys()
         cells_and_passages -= visual_effect.animation_completed_passages
 
@@ -316,10 +328,11 @@ class Visual:
         if not visual_effect.cells:
             return colored_visual_grid
         translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
-        cells_and_passages = self.find_passages(translated_cells)
         color_str = colorterm.fg(visual_effect.color)
-        for visual_coordinates in cells_and_passages:
+        for visual_coordinates in translated_cells:
             colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
+            for passage in self.passage_map.get(visual_coordinates, set()):
+                colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, color_str)
         return colored_visual_grid
 
     def color_single_cell(
@@ -359,27 +372,12 @@ class Visual:
         for group, cells in self.last_groups.items():
             group_color = self.get_group_color(group)
             translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
-            cells_and_passages = self.find_passages(translated_cells)
-            for visual_coordinates in cells_and_passages:
+            # cells_and_passages = self.find_passages(translated_cells)
+            for visual_coordinates in translated_cells:
                 colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, group_color)
+                for passage in self.passage_map.get(visual_coordinates, set()):
+                    colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, group_color)
         return colored_visual_grid
-
-    def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
-        """Identify passages between linked cells.
-
-        Args:
-            translated_cells (set[tuple[int, int]]): Visual coordinates for cells
-
-        Returns:
-            set[tuple[int, int]]: translated cells with passages added
-        """
-        for visual_coordinates in self.passages:
-            visual_y, visual_x = visual_coordinates
-            if ((visual_y + 1, visual_x) in translated_cells and (visual_y - 1, visual_x) in translated_cells) or (
-                (visual_y, visual_x + 1) in translated_cells and (visual_y, visual_x - 1) in translated_cells
-            ):
-                translated_cells.add(visual_coordinates)
-        return translated_cells
 
     def apply_cell_modification(
         self,
