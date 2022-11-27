@@ -357,22 +357,13 @@ class Visual:
         Returns:
             list[list[str]]: colorterm visual grid
         """
-        groups = None
-        if visual_effect and visual_effect.groups:
-            groups = visual_effect.groups
 
-        elif self.last_groups:
-            groups = self.last_groups
-
-        if groups:
-            for group, cells in self.last_groups.items():
-                group_color = self.get_group_color(group)
-                translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
-                cells_and_passages = self.find_passages(translated_cells)
-                for visual_coordinates in cells_and_passages:
-                    colored_visual_grid = self.apply_cell_modification(
-                        colored_visual_grid, visual_coordinates, group_color
-                    )
+        for group, cells in self.last_groups.items():
+            group_color = self.get_group_color(group)
+            translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
+            cells_and_passages = self.find_passages(translated_cells)
+            for visual_coordinates in cells_and_passages:
+                colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, group_color)
         return colored_visual_grid
 
     def find_passages(self, translated_cells: set[tuple[int, int]]) -> set[tuple[int, int]]:
