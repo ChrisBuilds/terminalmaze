@@ -182,7 +182,7 @@ class Visual:
             elif isinstance(current_effect, ve.RandomColorGroup):
                 if current_effect.groups:
                     self.last_groups = current_effect.groups
-                    colored_visual_grid = self.color_cell_groups(colored_visual_grid, current_effect)
+                    colored_visual_grid = self.color_cell_groups(colored_visual_grid)
 
             elif isinstance(current_effect, ve.Animation):
                 colored_visual_grid = self.animate_cells(colored_visual_grid, current_effect)
@@ -346,9 +346,7 @@ class Visual:
 
         return colored_visual_grid
 
-    def color_cell_groups(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.RandomColorGroup | None
-    ) -> list[list[str]]:
+    def color_cell_groups(self, colored_visual_grid: list[list[str]]) -> list[list[str]]:
         """Color cell groups.
 
         Args: colored_visual_grid (list[list[str]]): Copy of visual_grid. visual_effect (Optional[
