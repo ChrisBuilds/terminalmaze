@@ -332,7 +332,19 @@ class Visual:
         for visual_coordinates in translated_cells:
             colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
             for passage in self.passage_map.get(visual_coordinates, set()):
-                colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, color_str)
+                if (
+                    len(
+                        {
+                            (passage[0], passage[1] + 1),
+                            (passage[0], passage[1] - 1),
+                            (passage[0] + 1, passage[1]),
+                            (passage[0] - 1, passage[1]),
+                        }
+                        & translated_cells
+                    )
+                    == 2
+                ):
+                    colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, color_str)
         return colored_visual_grid
 
     def color_single_cell(
