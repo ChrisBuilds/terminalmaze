@@ -4,7 +4,7 @@
 RESET = "\x1b[0m"
 
 
-def color(color_code: str | int, location: int) -> str:
+def _color(color_code: str | int, location: int) -> str:
     """
     Returns an ANSI escape sequence to color the foreground/background of text following the returned sequence.
     Parameters
@@ -60,7 +60,7 @@ def fg(color_code: str | int) -> str:
     -------
     str : ANSI escape sequence
     """
-    sequence = color(color_code, 38)
+    sequence = _color(color_code, 38)
     return sequence
 
 
@@ -75,5 +75,5 @@ def bg(color_code: str | int) -> str:
     -------
     str : ANSI escape sequence
     """
-    sequence = color(color_code, 48)
+    sequence = _color(color_code, 48)
     return sequence
