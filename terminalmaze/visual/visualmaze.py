@@ -246,8 +246,22 @@ class Visual:
         visual_effect.cells.clear()
 
         cells_and_passages = set()
-        for visual_coordinate in translated_cells | visual_effect.animating.keys():
-            cells_and_passages |= self.passage_map.get(visual_coordinate, set())
+        cells_to_animate = translated_cells | visual_effect.animating.keys()
+        for visual_coordinate in cells_to_animate:
+            for passage in self.passage_map.get(visual_coordinate, set()):
+                if (
+                    len(
+                        {
+                            (passage[0], passage[1] + 1),
+                            (passage[0], passage[1] - 1),
+                            (passage[0] + 1, passage[1]),
+                            (passage[0] - 1, passage[1]),
+                        }
+                        & cells_to_animate
+                    )
+                    == 2
+                ):
+                    cells_and_passages.add(passage)
         cells_and_passages |= translated_cells
         cells_and_passages -= visual_effect.animating.keys()
         cells_and_passages -= visual_effect.animation_completed_passages
