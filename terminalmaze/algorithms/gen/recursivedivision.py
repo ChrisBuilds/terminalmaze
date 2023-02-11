@@ -50,6 +50,7 @@ class RecursiveDivision(Algorithm):
             0, 0, len(list(self.maze.each_row(ignore_mask=True))), len(list(self.maze.each_column(ignore_mask=True)))
         ):
             yield state
+        self.status_text["State"] = "Complete"
         while (
             self.ve_division_cell_north.animating
             or self.ve_division_cell_east.animating
