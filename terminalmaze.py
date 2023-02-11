@@ -1,4 +1,3 @@
-#!/usr/bin/python3
 import argparse
 import os
 import random
@@ -232,10 +231,19 @@ def main():
                 conditions = "early_exit"
             solve_generator = solve_algorithm(maze, theme[args.solve_algorithm], conditions)
             for maze in solve_generator.solve():
-                maze.visual.show(solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb)
+                maze.visual.show(
+                    solve_generator.visual_effects,
+                    solve_generator.status_text,
+                    nostatus=args.nostatus,
+                    verbosity=solveverb,
+                )
             else:
                 maze.visual.show(
-                    solve_generator.visual_effects, solve_generator.status_text, verbosity=solveverb, complete=True
+                    solve_generator.visual_effects,
+                    solve_generator.status_text,
+                    verbosity=solveverb,
+                    nostatus=args.nostatus,
+                    complete=True,
                 )
                 print()
 
