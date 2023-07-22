@@ -40,7 +40,8 @@ def parse_args() -> argparse.Namespace:
     maze_algo_help = "\n".join(MAZE_ALGORITHMS.keys())
     solve_algo_help = "\n".join(SOLVE_ALGORITHMS.keys())
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawTextHelpFormatter, description="Generate and solve mazes in the terminal"
+        formatter_class=argparse.RawTextHelpFormatter,
+        description="Generate and solve mazes in the terminal",
     )
     parser.add_argument(
         "width",
@@ -135,6 +136,15 @@ Supported Solve Algorithms
         default=4,
     ),
     parser.add_argument(
+        "-rd",
+        "--redrawdelay",
+        metavar="REDRAW",
+        type=float,
+        help="The minimum time, in seconds, between screen redraws. If this is too low, the screen may flicker. Default = 0.015",
+        required=False,
+        default=0.015,
+    ),
+    parser.add_argument(
         "--nostatus",
         action="store_true",
         dest="nostatus",
@@ -176,19 +186,27 @@ def main():
         theme = config.themes[args.theme]
         if ma := args.maze_algorithm:
             if ma not in theme:
-                print(f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme}).")
+                print(
+                    f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme})."
+                )
                 return
         if sa := args.solve_algorithm:
             if sa not in theme:
-                print(f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme}).")
+                print(
+                    f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme})."
+                )
                 return
     else:
-        print(f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly.")
+        print(
+            f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly."
+        )
         return
 
     mask = get_mask(args)
     if args.mask and not mask:
-        print(f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly.")
+        print(
+            f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly."
+        )
         return
 
     if args.height == 0 and args.width == 0:
@@ -197,7 +215,9 @@ def main():
             width = columns // 2
             height = (lines // 2) - 2  # subtract 2 for the status line
         except OSError:
-            print("Unable to determine terminal size. Specify height and width. See -h for usage.")
+            print(
+                "Unable to determine terminal size. Specify height and width. See -h for usage."
+            )
             return
     else:
         height = args.height
@@ -214,7 +234,11 @@ def main():
         maze_generator = maze_algorithm(maze, theme[args.maze_algorithm])
         for maze in maze_generator.generate_maze():
             maze.visual.show(
-                maze_generator.visual_effects, maze_generator.status_text, verbosity=mazeverb, nostatus=args.nostatus
+                maze_generator.visual_effects,
+                maze_generator.status_text,
+                verbosity=mazeverb,
+                nostatus=args.nostatus,
+                redrawdelay=args.redrawdelay,
             )
         else:
             maze.visual.show(
@@ -223,19 +247,23 @@ def main():
                 verbosity=mazeverb,
                 complete=True,
                 nostatus=args.nostatus,
+                redrawdelay=args.redrawdelay,
             )
             print()
         if solve_algorithm:
             conditions = None
             if args.solve_algorithm == "breadth_first_early_exit":
                 conditions = "early_exit"
-            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm], conditions)
+            solve_generator = solve_algorithm(
+                maze, theme[args.solve_algorithm], conditions
+            )
             for maze in solve_generator.solve():
                 maze.visual.show(
                     solve_generator.visual_effects,
                     solve_generator.status_text,
                     nostatus=args.nostatus,
                     verbosity=solveverb,
+                    redrawdelay=args.redrawdelay,
                 )
             else:
                 maze.visual.show(
@@ -244,6 +272,7 @@ def main():
                     verbosity=solveverb,
                     nostatus=args.nostatus,
                     complete=True,
+                    redrawdelay=args.redrawdelay,
                 )
                 print()
 
