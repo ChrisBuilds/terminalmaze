@@ -6,7 +6,7 @@ from collections import defaultdict
 
 import terminalmaze.visual.colorterm as colorterm
 import terminalmaze.visual.visualeffects as ve
-from terminalmaze.config import MAZE_THEME, tm_config
+from terminalmaze.config import MAZE_THEME
 from terminalmaze.resources.cell import Cell
 
 
@@ -139,7 +139,10 @@ class Visual:
         # replace character on cells with wall/path for (un)linked cells
         cell_a_translated = self.translate_cell_coords(cell_a)
         cell_b_translated = self.translate_cell_coords(cell_b)
-        for cell, visual_coordinates in {cell_a: cell_a_translated, cell_b: cell_b_translated}.items():
+        for cell, visual_coordinates in {
+            cell_a: cell_a_translated,
+            cell_b: cell_b_translated,
+        }.items():
             row, column = visual_coordinates
             if not cell.links:
                 self.visual_grid[row][column] = self.wall
@@ -269,9 +272,11 @@ class Visual:
         new_cells_initialization = {}
         for visual_coordinates in cells_and_passages:
             animation_state = SimpleNamespace()
-            initial_color, initial_character, initial_frame_duration = get_value_at_animation_state_index(
-                0, visual_effect.animation_details
-            )
+            (
+                initial_color,
+                initial_character,
+                initial_frame_duration,
+            ) = get_value_at_animation_state_index(0, visual_effect.animation_details)
             animation_state.animation_state_index = 0
             if isinstance(visual_effect.cycles, list):
                 animation_state.cycles_remaining = random.choice(visual_effect.cycles)
@@ -288,7 +293,8 @@ class Visual:
             if animation_state.frame_counter:
                 animation_state.frame_counter -= 1
                 color, character, frame_duration = get_value_at_animation_state_index(
-                    animation_state.animation_state_index, visual_effect.animation_details
+                    animation_state.animation_state_index,
+                    visual_effect.animation_details,
                 )
                 if len(character) > 1:
                     if not animation_state.persistent_character:
@@ -308,7 +314,8 @@ class Visual:
                 if animation_state.animation_state_index < animation_state.final_state_index:
                     animation_state.animation_state_index += 1
                     animation_state.frame_counter = get_value_at_animation_state_index(
-                        animation_state.animation_state_index, visual_effect.animation_details
+                        animation_state.animation_state_index,
+                        visual_effect.animation_details,
                     )[2]
                 else:
                     animation_complete.append(visual_coordinate)
@@ -318,7 +325,10 @@ class Visual:
                 if color:
                     color = colorterm.fg(color)
                 colored_visual_grid = self.apply_cell_modification(
-                    colored_visual_grid, visual_coordinate, character=character, color=color
+                    colored_visual_grid,
+                    visual_coordinate,
+                    character=character,
+                    color=color,
                 )
                 color = character = None
         for visual_coordinate in animation_complete:
@@ -328,7 +338,9 @@ class Visual:
         return colored_visual_grid
 
     def color_multiple_cells(
-        self, colored_visual_grid: list[list[str]], visual_effect: ve.ModifyMultipleCells
+        self,
+        colored_visual_grid: list[list[str]],
+        visual_effect: ve.ModifyMultipleCells,
     ) -> list[list[str]]:
         """Color multiple cells the same color.
 
@@ -478,6 +490,7 @@ class Visual:
         verbosity: int,
         complete: bool = False,
         nostatus: bool = False,
+        redrawdelay: float = 0.015,
     ) -> None:
         """
 
@@ -488,13 +501,13 @@ class Visual:
         status_text : Status texts to display below the maze
         verbosity : Determines which visual effects are shown
         complete : Indicates the maze is complete, final image of the maze
+        nostatus : Determines if the status text is shown below the maze
+        redrawdelay : The minimum time between screen redraws
 
         Returns
         -------
 
         """
-        terminal_delay = tm_config["global"]["terminal_delay"]
-
         if verbosity == 0:
             print(self.format_status(status_text), end="\r")
             if not complete:
@@ -503,8 +516,8 @@ class Visual:
         maze_visual = self.add_visual_effects(visual_effects, verbosity)
         lines = ["".join(line) for line in maze_visual]
         time_since_last_show = time.time() - self.last_show_time
-        if time_since_last_show < terminal_delay:
-            time.sleep(terminal_delay - time_since_last_show)
+        if time_since_last_show < redrawdelay:
+            time.sleep(redrawdelay - time_since_last_show)
         status_text["Time Elapsed"] = self.time_elapsed()
         system("clear")
         print("\n".join(lines))
