@@ -1,4 +1,0 @@
-[global]
-# Time in seconds between terminal refresh, increase if terminal is flickering
-terminal_delay = 0.015
-
