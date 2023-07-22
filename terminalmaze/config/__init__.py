@@ -4,11 +4,6 @@ from typing import Any, Type, Union
 import tomli
 from pydantic import BaseModel
 
-tm_config: dict[str, dict[str, Any]]
-path = pathlib.Path(__file__).parent / "conf.toml"
-with path.open(mode="rb") as conf_file:
-    tm_config = tomli.load(conf_file)
-
 tm_masks: dict[str, pathlib.Path] = dict()
 masks_path = pathlib.Path(__file__).parent / "masks"
 for mask in masks_path.iterdir():
