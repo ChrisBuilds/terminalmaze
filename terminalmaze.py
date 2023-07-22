@@ -76,7 +76,6 @@ Supported Maze Algorithms
 Supported Solve Algorithms
 --------------------------
 {solve_algo_help}""",
-        required=False,
         default=None,
         choices=list(SOLVE_ALGORITHMS.keys()),
     )
@@ -86,7 +85,6 @@ Supported Solve Algorithms
         metavar="THEME",
         type=str,
         help="Name of a theme in the themes directory, without the file extension .toml",
-        required=False,
         default="default",
     )
     parser.add_argument(
@@ -95,7 +93,6 @@ Supported Solve Algorithms
         metavar="SEED",
         type=int,
         help="Seed to pass to random generator",
-        required=False,
         default=None,
     ),
     parser.add_argument(
@@ -104,12 +101,11 @@ Supported Solve Algorithms
         metavar="MASK",
         type=str,
         help="Name of a mask in the masks directory, without the file extension .mask",
-        required=False,
         default=None,
     ),
     parser.add_argument(
         "-mv",
-        "--mazeverbosity",
+        "--maze_verbosity",
         metavar="MAZEVERBOSITY",
         type=int,
         help="Maze verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
@@ -117,13 +113,12 @@ Supported Solve Algorithms
         "General practice: 0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic "
         "visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
-        required=False,
         choices=[0, 1, 2, 3, 4],
         default=3,
     ),
     parser.add_argument(
         "-sv",
-        "--solveverbosity",
+        "--solve_verbosity",
         metavar="SOLVEVERBOSITY",
         type=int,
         help="Solve verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
@@ -131,17 +126,15 @@ Supported Solve Algorithms
         "General practice: 0 = NONE (only status text and final maze), 1 = Solve generation only, 2 = Logic "
         "visual effects, "
         "3 = Style visual effects, 4 = Logic and Style visual effects",
-        required=False,
         choices=[0, 1, 2, 3, 4],
         default=4,
     ),
     parser.add_argument(
         "-rd",
-        "--redrawdelay",
+        "--redraw_delay",
         metavar="REDRAW",
         type=float,
         help="The minimum time, in seconds, between screen redraws. If this is too low, the screen may flicker. Default = 0.015",
-        required=False,
         default=0.015,
     ),
     parser.add_argument(
@@ -186,27 +179,19 @@ def main():
         theme = config.themes[args.theme]
         if ma := args.maze_algorithm:
             if ma not in theme:
-                print(
-                    f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme})."
-                )
+                print(f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme}).")
                 return
         if sa := args.solve_algorithm:
             if sa not in theme:
-                print(
-                    f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme})."
-                )
+                print(f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme}).")
                 return
     else:
-        print(
-            f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly."
-        )
+        print(f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly.")
         return
 
     mask = get_mask(args)
     if args.mask and not mask:
-        print(
-            f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly."
-        )
+        print(f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly.")
         return
 
     if args.height == 0 and args.width == 0:
@@ -215,9 +200,7 @@ def main():
             width = columns // 2
             height = (lines // 2) - 2  # subtract 2 for the status line
         except OSError:
-            print(
-                "Unable to determine terminal size. Specify height and width. See -h for usage."
-            )
+            print("Unable to determine terminal size. Specify height and width. See -h for usage.")
             return
     else:
         height = args.height
@@ -228,8 +211,8 @@ def main():
     else:
         seed = args.seed
     maze.seed = seed
-    mazeverb = args.mazeverbosity
-    solveverb = args.solveverbosity
+    mazeverb = args.maze_verbosity
+    solveverb = args.solve_verbosity
     try:
         maze_generator = maze_algorithm(maze, theme[args.maze_algorithm])
         for maze in maze_generator.generate_maze():
@@ -238,7 +221,7 @@ def main():
                 maze_generator.status_text,
                 verbosity=mazeverb,
                 nostatus=args.nostatus,
-                redrawdelay=args.redrawdelay,
+                redrawdelay=args.redraw_delay,
             )
         else:
             maze.visual.show(
@@ -247,23 +230,21 @@ def main():
                 verbosity=mazeverb,
                 complete=True,
                 nostatus=args.nostatus,
-                redrawdelay=args.redrawdelay,
+                redrawdelay=args.redraw_delay,
             )
             print()
         if solve_algorithm:
             conditions = None
             if args.solve_algorithm == "breadth_first_early_exit":
                 conditions = "early_exit"
-            solve_generator = solve_algorithm(
-                maze, theme[args.solve_algorithm], conditions
-            )
+            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm], conditions)
             for maze in solve_generator.solve():
                 maze.visual.show(
                     solve_generator.visual_effects,
                     solve_generator.status_text,
                     nostatus=args.nostatus,
                     verbosity=solveverb,
-                    redrawdelay=args.redrawdelay,
+                    redrawdelay=args.redraw_delay,
                 )
             else:
                 maze.visual.show(
@@ -272,7 +253,7 @@ def main():
                     verbosity=solveverb,
                     nostatus=args.nostatus,
                     complete=True,
-                    redrawdelay=args.redrawdelay,
+                    redrawdelay=args.redraw_delay,
                 )
                 print()
 
