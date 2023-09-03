@@ -134,7 +134,7 @@ Supported Solve Algorithms
         "--redraw_delay",
         metavar="REDRAW",
         type=float,
-        help="The minimum time, in seconds, between screen redraws. If this is too low, the screen may flicker. Default = 0.015",
+        help="The minimum time, in seconds, between screen redraws. This controls the speed of the animation. Default = 0.015",
         default=0.015,
     ),
     parser.add_argument(
