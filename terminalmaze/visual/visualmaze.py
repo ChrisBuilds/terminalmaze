@@ -1,11 +1,13 @@
 import random
 import time
-from os import get_terminal_size, system
+import shutil
+import sys
 from types import SimpleNamespace
 from collections import defaultdict
 
 import terminalmaze.visual.colorterm as colorterm
 import terminalmaze.visual.visualeffects as ve
+from terminalmaze.visual import ansitools
 from terminalmaze.config import MAZE_THEME
 from terminalmaze.resources.cell import Cell
 
@@ -37,22 +39,25 @@ class Visual:
         self.passage_map: defaultdict[tuple[int, int], set[tuple[int, int]]] = defaultdict(set)
         self.last_show_time = time.time()
         self.start_time = time.time()
-        self.terminal_width = self.get_terminal_width()
+        self.terminal_width, self.terminal_height = self._get_terminal_dimensions()
+        self.prep_terminal()
         self.prepare_visual()
 
-    @staticmethod
-    def get_terminal_width() -> int:
-        """
-        Get the terminal size using os.get_terminal_size(). If unable to get terminal size, return 0.
-        Returns
-        -------
-        int : Column width of terminal, or 0 if unable to retrieve terminal size
+    def prep_terminal(self) -> None:
+        print("\n" * self.terminal_height)
+
+    def _get_terminal_dimensions(self) -> tuple[int, int]:
+        """Gets the terminal dimensions.
+
+        Returns:
+            tuple[int, int]: terminal width and height
         """
         try:
-            columns, lines = get_terminal_size()
-            return columns
+            terminal_width, terminal_height = shutil.get_terminal_size()
         except OSError:
-            return 0
+            # If the terminal size cannot be determined, return default values
+            return 80, 24
+        return terminal_width, terminal_height
 
     @staticmethod
     def translate_cell_coords(cell: Cell) -> tuple[int, int]:
@@ -519,8 +524,14 @@ class Visual:
         if time_since_last_show < redrawdelay:
             time.sleep(redrawdelay - time_since_last_show)
         status_text["Time Elapsed"] = self.time_elapsed()
-        system("clear")
-        print("\n".join(lines))
+        output = "\n".join(lines)
         if not nostatus:
-            print(f"{colorterm.RESET}{self.format_status(status_text)}")
+            output += f"\n{colorterm.RESET}{self.format_status(status_text)}"
+        sys.stdout.write(ansitools.DEC_SAVE_CURSOR_POSITION())
+        sys.stdout.write(ansitools.MOVE_CURSOR_UP(self.terminal_height - 1))
+        sys.stdout.write(ansitools.MOVE_CURSOR_TO_COLUMN(1))
+        sys.stdout.write(output)
+        sys.stdout.write(ansitools.DEC_RESTORE_CURSOR_POSITION())
+        sys.stdout.flush()
+
         self.last_show_time = time.time()
