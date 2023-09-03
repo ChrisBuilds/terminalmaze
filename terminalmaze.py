@@ -1,5 +1,5 @@
 import argparse
-import os
+import shutil
 import random
 import sys
 
@@ -168,6 +168,20 @@ def get_mask(args) -> str | None:
     return mask
 
 
+def _get_terminal_dimensions() -> tuple[int, int]:
+    """Gets the terminal dimensions.
+
+    Returns:
+        tuple[int, int]: terminal width and height
+    """
+    try:
+        terminal_width, terminal_height = shutil.get_terminal_size()
+    except OSError:
+        print("Unable to determine terminal size. Specify height and width. See -h for usage.")
+        return (0, 0)
+    return terminal_width, terminal_height
+
+
 def main():
     args = parse_args()
     maze_algorithm = MAZE_ALGORITHMS[args.maze_algorithm]
@@ -195,13 +209,10 @@ def main():
         return
 
     if args.height == 0 and args.width == 0:
-        try:
-            columns, lines = os.get_terminal_size()
-            width = columns // 2
-            height = (lines // 2) - 2  # subtract 2 for the status line
-        except OSError:
-            print("Unable to determine terminal size. Specify height and width. See -h for usage.")
-            return
+        columns, lines = _get_terminal_dimensions()
+        width = columns // 2
+        height = (lines // 2) - 2  # subtract 2 for the status line
+
     else:
         height = args.height
         width = args.width
