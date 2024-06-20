@@ -29,22 +29,29 @@ class Visual:
         """
         self.grid = grid
         self.theme = theme
-        self.wall = f"{colorterm.fg(theme.wall.color)}{theme.wall.character}{colorterm.RESET}"
-        self.path = f"{colorterm.fg(theme.path.color)}{theme.path.character}{colorterm.RESET}"
+        self.wall = (
+            f"{colorterm.fg(theme.wall.color)}{theme.wall.character}{colorterm.RESET}"
+        )
+        self.path = (
+            f"{colorterm.fg(theme.path.color)}{theme.path.character}{colorterm.RESET}"
+        )
         self.group_color_pool = list(range(0, 256))
         self.group_color_map: dict[int, int] = dict()
         self.last_groups: ve.GroupType
         self.visual_grid: list[list[str]] = list()
         self.passages: set[tuple[int, int]] = set()
-        self.passage_map: defaultdict[tuple[int, int], set[tuple[int, int]]] = defaultdict(set)
+        self.passage_map: defaultdict[tuple[int, int], set[tuple[int, int]]] = (
+            defaultdict(set)
+        )
         self.last_show_time = time.time()
         self.start_time = time.time()
         self.terminal_width, self.terminal_height = self._get_terminal_dimensions()
-        self.prep_terminal()
         self.prepare_visual()
+        self.prep_terminal()
 
     def prep_terminal(self) -> None:
-        print("\n" * self.terminal_height)
+        sys.stdout.write(ansitools.HIDE_CURSOR())
+        print("\n" * len(self.visual_grid))
 
     def _get_terminal_dimensions(self) -> tuple[int, int]:
         """Gets the terminal dimensions.
@@ -120,7 +127,9 @@ class Visual:
         if color:
             return colorterm.fg(color)
 
-        color = self.group_color_pool.pop(random.randint(0, len(self.group_color_pool) - 1))
+        color = self.group_color_pool.pop(
+            random.randint(0, len(self.group_color_pool) - 1)
+        )
         self.group_color_map[group_id] = color
 
         if not self.group_color_pool:
@@ -165,15 +174,23 @@ class Visual:
                 passage_column = cell_column + column_offset
                 self.visual_grid[passage_row][passage_column] = character
                 if unlink:
-                    self.passage_map[cell_a_translated].discard((passage_row, passage_column))
-                    self.passage_map[cell_b_translated].discard((passage_row, passage_column))
+                    self.passage_map[cell_a_translated].discard(
+                        (passage_row, passage_column)
+                    )
+                    self.passage_map[cell_b_translated].discard(
+                        (passage_row, passage_column)
+                    )
                     self.passages.discard((passage_row, passage_column))
                 else:
-                    self.passage_map[(cell_row, cell_column)].add((passage_row, passage_column))
+                    self.passage_map[(cell_row, cell_column)].add(
+                        (passage_row, passage_column)
+                    )
                     self.passages.add((passage_row, passage_column))
                 return
 
-    def add_visual_effects(self, visual_effects: dict[str, ve.VisualEffect], verbosity: int) -> list[list[str]]:
+    def add_visual_effects(
+        self, visual_effects: dict[str, ve.VisualEffect], verbosity: int
+    ) -> list[list[str]]:
         """Apply color to cells and passage_map to show logic.
 
         Args:
@@ -191,10 +208,14 @@ class Visual:
                 continue
 
             if isinstance(current_effect, ve.ModifySingleCell):
-                colored_visual_grid = self.color_single_cell(colored_visual_grid, current_effect)
+                colored_visual_grid = self.color_single_cell(
+                    colored_visual_grid, current_effect
+                )
 
             elif isinstance(current_effect, ve.ModifyMultipleCells):
-                colored_visual_grid = self.color_multiple_cells(colored_visual_grid, current_effect)
+                colored_visual_grid = self.color_multiple_cells(
+                    colored_visual_grid, current_effect
+                )
 
             elif isinstance(current_effect, ve.RandomColorGroup):
                 if current_effect.groups:
@@ -202,11 +223,15 @@ class Visual:
                     colored_visual_grid = self.color_cell_groups(colored_visual_grid)
 
             elif isinstance(current_effect, ve.Animation):
-                colored_visual_grid = self.animate_cells(colored_visual_grid, current_effect)
+                colored_visual_grid = self.animate_cells(
+                    colored_visual_grid, current_effect
+                )
 
         return colored_visual_grid
 
-    def animate_cells(self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation) -> list[list[str]]:
+    def animate_cells(
+        self, colored_visual_grid: list[list[str]], visual_effect: ve.Animation
+    ) -> list[list[str]]:
         """
         Modify cells in the grid to the character and color specified in the animation visual effect. Track
         cells being animated, including passage_map, and frame position.
@@ -236,13 +261,17 @@ class Visual:
             """
             if state_index >= len(collection):
                 return None, None, 0
-            color_value, character_symbol, frame_duration_at_state_index = collection[state_index]
+            color_value, character_symbol, frame_duration_at_state_index = collection[
+                state_index
+            ]
             if isinstance(color_value, list):
                 color_value = random.choice(color_value)
             if isinstance(character_symbol, list):
                 character_symbol = random.choice(character_symbol)
             if isinstance(frame_duration_at_state_index, list):
-                frame_duration_at_state_index = random.choice(frame_duration_at_state_index)
+                frame_duration_at_state_index = random.choice(
+                    frame_duration_at_state_index
+                )
             return color_value, character_symbol, int(frame_duration_at_state_index)
 
         color = character = None
@@ -310,13 +339,17 @@ class Visual:
 
             if animation_state.frame_counter == 0:
                 if (
-                    animation_state.animation_state_index == animation_state.final_state_index
+                    animation_state.animation_state_index
+                    == animation_state.final_state_index
                     and animation_state.cycles_remaining > 0
                 ):
                     animation_state.animation_state_index = 0
                     animation_state.cycles_remaining -= 1
 
-                if animation_state.animation_state_index < animation_state.final_state_index:
+                if (
+                    animation_state.animation_state_index
+                    < animation_state.final_state_index
+                ):
                     animation_state.animation_state_index += 1
                     animation_state.frame_counter = get_value_at_animation_state_index(
                         animation_state.animation_state_index,
@@ -358,10 +391,14 @@ class Visual:
         """
         if not visual_effect.cells:
             return colored_visual_grid
-        translated_cells = set(self.translate_cell_coords(cell) for cell in visual_effect.cells)
+        translated_cells = set(
+            self.translate_cell_coords(cell) for cell in visual_effect.cells
+        )
         color_str = colorterm.fg(visual_effect.color)
         for visual_coordinates in translated_cells:
-            colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
+            colored_visual_grid = self.apply_cell_modification(
+                colored_visual_grid, visual_coordinates, color_str
+            )
             for passage in self.passage_map.get(visual_coordinates, set()):
                 if (
                     len(
@@ -375,7 +412,9 @@ class Visual:
                     )
                     == 2
                 ):
-                    colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, color_str)
+                    colored_visual_grid = self.apply_cell_modification(
+                        colored_visual_grid, passage, color_str
+                    )
         return colored_visual_grid
 
     def color_single_cell(
@@ -398,11 +437,15 @@ class Visual:
 
         visual_coordinates = self.translate_cell_coords(visual_effect.cell)
         color_str = colorterm.fg(visual_effect.color)
-        colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, color_str)
+        colored_visual_grid = self.apply_cell_modification(
+            colored_visual_grid, visual_coordinates, color_str
+        )
 
         return colored_visual_grid
 
-    def color_cell_groups(self, colored_visual_grid: list[list[str]]) -> list[list[str]]:
+    def color_cell_groups(
+        self, colored_visual_grid: list[list[str]]
+    ) -> list[list[str]]:
         """Color cell groups.
 
         Args: colored_visual_grid (list[list[str]]): Copy of visual_grid. visual_effect (Optional[
@@ -417,9 +460,13 @@ class Visual:
             translated_cells = set(self.translate_cell_coords(cell) for cell in cells)
             # cells_and_passages = self.find_passages(translated_cells)
             for visual_coordinates in translated_cells:
-                colored_visual_grid = self.apply_cell_modification(colored_visual_grid, visual_coordinates, group_color)
+                colored_visual_grid = self.apply_cell_modification(
+                    colored_visual_grid, visual_coordinates, group_color
+                )
                 for passage in self.passage_map.get(visual_coordinates, set()):
-                    colored_visual_grid = self.apply_cell_modification(colored_visual_grid, passage, group_color)
+                    colored_visual_grid = self.apply_cell_modification(
+                        colored_visual_grid, passage, group_color
+                    )
         return colored_visual_grid
 
     def apply_cell_modification(
@@ -451,9 +498,9 @@ class Visual:
             current_character = character
         if color:
             current_color = color
-        colored_visual_grid[y][
-            x
-        ] = f"{colorterm.bg(self.theme.wall.color)}{current_color}{current_character}{colorterm.RESET}"
+        colored_visual_grid[y][x] = (
+            f"{colorterm.bg(self.theme.wall.color)}{current_color}{current_character}{colorterm.RESET}"
+        )
         return colored_visual_grid
 
     def format_status(self, status_text: dict[str, str | int | None]) -> str:
@@ -473,7 +520,9 @@ class Visual:
             status_string += f" {label}: {value} |"
         status_string = status_string.strip("|").strip()
         if self.terminal_width:
-            status_string = status_string + (" " * (self.terminal_width - len(status_string)))
+            status_string = status_string + (
+                " " * (self.terminal_width - len(status_string))
+            )
         return status_string
 
     def time_elapsed(self) -> str:
@@ -527,9 +576,9 @@ class Visual:
         output = "\n".join(lines)
         if not nostatus:
             output += f"\n{colorterm.RESET}{self.format_status(status_text)}"
-        sys.stdout.write(ansitools.DEC_SAVE_CURSOR_POSITION())
-        sys.stdout.write(ansitools.MOVE_CURSOR_UP(self.terminal_height - 1))
-        sys.stdout.write(ansitools.MOVE_CURSOR_TO_COLUMN(1))
+        # sys.stdout.write(ansitools.DEC_SAVE_CURSOR_POSITION())
+        sys.stdout.write(ansitools.MOVE_CURSOR_UP(len(self.visual_grid)))
+        # sys.stdout.write(ansitools.MOVE_CURSOR_TO_COLUMN(1))
         sys.stdout.write(output)
         sys.stdout.write(ansitools.DEC_RESTORE_CURSOR_POSITION())
         sys.stdout.flush()
