@@ -7,6 +7,7 @@ import terminalmaze.config as config
 import terminalmaze.algorithms.gen as maze_algos
 import terminalmaze.algorithms.solve as solve_algos
 from terminalmaze.resources.grid import Grid
+from terminalmaze.visual import ansitools
 
 MAZE_ALGORITHMS = {
     "binary_tree": maze_algos.binarytree.BinaryTree,
@@ -87,56 +88,66 @@ Supported Solve Algorithms
         help="Name of a theme in the themes directory, without the file extension .toml",
         default="default",
     )
-    parser.add_argument(
-        "-s",
-        "--seed",
-        metavar="SEED",
-        type=int,
-        help="Seed to pass to random generator",
-        default=None,
-    ),
-    parser.add_argument(
-        "-mk",
-        "--mask",
-        metavar="MASK",
-        type=str,
-        help="Name of a mask in the masks directory, without the file extension .mask",
-        default=None,
-    ),
-    parser.add_argument(
-        "-mv",
-        "--maze_verbosity",
-        metavar="MAZEVERBOSITY",
-        type=int,
-        help="Maze verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
-        "configurable in theme files. "
-        "General practice: 0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic "
-        "visual effects, "
-        "3 = Style visual effects, 4 = Logic and Style visual effects",
-        choices=[0, 1, 2, 3, 4],
-        default=3,
-    ),
-    parser.add_argument(
-        "-sv",
-        "--solve_verbosity",
-        metavar="SOLVEVERBOSITY",
-        type=int,
-        help="Solve verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
-        "configurable in theme files. "
-        "General practice: 0 = NONE (only status text and final maze), 1 = Solve generation only, 2 = Logic "
-        "visual effects, "
-        "3 = Style visual effects, 4 = Logic and Style visual effects",
-        choices=[0, 1, 2, 3, 4],
-        default=4,
-    ),
-    parser.add_argument(
-        "-rd",
-        "--redraw_delay",
-        metavar="REDRAW",
-        type=float,
-        help="The minimum time, in seconds, between screen redraws. This controls the speed of the animation. Default = 0.015",
-        default=0.015,
-    ),
+    (
+        parser.add_argument(
+            "-s",
+            "--seed",
+            metavar="SEED",
+            type=int,
+            help="Seed to pass to random generator",
+            default=None,
+        ),
+    )
+    (
+        parser.add_argument(
+            "-mk",
+            "--mask",
+            metavar="MASK",
+            type=str,
+            help="Name of a mask in the masks directory, without the file extension .mask",
+            default=None,
+        ),
+    )
+    (
+        parser.add_argument(
+            "-mv",
+            "--maze_verbosity",
+            metavar="MAZEVERBOSITY",
+            type=int,
+            help="Maze verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
+            "configurable in theme files. "
+            "General practice: 0 = NONE (only status text and final maze), 1 = Maze generation only, 2 = Logic "
+            "visual effects, "
+            "3 = Style visual effects, 4 = Logic and Style visual effects",
+            choices=[0, 1, 2, 3, 4],
+            default=3,
+        ),
+    )
+    (
+        parser.add_argument(
+            "-sv",
+            "--solve_verbosity",
+            metavar="SOLVEVERBOSITY",
+            type=int,
+            help="Solve verbosity is a number 0-4 with determines which visual effects are shown. Verbosity is "
+            "configurable in theme files. "
+            "General practice: 0 = NONE (only status text and final maze), 1 = Solve generation only, 2 = Logic "
+            "visual effects, "
+            "3 = Style visual effects, 4 = Logic and Style visual effects",
+            choices=[0, 1, 2, 3, 4],
+            default=4,
+        ),
+    )
+    (
+        parser.add_argument(
+            "-rd",
+            "--redraw_delay",
+            metavar="REDRAW",
+            type=float,
+            help="The minimum time, in seconds, between screen redraws. This controls the speed of the animation. Default = 0.015",
+            default=0.015,
+        ),
+    )
     parser.add_argument(
         "--nostatus",
         action="store_true",
@@ -177,7 +188,9 @@ def _get_terminal_dimensions() -> tuple[int, int]:
     try:
         terminal_width, terminal_height = shutil.get_terminal_size()
     except OSError:
-        print("Unable to determine terminal size. Specify height and width. See -h for usage.")
+        print(
+            "Unable to determine terminal size. Specify height and width. See -h for usage."
+        )
         return (0, 0)
     return terminal_width, terminal_height
 
@@ -193,19 +206,27 @@ def main():
         theme = config.themes[args.theme]
         if ma := args.maze_algorithm:
             if ma not in theme:
-                print(f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme}).")
+                print(
+                    f"Unable to locate theme specification for maze algorithm ({ma}) in theme file ({args.theme})."
+                )
                 return
         if sa := args.solve_algorithm:
             if sa not in theme:
-                print(f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme}).")
+                print(
+                    f"Unable to locate theme specification for solve algorithm ({sa}) in theme file ({args.theme})."
+                )
                 return
     else:
-        print(f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly.")
+        print(
+            f"Unable to locate theme: {args.theme}. Verify file exists in themes dir and was spelled correctly."
+        )
         return
 
     mask = get_mask(args)
     if args.mask and not mask:
-        print(f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly.")
+        print(
+            f"Unable to locate mask: {args.mask}. Verify file exists in masks dir and was spelled correctly."
+        )
         return
 
     if args.height == 0 and args.width == 0:
@@ -248,7 +269,9 @@ def main():
             conditions = None
             if args.solve_algorithm == "breadth_first_early_exit":
                 conditions = "early_exit"
-            solve_generator = solve_algorithm(maze, theme[args.solve_algorithm], conditions)
+            solve_generator = solve_algorithm(
+                maze, theme[args.solve_algorithm], conditions
+            )
             for maze in solve_generator.solve():
                 maze.visual.show(
                     solve_generator.visual_effects,
@@ -267,9 +290,10 @@ def main():
                     redrawdelay=args.redraw_delay,
                 )
                 print()
-
+        sys.stdout.write(ansitools.SHOW_CURSOR())
     except KeyboardInterrupt:
         print("Maze generation stopped.")
+        sys.stdout.write(ansitools.SHOW_CURSOR())
         sys.exit()
 
 
