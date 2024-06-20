@@ -1,51 +1,87 @@
-# NOTE: Colors are shown when their category of verbosity is enabled.
+# NOTE: Colors are shown when their number of verbosity is enabled.
 #       See help menu for more information. Not applicable to wall/path.
-# Verbosity: 2 = Logic only, 3 = Style only, 4 = Logic and Style
 #######################################################################
 ########################    MAZE ALGORITHMS    ########################
 #######################################################################
 [aldous_broder]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# time between frames while searching for unliked cells, longer delay allows
+#  faster searching but causes a less fluid animation
+maximum_searching_frame_delay = 0.027
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
+
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",1],]
 
-# Verbosity - STYLE: color of the last grid cell that was linked into the maze
+# last grid cell that was linked into the maze
+last_linked.verbosity = [3,4]
 last_linked.layer = 1
-last_linked.frames_per_value = 1
-last_linked.colors = [218]
-last_linked.characters = []
+last_linked.cycles = 1
+last_linked.animation_details = [["#adfff6","",4],
+                                 ["#324b46","",4],
+                                 ["#336e64","",4],
+                                 ["#2b9283","",4],
+                                 ["#00b8a3","",4],
+                                 ["#75c6a0","",4],
+                                 ["#abd3a9","",4],
+                                 ["#d4e0be","",4],]
 
-# Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
+# neighbors invalid for linking (adjacent to the working cell)
+invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.color = 159
+invalid_neighbors.cycles = 1
+invalid_neighbors.animation_details = []
 
-# Verbosity - STYLE: color for cells that are already linked into the maze and are being revisted
+# cells that are already linked into the maze and are being revisted
+invalid_visited.verbosity = [3,4]
 invalid_visited.layer = 0
-invalid_visited.frames_per_value = 1
-invalid_visited.colors = [159]
-invalid_visited.characters = []
+invalid_visited.cycles = 1
+invalid_visited.animation_details = [["#4e4d4a","",4],
+                                 ["#74736c","",4],
+                                 ["#9c9a90","",4],
+                                 ["#c6c4b5","",4],]
+
 ###########################
 ###########################
 [binary_tree]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","", 3]]
 
-# Verbosity - LOGIC: color for neighbors adjacent to the cell
-neighbor.layer = 0
-neighbor.color = 159
+# cell last linked into the maze
+last_linked.verbosity = [3,4]
+last_linked.layer = 0
+last_linked.cycles = 1
+last_linked.animation_details = [["#adfff6","",4],
+                                 ["#00b8a3","",8],
+                                 ["#75c6a0","",8],
+                                 ["#abd3a9","",8],
+                                 ["#d4e0be","",8]]
+
+# neighbors adjacent to the cell
+neighbors.verbosity = [2,4]
+neighbors.layer = 0
+neighbors.cycles = 1
+neighbors.animation_details = [["#820024","",1]]
 
 ###########################
 ###########################
@@ -53,209 +89,443 @@ neighbor.color = 159
 #NOTE: Ellers algorithm relies on random colors for the cell groups which
 #      limits configuration options. Path color may only be observed after
 #      maze generation has completed.
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-group_to_random_color_layer = 0
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
+
+# groups of cells
+group_to_random_color.verbosity = [2,3,4]
+group_to_random_color.layer = 0
+group_to_random_color.character = ""
 
 ###########################
 ###########################
 [hunt_and_kill]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 16
+# number of frames to skip per frame shown during the hunting state, decrease
+#  to slow down, and show more frames, during the hunting state
+hunting_frames_skip = 3
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - All: color of the paths (linked cells)
-path = 34
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",3]]
 
-# Verbosity - LOGIC: color of the last grid cell that was linked into the maze
-last_linked.layer = 0
-last_linked.color = 49
-
-# Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
+# neighbors invalid for linking (adjacent to the working cell)
+invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.color = 88
+invalid_neighbors.cycles = 1
+invalid_neighbors.animation_details = [["#820024","",1]]
 
-# Verbosity - STYLE: applies to cells as they are linked into the grid
-# (color at index 0 is the front color)
-#   number of colored cells will be up to the length of this list
-link_transition.layer = 0
-link_transition.frames_per_value = 2
-link_transition.characters = []
-link_transition.colors = [46, 47, 48, 49, 50]
+# last cell linked into the grid
+last_linked.verbosity = [3,4]
+last_linked.layer = 0
+last_linked.cycles = 1
+last_linked.animation_details = [["#adfff6","",4],
+                                 ["#00b8a3","",8],
+                                 ["#75c6a0","",8],
+                                 ["#abd3a9","",8],
+                                 ["#d4e0be","",8]]
 
-# Verbosity - STYLE: applies to unlinked cells passed over while in the hunting state
-hunt_transition.layer = 0
-hunt_transition.frames_per_value = 1
-hunt_transition.colors = [47, 48, 49, 50]
-hunt_transition.characters = []
+# unlinked cells passed over while in the hunting state
+hunt_cells.verbosity = [3,4]
+hunt_cells.layer = 0
+hunt_cells.cycles = 1
+hunt_cells.animation_details = [["#432929","",3],
+                                ["#592427","",2],
+                                ["#6d1a26","",1],
+                                ["#820024","",1],
+                                ["#6d1a26","",1],
+                                ["#592427","",2],
+                                ["#432929","",3],]
 
 
 ###########################
 ###########################
 [kruskals_randomized]
-#NOTE: Kruskal's Randomlized algorithm relies on random colors for the cell groups which
+#NOTE: Kruskal's Randomized algorithm relies on random colors for the cell groups which
 #      limits configuration options. Path color may only be observed after
 #      maze generation has completed.
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-group_random_color_layer = 0
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
+
+# groups of cells
+group_random_color.verbosity = [2,3,4]
+group_random_color.layer = 0
+group_random_color.character = ""
 
 ###########################
 ###########################
 [prims_simple]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# frames skipped is based on the number of active edges, adjust the ratio up to slow
+#  down and show more frames : int >= 1
+edge_frame_ratio = 4
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
+
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",3]]
 
-# Verbosity - STYLE: color of cells on the edge of the linked area
-edges.layer = 0
-edges.color = 159
+# cells on the edge of the linked area
+edges.verbosity = [3,4]
+edges.layer = 1
+edges.cycles = 1
+edges.animation_details = [["#adfff6","",4]]
 
-# Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
+# neighbors invalid for linking (adjacent to the working cell)
+invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer = 0
-invalid_neighbors.color = 52
+invalid_neighbors.cycles = 1
+invalid_neighbors.animation_details = [["#820024","",3]]
 
-# Verbosity - LOGIC: color of the last grid cell that was linked into the maze
+# last cell that was linked into the maze
+last_linked.verbosity = [3,4]
 last_linked.layer = 0
-last_linked.color = 159
-
-# Verbosity - STYLE: color of cells second to the edge of the maze
-old_edges.layer = 0
-old_edges.color = 218
+last_linked.cycles = 1
+last_linked.animation_details = [["#324b46","",4],
+                                 ["#336e64","",4],
+                                 ["#2b9283","",4],
+                                 ["#00b8a3","",4],
+                                 ["#75c6a0","",4],
+                                 ["#abd3a9","",4],
+                                 ["#d4e0be","",4],]
 
 ###########################
 ###########################
 [prims_weighted]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",3]]
 
-# Verbosity - STYLE: color of cells awaiting linking
-links.layer = 0
-links.color = 79
+# links encountered but not linked due to high cost
+pending_weighted_links.verbosity = [3,4]
+pending_weighted_links.layer = 0
+pending_weighted_links.color = "#abd3a9"
+pending_weighted_links.character = ""
 
-# Verbosity - LOGIC: color of cells adjacent to the workingcell that are not linked
+# newly discovered links not linked due to high cost
+new_weighted_links.verbosity = [3,4]
+new_weighted_links.layer = 2
+new_weighted_links.cycles = 1
+new_weighted_links.animation_details = [["#adfff6","",4]]
+
+# cells adjacent to the workingcell that are not linked
+unlinked_neighbors.verbosity = [2,4]
 unlinked_neighbors.layer = 0
-unlinked_neighbors.color = 218
+unlinked_neighbors.cycles = 1
+unlinked_neighbors.animation_details = [["#FF9607","",10]]
 
-# Verbosity - STYLE: gradient trail showing recently linked cells
-# (color at index 0 is the front color)
-last_linked_transition.layer = 1
-last_linked_transition.frames_per_value = 1
-last_linked_transition.colors = [47, 48, 49, 50]
-last_linked_transition.characters = []
-
+# cell last linked into the maze
+last_linked.verbosity = [3,4]
+last_linked.layer = 2
+last_linked.cycles = 1
+last_linked.animation_details = [["#324b46","",4],
+                                 ["#336e64","",4],
+                                 ["#2b9283","",4],
+                                 ["#00b8a3","",4],
+                                 ["#75c6a0","",4],
+                                 ["#abd3a9","",4],
+                                 ["#d4e0be","",4],]
 ###########################
 ###########################
 [recursive_backtracker]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 16
+# number of frames to skip per draw while backtracking
+# higher number = faster backtracking
+# ex: 1 = show every other frame while backtracking
+backtrack_skip_frames = 1
 
-# Verbosity - All: color of the paths (linked cells)
-path = 34
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
 
-# Verbosity - STYLE: color of the path on the first pass, before backtracking
-stack.layer = 0
-stack.color = 22
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",1]]
 
-# Verbosity - LOGIC: color for neighbors invalid for linking (adjacent to the working cell)
+# path on the first pass, before backtracking
+stack.verbosity = [2,3,4]
+stack.layer = 0
+stack.color = "#00B8A3"
+stack.character = ""
+
+# neighbors invalid for linking (adjacent to the working cell)
+invalid_neighbors.verbosity = [2,4]
 invalid_neighbors.layer=0
-invalid_neighbors.color = 52
+invalid_neighbors.cycles = 1
+invalid_neighbors.animation_details = [["#820024","",1]]
 
-# Verbosity - LOGIC: color of the last grid cell that was linked into the maze
+# last cell that was linked into the maze
+last_linked.verbosity = [2,4]
 last_linked.layer = 0
-last_linked.color = 218
+last_linked.cycles = 1
+last_linked.animation_details = [["#FF9607","",1]]
 
-# Verbosity - STYLE: applies to cells as they are added to the stack
-# (color at index 0 is the front color)
-#   number of colored cells will be up to the length of this list
-stack_transition.layer = 0
-stack_transition.frames_per_value = 3
-stack_transition.colors = [82,46,40,34,28]
-stack_transition.characters = []
+# cells as they are added to the stack
+stack_added_cells.verbosity = [3,4]
+stack_added_cells.layer = 0
+stack_added_cells.cycles = 1
+stack_added_cells.animation_details = [["#c9fff9","",3],
+                                        ["#92fff3","",3],
+                                        ["#5cffec","",3],
+                                        ["#26ffe6","",3],
+                                        ["#00eed3","",3]]
 
-# Verbosity - STYLE: applies to cells as they are removed from the stack
-# (color at index 0 is the front color)
-#   number of colored cells will be up to the length of this list
-backtrack_transition.layer = 1
-backtrack_transition.frames_per_value = 3
-backtrack_transition.colors = [82,46,40,34]
-backtrack_transition.characters = []
+# cells as they are removed from the stack
+stack_removed_cells.verbosity = [3,4]
+stack_removed_cells.layer = 1
+stack_removed_cells.cycles = 1
+stack_removed_cells.animation_details = []
+###########################
+###########################
+[recursive_division]
+
+# color of the walls and unlinked cells
+wall.color = "#2B2B2B"
+wall.character = "█"
+
+# color of the paths (linked cells)
+path.color = "#F2EFDC"
+path.character = "█"
+
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
+working_cell.layer = 0
+working_cell.cycles = 1
+working_cell.animation_details = [["#FF9607","",1]]
+
+# single passage cell ignored during division
+passage_cell.verbosity = [2,4]
+passage_cell.layer = 1
+passage_cell.cycles = 1
+passage_cell.animation_details = [["#820024","",2]]
+
+# fully linked cells generated at the start of the maze generation
+generating_links_cells.verbosity = [3,4]
+generating_links_cells.layer = 0
+generating_links_cells.cycles = 1
+generating_links_cells.animation_details = [["#adfff6","",5],
+                                            ["#00B8A3","",5],
+                                            ["#75c6a0","",5],
+                                            ["#abd3a9","",5]]
+
+# east cells during a vertical division
+division_cell_east.verbosity = [3,4]
+division_cell_east.layer = 0
+division_cell_east.cycles = 1
+division_cell_east.animation_details = [["#abd3a9","▐",4],
+                                        ["#00b8a3","▕",4],
+                                        ["#abd3a9","▐",4]]
+
+# west cells during a vertical division
+division_cell_west.verbosity = [3,4]
+division_cell_west.layer = 0
+division_cell_west.cycles = 1
+division_cell_west.animation_details = [["#c8dbb5","▉",4],
+                                        ["#89caa1","▊",4],
+                                        ["#00b8a3","▋",4],
+                                        ["#00b8a3","▌",4],
+                                        ["#00b8a3","▍",4],
+                                        ["#00b8a3","▎",4],
+                                        ["#00b8a3","▍",4],
+                                        ["#00b8a3","▌",4],
+                                        ["#00b8a3","▋",4],
+                                        ["#89caa1","▊",4],
+                                        ["#c8dbb5","▉",4],]
+# north cells during a vertical division
+division_cell_north.verbosity = [3,4]
+division_cell_north.layer = 0
+division_cell_north.cycles = 1
+division_cell_north.animation_details = [["#abd3a9","▀",4],
+                                         ["#00b8a3","▔",4],
+                                         ["#abd3a9","▀",4]]
+
+# south cells during a vertical division
+division_cell_south.verbosity = [3,4]
+division_cell_south.layer = 0
+division_cell_south.cycles = 1
+division_cell_south.animation_details = [["#c8dbb5","▇",4],
+                                         ["#89caa1","▆",4],
+                                         ["#00b8a3","▅",4],
+                                         ["#00b8a3","▄",4],
+                                         ["#00b8a3","▃",4],
+                                         ["#00b8a3","▂",4],
+                                         ["#00b8a3","▁",4],
+                                         ["#00b8a3","▂",4],
+                                         ["#00b8a3","▃",4],
+                                         ["#00b8a3","▄",4],
+                                         ["#00b8a3","▅",4],
+                                         ["#89caa1","▆",4],
+                                         ["#c8dbb5","▇",4],]
 
 ###########################
 ###########################
 [side_winder]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# color of the walls and unlinked cells
+wall.color = 240
+wall.character = "█"
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the paths (linked cells)
+path.color = 6
+path.character = "█"
 
-# Verbosity - LOGIC: color of cells in each run prior to making an upward link
-run.layer = 0
+# cells in each run prior to making an upward link
+run.verbosity = [2,4]
+run.layer = 1
 run.color = 218
+run.character = ""
 
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 218
+working_cell.cycles = 1
+working_cell.animation_details = []
 
-# Verbosity - LOGIC: color of the last grid cell that was linked into the maze
+# last cell that was linked into the maze
+last_linked.verbosity = [2,4]
 last_linked.layer = 0
-last_linked.color = 159
+last_linked.cycles = 1
+last_linked.animation_details = []
 
 ###########################
 ###########################
 [wilsons]
-# Verbosity - All: color of the walls and unlinked cells
-wall = 240
+# number of frames to skip between visible frames during the initial searching state while
+#  total number of links < 3, after 3 links are formed, this number is reduced to 5
+#  due to the reduced likelihood of long search durations
+#  lower this number to see more frames during the initial searching state (slower maze gen)
+searching_frames_skipped = 60
 
-# Verbosity - All: color of the paths (linked cells)
-path = 6
+# color of the walls and unlinked cells
+wall.color = "#398BA7"
+wall.character = "█"
 
-# Verbosity - LOGIC: color of the cell being targeted for the initial linked path
+# color of the paths (linked cells)
+path.color = "#F4B9C5"
+path.character = "█"
+
+# cell being targeted for the initial linked path
+target.verbosity = [2,3,4]
 target.layer = 0
 target.color = 218
+target.character = ""
 
-# Verbosity - LOGIC: color of the path while drawing new linked paths
-walk.layer = 0
-walk.color = 49
-
-# Verbosity - LOGIC: color of the current cell being assessed for linking
+# current cell being assessed for linking
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
-working_cell.color = 14
+working_cell.cycles = 1
+working_cell.animation_details = []
 
-# Verbosity - STYLE: transition colors undergone by new links
-link_transition.layer = 1
-link_transition.frames_per_value = 10
-link_transition.colors = [50, 87, 86, 50,44,37]
-link_transition.characters = []
+# unlinked cells showing the walk searching for the maze
+searching_walk.verbosity = [2,3,4]
+searching_walk.layer = 0
+searching_walk.color = "#82EEEF"
+searching_walk.character = ""
+
+# applies to all cells in a walk while the walk is being linking
+#  tip: use a lower layer than new_linked and last_linked for
+#       effects such as hiding the walk during linking animations (use wall color)
+linking_walk.verbosity = [2,3,4]
+linking_walk.layer = 0
+linking_walk.color = "#398BA7"
+linking_walk.character = ""
+
+
+# applies to the walks after it has been fully linked into the maze
+new_linked_walk.verbosity = [3,4]
+new_linked_walk.layer = 1
+new_linked_walk.cycles = 2
+new_linked_walk.animation_details = [["#398ba7","",3],
+                                        ["#68a7c4","",6],
+                                        ["#91c3e2","",6],
+                                        ["#bae1ff","",6],
+                                        ["#d2d1fd","",6],
+                                        ["#f1bfe4","",6],
+                                        ["#ffb3ba","",6],
+                                        ["#ffc1b4","",6],
+                                        ["#ffd0b4","",6],
+                                        ["#ffdfba","",6],
+                                        ["#ffe9b8","",6],
+                                        ["#fff3b8","",6],
+                                        ["#ffffba","",6],
+                                        ["#f2e9b3","",6],
+                                        ["#dbf4b7","",6],
+                                        ["#baffc9","",6],
+                                        ["#9bfaeb","",6],
+                                        ["#a0efff","",6],
+                                        ["#bae1ff","",6],
+                                        ["#c6cdfb","",6],
+                                        ["#e0b5e4","",6],
+                                        ["#f29eb9","",6],]
+
+# last cell linked into the walk
+last_linked.verbosity = [3,4]
+last_linked.layer = 0
+last_linked.cycles = 1
+last_linked.animation_details = [["#398ba7","",1],
+                                        ["#68a7c4","",1],
+                                        ["#91c3e2","",1],
+                                        ["#bae1ff","",1],
+                                        ["#d2d1fd","",1],
+                                        ["#f1bfe4","",1],
+                                        ["#ffb3ba","",1],
+                                        ["#ffc1b4","",1],
+                                        ["#ffd0b4","",1],
+                                        ["#ffdfba","",1],
+                                        ["#ffe9b8","",1],
+                                        ["#fff3b8","",1],
+                                        ["#ffffba","",1],
+                                        ["#f2e9b3","",1],
+                                        ["#dbf4b7","",1],
+                                        ["#baffc9","",1],
+                                        ["#9bfaeb","",1],
+                                        ["#a0efff","",1],
+                                        ["#bae1ff","",1],
+                                        ["#c6cdfb","",1],
+                                        ["#e0b5e4","",1],
+                                        ["#f29eb9","",1],]
 
 ########################################################################
 ########################    Solve Algorithms    ########################
@@ -264,36 +534,188 @@ link_transition.characters = []
 #       maze algorithm responsible for the maze.
 [breadth_first]
 
-# Verbosity - LOGIC: current cell being assessed for neighbors in the path
+# current cell being assessed for neighbors in the path
+working_cell.verbosity = [2,4]
+working_cell.layer = 0
+working_cell.color = "#FF9607"
+working_cell.character = ""
+
+# color of cells on the outer edge of the search area
+frontier.verbosity = [2,4]
+frontier.layer = 0
+frontier.color = "#00B8A3"
+frontier.character = "#00B8A3"
+
+# color of cells that have been visited
+visited.verbosity = [3,4]
+visited.layer = 0
+visited.color = "#00B8A3"
+visited.character = ""
+
+# cells visited on the search path
+# (color at index 0 is the start of the transition)
+visited_animation.verbosity = [3,4]
+visited_animation.layer = 1
+visited_animation.cycles = 1
+visited_animation.animation_details = [["#aaa89c", "", 10],
+                                        ["#676661","",10],
+                                        ["#ffffff", "", 10],
+                                        ["#fbfaf3", "", 10],
+                                        ["#F2EFDC", "", 10],
+                                        ["#aaa89c", "🞐", [10,4]],
+                                        ["#aaa89c", "🞏", [10,4]],
+                                        ["#676661", "🞎", [10,4]],
+                                        ["#2b2b2b", "", 60],
+                                        ["#335750", "", 10],
+                                        ["#7dfff0", "", 10],
+                                        ["#befff8", "", 10],
+                                        ["#3bffe9", "", 10],
+                                        ["#00f9dd", "", 10],
+                                        ["#00B8A3", "", 10],]
+
+
+# color of cell being targeted for the solution path
+target.verbosity = [2,4]
+target.layer = 0
+target.color = "#820024"
+target.character = ""
+
+# color of the solution path discovered
+solution_path.verbosity = [2,3,4]
+solution_path.layer = 1
+solution_path.color = "#FF9607"
+solution_path.character = ""
+
+# cells visited on the solution path
+# (value at index 0 is the start of the transition)
+solution_animation.verbosity = [2,3,4]
+solution_animation.layer = 2
+solution_animation.cycles = 1
+solution_animation.animation_details = [["#88F7E2","",5],
+                                        ["#44D492","",5],
+                                        ["#F5EB67","",5],
+                                        ["#FFA15C","",5],
+                                        ["#FA233E","",5],
+                                        ["#FFA15C","",5],
+                                        ["#F5EB67","",5],
+                                        ["#44D492","",5],
+                                        ["#88F7E2","",5]]
+######################################################
+######################################################
+[breadth_first_early_exit]
+
+# current cell being assessed for neighbors in the path
+working_cell.verbosity = [2,4]
 working_cell.layer = 0
 working_cell.color = 218
+working_cell.character = ""
 
-# Verbosity - LOGIC: color of cells on the outer edge of the search area
+# color of cells on the outer edge of the search area
+frontier.verbosity = [2,4]
 frontier.layer = 0
 frontier.color = 82
+frontier.character = ""
 
-# Verbosity - STYLE: color of cells that have been visited
+# color of cells that have been visited
+visited.verbosity = [3,4]
 visited.layer = 0
 visited.color = 172
+visited.character = ""
 
-# Verbosity - STYLE: cells visited on the search path
+# cells visited on the search path
 # (color at index 0 is the start of the transition)
-visited_transition.layer = 1
-visited_transition.frames_per_value = 10
-visited_transition.colors = [46,40,34,28,22,16,22,28,22,16,94,172]
-visited_transition.characters = ["█","█","█","█","█","█","01","01","01","01"]
+visited_animation.verbosity = [3,4]
+visited_animation.layer = 1
+visited_animation.cycles = 1
+visited_animation.animation_details = []
 
-# Verbosity - LOGIC: color of cell being targeted for the solution path
+# color of cell being targeted for the solution path
+target.verbosity = [2,4]
 target.layer = 0
 target.color = 202
+target.character = ""
 
-# Verbosity - LOGIC: color of the solution path discovered
+# color of the solution path discovered
+solution_path.verbosity = [2,3,4]
 solution_path.layer = 1
 solution_path.color = 46
+solution_path.character = ""
 
-# Verbosity - STYLE: cells visited on the solution path
+# cells visited on the solution path
 # (value at index 0 is the start of the transition)
-solution_transition.layer = 2
-solution_transition.frames_per_value = 2
-solution_transition.colors = [21,93,92,91,89,160,166,172,178,184,190,154,118]
-solution_transition.characters = []
+solution_animation.verbosity = [3,4]
+solution_animation.layer = 2
+solution_animation.cycles = 1
+solution_animation.animation_details = []
+
+######################################################
+######################################################
+[greedy_best_first]
+
+# current cell being assessed for neighbors in the path
+working_cell.verbosity = [2,4]
+working_cell.layer = 0
+working_cell.color = "#FF9607"
+working_cell.character = ""
+
+# color of cells on the outer edge of the search area
+frontier.verbosity = [2,4]
+frontier.layer = 0
+frontier.color = "#00B8A3"
+frontier.character = ""
+
+# color of cells that have been visited
+visited.verbosity = [2,3,4]
+visited.layer = 0
+visited.color = "#00B8A3"
+visited.character = ""
+
+# cells visited on the search path
+# (color at index 0 is the start of the transition)
+visited_animation.verbosity = [3,4]
+visited_animation.layer = 1
+visited_animation.cycles = 1
+visited_animation.animation_details = [["#aaa89c", "", 10],
+                                        ["#676661","",10],
+                                        ["#ffffff", "", 10],
+                                        ["#fbfaf3", "", 10],
+                                        ["#F2EFDC", "", 10],
+                                        ["#aaa89c", "🞐", [10,4]],
+                                        ["#aaa89c", "🞏", [10,4]],
+                                        ["#676661", "🞎", [10,4]],
+                                        ["#2b2b2b", "", 60],
+                                        ["#335750", "", 10],
+                                        ["#7dfff0", "", 10],
+                                        ["#befff8", "", 10],
+                                        ["#3bffe9", "", 10],
+                                        ["#00f9dd", "", 10],
+                                        ["#00B8A3", "", 10],]
+
+# color of cell being targeted for the solution path
+target.verbosity = [2,4]
+target.layer = 0
+target.color = "#820024"
+target.character = ""
+
+# color of the solution path discovered
+solution_path.verbosity = [2,3,4]
+solution_path.layer = 1
+solution_path.color = "#FF9607"
+solution_path.character = ""
+
+# cells visited on the solution path
+# (value at index 0 is the start of the transition)
+solution_animation.verbosity = [3,4]
+solution_animation.layer = 2
+solution_animation.cycles = 1
+solution_animation.animation_details = [["#88F7E2","",5],
+                                        ["#44D492","",5],
+                                        ["#F5EB67","",5],
+                                        ["#FFA15C","",5],
+                                        ["#FA233E","",5],
+                                        ["#FFA15C","",5],
+                                        ["#F5EB67","",5],
+                                        ["#44D492","",5],
+                                        ["#88F7E2","",5]]
+######################################################
+######################################################
