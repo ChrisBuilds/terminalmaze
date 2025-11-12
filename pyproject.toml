@@ -1,0 +1,15 @@
+[project]
+name = "terminalmaze"
+version = "0.1.0"
+description = "Maze generation visualizer."
+readme = "README.md"
+authors = [{ name = "Chris", email = "741258+github@pm.me" }]
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2.12.4", "tomli>=2.3.0"]
+
+[project.scripts]
+terminalmaze = "terminalmaze.main:main"
+
+[build-system]
+requires = ["uv_build>=0.9.8,<0.10.0"]
+build-backend = "uv_build"
