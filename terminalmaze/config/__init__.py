@@ -212,4 +212,4 @@ model_map: dict[str, Type[THEME]] = {
 themes: dict[str, dict[str, THEME]] = {theme_name: dict() for theme_name in tm_themes}
 for theme_name, algorithms in tm_themes.items():
     for algorithm, theme_data in algorithms.items():
-        themes[theme_name][algorithm] = model_map[algorithm].parse_obj(theme_data)
+        themes[theme_name][algorithm] = model_map[algorithm].model_validate(theme_data)
