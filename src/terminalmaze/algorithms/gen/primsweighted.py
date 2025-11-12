@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Cell, Grid
 
 class PrimsWeighted(Algorithm):
     def __init__(self, maze: Grid, theme: PrimsWeightedTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.status_text["Algorithm"] = "Prims Weighted"
         self.status_text["Edges"] = 0

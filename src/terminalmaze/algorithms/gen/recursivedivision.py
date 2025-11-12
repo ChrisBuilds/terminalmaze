@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Grid
 
 class RecursiveDivision(Algorithm):
     def __init__(self, maze: Grid, theme: RecursiveDivisionTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.status_text["Algorithm"] = "Recursive Division"
         self.status_text["Divisions"] = f"{0: >4}"
         self.status_text["State"] = ""
@@ -33,7 +33,6 @@ class RecursiveDivision(Algorithm):
         self.visual_effects["passage_cell"] = self.ve_passage_cell
 
     def generate_maze(self) -> Generator[Grid, None, None]:
-
         all_cells = list(self.maze.each_cell(ignore_mask=True))
         while all_cells:
             working_cell = all_cells.pop(random.randint(0, len(all_cells) - 1))

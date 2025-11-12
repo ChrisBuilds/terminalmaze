@@ -14,7 +14,7 @@ class Sidewinder(Algorithm):
         """
         For each row, randomly link cells in a run of cells to their north or east neighbor.
         """
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.status_text["Algorithm"] = "Sidewinder"
         self.status_text["Unvisited Cells"] = 0

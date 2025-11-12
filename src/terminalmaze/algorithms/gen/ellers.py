@@ -11,7 +11,7 @@ from terminalmaze.resources.grid import Grid
 
 class Ellers(Algorithm):
     def __init__(self, maze: Grid, theme: EllersTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.ignore_mask = True
         self.theme = theme
         self.status_text["Algorithm"] = "Eller's"

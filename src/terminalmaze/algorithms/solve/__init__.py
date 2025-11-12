@@ -1,2 +1,6 @@
-import terminalmaze.algorithms.solve.breadthfirst
-import terminalmaze.algorithms.solve.greedybestfirst
+from . import breadthfirst, greedybestfirst
+
+__all__ = [
+    "breadthfirst",
+    "greedybestfirst",
+]

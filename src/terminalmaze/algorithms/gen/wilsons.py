@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Cell, Grid
 
 class Wilsons(Algorithm):
     def __init__(self, maze: Grid, theme: WilsonsTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.status_text["Algorithm"] = "Wilsons"
         self.status_text["Unvisited"] = 0
@@ -86,7 +86,6 @@ class Wilsons(Algorithm):
                     ve_new_linked_walks.cells.append(next_cell)
                     links += 1
                 else:
-
                     walk.append(next_cell)
                     working_cell = next_cell
                     ve_working_cell.cells.append(working_cell)

@@ -2,13 +2,16 @@ import random
 import time
 from typing import Generator
 
+from pydantic import BaseModel
+
 from terminalmaze.resources.grid import Cell, Grid
 from terminalmaze.visual.visualeffects import VisualEffect
 
 
 class Algorithm:
-    def __init__(self, maze: Grid) -> None:
+    def __init__(self, maze: Grid, theme: BaseModel) -> None:
         self.maze: Grid = maze
+        self.theme = theme
         self.visual_effects: dict[str, VisualEffect] = dict()
         self.status_text: dict[str, str | int | None] = dict()
         self.status_text = {"Algorithm": "", "Seed": self.maze.seed, "Time Elapsed": ""}

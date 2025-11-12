@@ -8,7 +8,7 @@ from terminalmaze.resources.grid import Cell, Grid
 
 class BreadthFirst(Algorithm):
     def __init__(self, maze: Grid, theme: BreadthFirstTheme, *conditions) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.status_text["Algorithm"] = "Breadth First"
         self.status_text["Frontier"] = 0

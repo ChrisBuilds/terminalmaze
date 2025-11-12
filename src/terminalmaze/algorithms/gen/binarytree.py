@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Grid
 
 class BinaryTree(Algorithm):
     def __init__(self, maze: Grid, theme: BinaryTreeTheme):
-        super().__init__(maze)
+        super().__init__(maze, theme)
         """
         Create a maze by randomly connecting each cell to its neighbor to the north or east.
         """

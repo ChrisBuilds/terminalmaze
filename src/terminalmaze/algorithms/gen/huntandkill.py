@@ -40,7 +40,7 @@ class HuntandKill(Algorithm):
         maze : Grid
             Grid object from the grid module.
         """
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.status_text["Algorithm"] = "Hunt And Kill"
         self.status_text["Unvisited Cells"] = 0
         self.status_text["State"] = ""

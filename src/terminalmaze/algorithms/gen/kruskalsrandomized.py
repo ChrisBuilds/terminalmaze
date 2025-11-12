@@ -11,7 +11,7 @@ from terminalmaze.resources.grid import Grid
 
 class KruskalsRandomized(Algorithm):
     def __init__(self, maze: Grid, theme: KruskalsRandomizedTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.group_to_cell_map_logic: defaultdict[int, set[Cell]] = defaultdict(set)  # group : {cells}
         self.cell_to_group_map: dict[Cell, int] = dict()  # cell_address : group

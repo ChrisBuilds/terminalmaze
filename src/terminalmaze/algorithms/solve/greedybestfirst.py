@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Cell, Grid
 
 class GreedyBestFirst(Algorithm):
     def __init__(self, maze: Grid, theme: BreadthFirstTheme, *conditions) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.theme = theme
         self.conditions = conditions
         self.status_text["Algorithm"] = "Greedy Best First"

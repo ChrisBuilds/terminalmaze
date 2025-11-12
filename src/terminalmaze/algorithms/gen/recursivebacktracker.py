@@ -9,7 +9,7 @@ from terminalmaze.resources.grid import Grid
 
 class RecursiveBacktracker(Algorithm):
     def __init__(self, maze: Grid, theme: RecursiveBacktrackerTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.status_text["Algorithm"] = "Recursive Backtracker"
         self.status_text.update({"Pending Paths": "", "Stack Length": "", "State": ""})
         self.skip_frames = theme.backtrack_skip_frames

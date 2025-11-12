@@ -10,7 +10,7 @@ from terminalmaze.resources.grid import Grid
 
 class AldousBroder(Algorithm):
     def __init__(self, maze: Grid, theme: AldousBroderTheme) -> None:
-        super().__init__(maze)
+        super().__init__(maze, theme)
         self.status_text["Algorithm"] = "Aldous Broder"
         self.status_text.update({"Unvisited": 0, "Revisited": 0, "Cell": "", "State": ""})
         self.frame_time = time.time()
